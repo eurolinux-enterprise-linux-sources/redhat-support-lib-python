@@ -71,7 +71,7 @@ class Proxy(object):
         '''
         return self.request('POST', url, body, headers)
 
-    def upload(self, url, fileName, description=None):
+    def upload(self, url, fileName, fileChunk=None, description=None):
         '''
         Upload a file.
         Returns a 2 tuple consisting of the response body as strata.xml.params.* object and the returned
@@ -80,7 +80,7 @@ class Proxy(object):
         conn = self.getConnectionsPool().getConnection()
         try:
             try:
-                response = conn.doUpload(url, fileName, description)
+                response = conn.doUpload(url, fileName, fileChunk, description)
                 logger.debug("HTTP response status(%s) " % response.status)
                 if response.status < 400:
                     res = response.read()

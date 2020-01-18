@@ -36,11 +36,11 @@ class ConfigHelper(object):
                  proxy_url=None,
                  proxy_user=None,
                  proxy_pass=None,
-                 ftp_host=None,
+                 ftp_host='dropbox.redhat.com',
                  ftp_port=None,
                  ftp_user=None,
                  ftp_pass=None,
-                 ftp_dir=None,
+                 ftp_dir='/incoming',
                  timeout=None,
                  userAgent=None,
                  http_debug=False,
@@ -54,15 +54,15 @@ class ConfigHelper(object):
         self.proxy_url = proxy_url
         self.proxy_user = proxy_user
         self.proxy_pass = proxy_pass
-        self.ftp_host = ftp_host,
-        self.ftp_port = ftp_port,
-        self.ftp_user = ftp_user,
-        self.ftp_pass = ftp_pass,
-        self.ftp_dir = ftp_dir,
+        self.ftp_host = ftp_host
+        self.ftp_port = ftp_port
+        self.ftp_user = ftp_user
+        self.ftp_pass = ftp_pass
+        self.ftp_dir = ftp_dir
         self.timeout = timeout
         self.userAgent = userAgent
         self.http_debug = http_debug
-        self.attachment_max_size = 900000000
+        self.attachment_max_size = 1 * 1024 * 1024 * 1024 # 1GB
         self.no_verify_ssl = no_verify_ssl
         self.ssl_ca = ssl_ca
 

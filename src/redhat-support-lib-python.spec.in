@@ -64,8 +64,8 @@ make %{?_smp_mflags} install DESTDIR="%{buildroot}"
 %{python_sitelib}/redhat_support_lib/
 
 %changelog
-* Sun Aug 11 2013 Keith Robertson <kroberts@redhat.com> - 0.9.5-9
-- Resolves: rhbz#967496
+* Wed Feb 26 2014 Keith Robertson <kroberts@redhat.com> - 0.9.6-0
+- Various fixes
 
 * Sun Aug 11 2013 Keith Robertson <kroberts@redhat.com> - 0.9.5-8
 - Resolves: rhbz#987168

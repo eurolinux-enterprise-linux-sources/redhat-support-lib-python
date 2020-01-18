@@ -35,7 +35,6 @@ import mimetypes
 import os.path
 import socket
 from email.Header import decode_header
-import shutil
 
 
 logger = logging.getLogger("redhat_support_lib.infrastructure.brokers")
@@ -54,47 +53,48 @@ class solution(params.solution, Base):
         obj.__init__(solution)
         return obj
 
-    @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None,
-                  lastModifiedDate=None, id=None, uri=None, uidName=None,
-                  view_uri=None, title=None, authorSSOName=None,
-                  lastModifiedBySSOName=None, language=None, issue=None,
-                  environment=None, resolution=None, rootCause=None,
-                  internalDiagnosticSteps=None, externalDiagnosticSteps=None,
-                  summary=None, tags=None, case=None, tag=None, published=None,
-                  duplicateOf=None, body=None, kcsState=None,
-                  ModerationState=None, explanation=None):
 
+    @classmethod
+    def fromProps(cls,
+                  createdBy=None,
+                  title=None,
+                  summary=None,
+                  kcsState=None,
+                  resolution=None,
+                  **kwargs):
+
+        issue = kwargs.get('issue', None)
         if issue is not None:
             issue = params.issueType(issue, None)
 
+        resolution = kwargs.get('resolution', None)
         if resolution is not None:
             resolution = params.resolutionType(resolution, None)
 
+        environment = kwargs.get('environment', None)
         if environment is not None:
             environment = params.environmentType(environment, None)
 
+        rootCause = kwargs.get('rootCause', None)
         if rootCause is not None:
             rootCause = params.rootCauseType(rootCause, None)
 
+        internalDiagnosticSteps = kwargs.get('internalDiagnosticSteps', None)
         if internalDiagnosticSteps is not None:
             internalDiagnosticSteps = params.internalDiagnosticStepsType(internalDiagnosticSteps, None)
 
-        if tag is not None:
-            tag = params.tagType(tag, None)
+        tags = kwargs.get('tags', None)
+        if tags is not None:
+            tags = params.tagType(tags, None)
 
+        duplicateOf = kwargs.get('duplicateOf', None)
         if duplicateOf is not None:
             duplicateOf = params.duplicateOfType(None, duplicateOf)
 
-        psol = params.solution(createdBy=createdBy, createdDate=createdDate, lastModifiedBy=lastModifiedBy,
-                               lastModifiedDate=lastModifiedDate, id=id, uri=uri, uidName=uidName,
-                               view_uri=view_uri, title=title, authorSSOName=authorSSOName,
-                               lastModifiedBySSOName=lastModifiedBySSOName, language=language, issue=issue,
-                               environment=environment, resolution=resolution, rootCause=rootCause,
-                               internalDiagnosticSteps=internalDiagnosticSteps, externalDiagnosticSteps=externalDiagnosticSteps,
-                               summary=summary, tags=tags, case=case, tag=tag, published=published,
-                               duplicateOf=duplicateOf, body=body, kcsState=kcsState,
-                               ModerationState=ModerationState, explanation=explanation)
+        psol = params.solution(createdBy=createdBy, title=title,
+                               summary=summary, kcsState=kcsState,
+                               resolution=resolution, **kwargs)
+
         return cls(psol)
 
     def set_issue(self, issue):
@@ -241,41 +241,41 @@ class article(params.article, Base):
         obj.__init__(article)
         return obj
 
-    @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None,
-                  id=None, uri=None, uidName=None, view_uri=None, title=None, authorSSOName=None,
-                  lastModifiedBySSOName=None, language=None, issue=None, environment=None, resolution=None,
-                  rootCause=None, internalDiagnosticSteps=None, articleBody=None, externalDiagnosticSteps=None,
-                  summary=None, tags=None, case=None, tag=None, published=None, duplicateOf=None, kcsState=None,
-                  body=None, explanation=None):
 
-        if issue is not None:
+    @classmethod
+    def fromProps(cls, createdBy=None, title=None, summary=None, kcsState=None, body=None, **kwargs):
+
+        issue = kwargs.get('issue', None)
+        if kwargs.get('issue', None):
             issue = params.issueType(issue, None)
 
+        resolution = kwargs.get('resolution', None)
         if resolution is not None:
             resolution = params.resolutionType(resolution, None)
 
+        environment = kwargs.get('environment', None)
         if environment is not None:
             environment = params.environmentType(environment, None)
 
+        rootCause = kwargs.get('rootCause', None)
         if rootCause is not None:
             rootCause = params.rootCauseType(rootCause, None)
 
+        internalDiagnosticSteps = kwargs.get('internalDiagnosticSteps', None)
         if internalDiagnosticSteps is not None:
             internalDiagnosticSteps = params.internalDiagnosticStepsType(internalDiagnosticSteps, None)
 
+        tag = kwargs.get('tag', None)
         if tag is not None:
             tag = params.tagType(tag, None)
 
+        duplicateOf = kwargs.get('duplicateOf', None)
         if duplicateOf is not None:
             duplicateOf = params.duplicateOfType(None, duplicateOf)
 
-        psol = params.article(createdBy, createdDate, lastModifiedBy, lastModifiedDate,
-                              id, uri, uidName, view_uri, title, authorSSOName,
-                              lastModifiedBySSOName, language, issue, environment, resolution,
-                              rootCause, internalDiagnosticSteps, articleBody, externalDiagnosticSteps,
-                              summary, tags, case, tag, published, duplicateOf, kcsState,
-                              body, explanation)
+        psol = params.article(createdBy=createdBy, title=title,
+                              summary=summary, kcsState=kcsState,
+                              body=body, **kwargs)
         return cls(psol)
 
     def set_issue(self, issue):
@@ -421,12 +421,12 @@ class comment(params.comment, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None,
-                  lastModifiedDate=None, id=None, caseNumber=None, text=None,
-                  uri=None, public=True, draft=False, publishedDate=None):
-        comment = params.comment(createdBy, createdDate, lastModifiedBy,
-                                 lastModifiedDate, id, caseNumber, text,
-                                 uri, public, draft, publishedDate)
+    def fromProps(cls, caseNumber=None, text=None,
+                  public=True, **kwargs):
+        comment = params.comment(caseNumber=caseNumber,
+                                 text=text,
+                                 public=public,
+                                 **kwargs)
         return cls(comment)
 
 
@@ -562,17 +562,13 @@ class attachment(params.attachment, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None,
-                  lastModifiedDate=None, caseNumber=None, caseId=None,
-                  uuid=None, etag=None, uri=None, fileDate=None, fileName=None,
-                  description=None, mimeType=None, length=None, active=None,
-                  deprecated=None, private=False):
+    def fromProps(cls, caseNumber=None, public=True,
+                  fileName=None, description=None, **kwargs):
 
-        attachmnt = params.attachment(createdBy, createdDate, lastModifiedBy,
-                                      lastModifiedDate, caseNumber, caseId,
-                                      uuid, etag, uri, fileDate, fileName,
-                                      description, mimeType, length, active,
-                                      deprecated, private)
+        attachmnt = params.attachment(caseNumber=caseNumber, private=not public,
+                                      fileName=fileName, description=description,
+                                      **kwargs)
+
         return cls(attachmnt)
 
 
@@ -585,7 +581,7 @@ class attachments(Base):
         self.superclass = self
 
     def add(self, caseNumber=None, public=True, fileName=None,
-            description=None):
+            fileChunk=None, description=None, useFtp=False):
         '''
         Add a new attachment
 
@@ -608,42 +604,33 @@ class attachments(Base):
         '''
         url = '/rs/cases/{caseNumber}/attachments'
         amnt = None
-        tmp_dir = None
         config = confighelper.get_config_helper()
-        try:
-            if fileName:
+
+        exceeds_max_size = (not fileChunk and os.path.getsize(fileName) > config.attachment_max_size)
+        if useFtp or exceeds_max_size:
+            amnt = FtpHelper.ftp_attachment(fileName, caseNumber, fileChunk)
+            if exceeds_max_size and not useFtp:
+                # if useFtp is True, no need to display this comment in the case
                 filebaseName = os.path.basename(fileName)
-                if not "zip" in mimetypes.guess_type(fileName):
-                    tmp_dir, fileName = FtpHelper.compress_attachment(fileName,
-                                                                    caseNumber)
-
-            size = os.path.getsize(fileName)
-            if size >= config.attachment_max_size:
-                amnt = FtpHelper.ftp_attachment(fileName=fileName,
-                                            caseNumber=caseNumber)
-
-                cmntText = ('The file ' + filebaseName + ' exceeds the \
-byte limit to attach a file to a case; therefore, the file \
-was uploaded to ' + config.ftp_host + 'as ' +
-os.path.basename(fileName))
+                cmntText = ('[RHST] The file %s exceeds the byte limit to attach a file '
+                            'to a case; therefore the file was uploaded to %s as %s-%s'
+                            % (filebaseName, config.ftp_host, caseNumber, filebaseName))
                 cmnt = InstanceMaker.makeComment(caseNumber=caseNumber,
                                                  text=cmntText)
                 casecomment = comments()
                 casecomment.add(cmnt)
-            else:
-                url = UrlHelper.replace(url, {'{caseNumber}': caseNumber})
+        else:
+            url = UrlHelper.replace(url, {'{caseNumber}': caseNumber})
 
-                doc = self._getProxy().upload(SearchHelper.appendQuery(url, {'public':public}),
-                                                       fileName,
-                                                       description)[0]
-                amnt = attachment(doc)
-                amnt.set_private(not public)
-                amnt.set_mimeType(mimetypes.guess_type(fileName)[0] or
-                                  'application/octet-stream')
-                logger.debug("REST Response:%s" % amnt.toXml())
-        finally:
-            if tmp_dir:
-                shutil.rmtree(tmp_dir)  # delete tmp directory
+            doc = self._getProxy().upload(SearchHelper.appendQuery(url, {'private':not public}),
+                                          fileName,
+                                          fileChunk,
+                                          description)[0]
+            amnt = attachment(doc)
+            amnt.set_private(not public)
+            amnt.set_mimeType(mimetypes.guess_type(fileName)[0] or
+                              'application/octet-stream')
+            logger.debug("REST Response:%s" % amnt.toXml())
         return amnt
 
     def delete(self, caseNumber=None, attachmentUUID=None):
@@ -809,14 +796,9 @@ class entitlement(params.entitlement, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None,
-                  lastModifiedDate=None, id=None, uri=None, name=None, sla=None,
-                  supportLevel=None, serviceLevel=None, startDate=None, endDate=None):
+    def fromProps(cls, name=None, **kwargs):
 
-        entitlement = params.entitlement(createdBy, createdDate, lastModifiedBy,
-                                         lastModifiedDate, id, uri, name,
-                                         sla, supportLevel, serviceLevel,
-                                         startDate, endDate)
+        entitlement = params.entitlement(name=name, **kwargs)
         return cls(entitlement)
 
 class entitlements(Base):
@@ -856,7 +838,8 @@ class entitlements(Base):
         url = '/rs/entitlements'
         # Strata is inverted in several respects, the option for filtering inactive entitlements being one.
         showAll = not activeOnly
-        doc, headers = self._getProxy().get(url=SearchHelper.appendQuery(url, {"showAll":showAll, "product": product}))
+        doc, headers = self._getProxy().get(url=SearchHelper.appendQuery(url,
+                                                                         {"showAll":showAll, "product": product}))
         logger.debug("REST Response:\n%s" % ParseHelper.toXml(doc))
         return ParseHelper.toCollection(entitlement,
                                         FilterHelper.filter(doc.get_entitlement(), kwargs))
@@ -1091,13 +1074,42 @@ class symptom(params.symptom, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None,
-                  caseNumber=None, category=None, data=None, description=None, display=None,
-                  location=None, problemSymptomParameters=None, summary=None, timestamp=None, uri=None):
-        symptom = params.symptom(createdBy=createdBy, createdDate=createdDate, lastModifiedBy=lastModifiedBy, lastModifiedDate=lastModifiedDate,
-                  caseNumber=caseNumber, category=category, data=data, description=description, display=display,
-                  location=location, problemSymptomParameters=problemSymptomParameters, summary=summary, timestamp=timestamp, uri=uri)
+    def fromProps(cls, caseNumber=None, category=None, 
+                  data=None, description=None,
+                  location=None, summary=None,
+                  uri=None, **kwargs):
+
+        symptom = params.symptom(caseNumber=caseNumber, category=category,
+                                 data=data, description=description,
+                                 location=location, summary=summary,
+                                 uri=uri, **kwargs)
         return cls(symptom)
+
+
+class extractedSymptom(params.extractedSymptom, Base):
+    def __init__(self, extractedSymptom):
+        self.superclass = extractedSymptom
+
+    def __new__(cls, extractedSymptom):
+        if extractedSymptom is None: return None
+        obj = object.__new__(cls)
+        obj.__init__(extractedSymptom)
+        return obj
+
+    @classmethod
+    def fromProps(cls, label=None, createdBy=None, createdDate=None, lastModifiedBy=None,
+                  lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None,
+                  type_=None, category=None, occurrences=None, verbatim=None, fields=None,
+                  beginIndex=None, endIndex=None, summary=None, signature=None, timestamp=None):
+
+        symptom = params.extractedSymptom(label=label, createdBy=createdBy, createdDate=createdDate,
+                                          lastModifiedBy=lastModifiedBy, lastModifiedDate=lastModifiedDate,
+                                          linked=linked, linkedBy=linkedBy, linkedAt=linkedAt,
+                                          type_=type_, category=category, occurrences=occurrences,
+                                          verbatim=verbatim, fields=fields, beginIndex=beginIndex,
+                                          endIndex=endIndex, summary=summary, signature=signature,
+                                          timestamp=timestamp)
+        return cls(extractedSymptom)
 
 
 class symptoms(Base):
@@ -1107,14 +1119,83 @@ class symptoms(Base):
         # Without this assignment you'll get a nice and confusing recursion stacktrace if
         # a wayward programmer attempts to call a non-existent method on this class.
         self.superclass = self
+
+
     def add(self, sym):
         url = '/rs/symptoms'
         doc, headers = self._getProxy().add(url=url,
                                             body=ParseHelper.toXml(sym))
         d = {}
         d.update(headers)
-        location = d['location']
-        return location
+        sym.set_location(d['location'])
+        return sym
+
+
+    def extractFromStr(self,
+                       content=None):
+        '''
+        Queries the symptom extractor RESTful interface with a given string.
+
+        :param content:
+            The text that you wish to be analyzed by the diagnostics engine
+
+        :type content: string
+        :returns: A list of extractedSymptom objects
+        :rtype: list
+        :raises:
+            Exception if there was a connection related issue or an
+            issue parsing headers
+        '''
+        url = '/rs/symptoms/extractor'
+
+        doc, headers = self._getProxy().action(url,
+                                               body=escape(content),
+                                               headers={'Content-Type': 'text/plain'})
+
+        logger.debug("REST Response:\n%s" % ParseHelper.toXml(doc))
+        return ParseHelper.toCollection(extractedSymptom, doc.get_extractedSymptom())
+
+    def extractFromFile(self, fileName=None):
+        '''
+        Queries the symptom extractor RESTful interface with a given string.
+
+        :param fileName:
+            The path of the file that you wish to be analyzed
+            by the diagnostics engine
+
+        :type fileName: file
+        :returns: A list of extractedSymptom objects
+        :rtype: list
+        :raises:
+            Exception if there was a connection related issue or an
+            issue parsing headers
+
+            socket.error or IOError for issues when reading the specified file.
+        '''
+        url = '/rs/symptoms/extractor'
+        fh = None
+        doc = None
+        try:
+            try:
+                fh = open(fileName, 'rb')
+                doc, headers = self._getProxy().action(url,
+                                                       fh.read(),
+                                                       {'Content-Type': 'text/plain'})
+            except socket.error, se:
+                logger.debug('Socket error: msg(%s)' % (se))
+                raise ConnectionError, str(se)
+            except IOError, ioe:
+                logger.debug('I/O error: errno(%s) strerror(%s)' % (ioe.errno, ioe.strerror))
+                raise
+            except Exception, e:
+                logger.debug('Unexpected exception: msg(%s)' % (str(e)))
+                raise
+        finally:
+            if fh:
+                fh.close()
+
+        logger.debug("REST Response:\n%s" % ParseHelper.toXml(doc))
+        return ParseHelper.toCollection(extractedSymptom, doc.get_extractedSymptom())
 
 
 class problem(params.problem, Base):
@@ -1129,9 +1210,9 @@ class problem(params.problem, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, source=None, link=None):
+    def fromProps(cls, source=None, link=None, explainSbr=None):
 
-        problem = params.problem(source, link)
+        problem = params.problem(source=source, link=link, explainSbr=explainSbr)
         return cls(problem)
 
 
@@ -1320,66 +1401,9 @@ class recommendation(params.recommendation, Base):
         return obj
 
     @classmethod
-    def fromProps(cls, createdBy=None, createdDate=None, lastModifiedBy=None,
-                  lastModifiedDate=None, algorithmScore=None,
-                  analysisAlgorithm=None, analysisAlgorithmVersion=None,
-                  analysisCategory=None, analysisModule=None,
-                  analysisService=None, analysisServiceVersion=None,
-                  bucket=None, caseNumber=None, client=None,
-                  clientVersion=None, display=None, analysisStatus=None,
-                  firstSuggestedDate=None, keywords=None,
-                  lastSuggestedDate=None, linked=None, linkedAt=None,
-                  linkedBy=None, location=None, luceneScore=None, message=None,
-                  note=None, origin=None, pinnedAt=None, pinnedBy=None,
-                  relevanceScore=None, resource=None, resourceId=None,
-                  resourceType=None, resourceURI=None, resourceViewURI=None,
-                  rule=None, ruleVersion=None, scoringAlgorithmVersion=None,
-                  solutionId=None, solutionKcsState=None,
-                  solutionOwnerSSOName=None, solutionTitle=None,
-                  solutionAbstract=None, solutionUrl=None, suggestedCount=None,
-                  suggestionRelevanceScore=None, explanation=None, title=None,
-                  tracebackUrl=None, solutionCaseCount=None, language=None,
-                  detectedLanguage=None, setLanguage=None,
-                  ModerationState=None, hasPublishedVersion=None, product=None,
-                  indexedDate=None):
+    def fromProps(cls, **kwargs):
 
-        prec = params.recommendation(
-                  createdBy=createdBy, createdDate=createdDate,
-                  lastModifiedBy=lastModifiedBy,
-                  lastModifiedDate=lastModifiedDate,
-                  algorithmScore=algorithmScore,
-                  analysisAlgorithm=analysisAlgorithm,
-                  analysisAlgorithmVersion=analysisAlgorithmVersion,
-                  analysisCategory=analysisCategory,
-                  analysisModule=analysisModule,
-                  analysisService=analysisService,
-                  analysisServiceVersion=analysisServiceVersion, bucket=bucket,
-                  caseNumber=caseNumber, client=client,
-                  clientVersion=clientVersion, display=display,
-                  analysisStatus=analysisStatus,
-                  firstSuggestedDate=firstSuggestedDate, keywords=keywords,
-                  lastSuggestedDate=lastSuggestedDate, linked=linked,
-                  linkedAt=linkedAt, linkedBy=linkedBy, location=location,
-                  luceneScore=luceneScore, message=message, note=note,
-                  origin=origin, pinnedAt=pinnedAt, pinnedBy=pinnedBy,
-                  relevanceScore=relevanceScore, resource=resource,
-                  resourceId=resourceId, resourceType=resourceType,
-                  resourceURI=resourceURI, resourceViewURI=resourceViewURI,
-                  rule=rule, ruleVersion=ruleVersion,
-                  scoringAlgorithmVersion=scoringAlgorithmVersion,
-                  solutionId=solutionId, solutionKcsState=solutionKcsState,
-                  solutionOwnerSSOName=solutionOwnerSSOName,
-                  solutionTitle=solutionTitle,
-                  solutionAbstract=solutionAbstract, solutionUrl=solutionUrl,
-                  suggestedCount=suggestedCount,
-                  suggestionRelevanceScore=suggestionRelevanceScore,
-                  explanation=explanation, title=title,
-                  tracebackUrl=tracebackUrl,
-                  solutionCaseCount=solutionCaseCount, language=language,
-                  detectedLanguage=detectedLanguage, setLanguage=setLanguage,
-                  ModerationState=ModerationState,
-                  hasPublishedVersion=hasPublishedVersion, product=product,
-                  indexedDate=indexedDate)
+        prec = params.recommendation(**kwargs)
         return cls(prec)
 
 
@@ -1519,6 +1543,61 @@ class values(Base):
         return severity_values
 
 
+class searchResult(params.searchResult, Base):
+    def __init__(self, searchResult):
+        self.superclass = searchResult
+
+    def __new__(cls, searchResult):
+        if searchResult is None: return None
+        obj = object.__new__(cls)
+        obj.__init__(searchResult)
+        return obj
+
+    @classmethod
+    def fromProps(cls, **kwargs):
+
+        symptom = params.searchResult(**kwargs)
+        return cls(searchResult)
+
+class search(Base):
+    def __init__(self):
+        """Constructor."""
+        # Assign self to superclass for the broker classes that are aggregates of the specific type.
+        # Without this assignment you'll get a nice and confusing recursion stacktrace if
+        # a wayward programmer attempts to call a non-existent method on this class.
+        self.superclass = self
+
+    def search(self, keywords=None, **kwargs):
+        '''
+        Queries the search RESTful interface with a given set of keywords.
+
+        :param keywords: Search string
+        :type keywords: string
+        :param searchopts: search options/query filters passed to the API
+        :type searchopts: dict
+        :param kwargs:
+            Additional options passed to FilterHelper
+
+            Example:
+
+            .. code-block:: python
+
+                api.search.search('RHEV', authorSSOName="anonymous")
+
+        :returns: A list of searchResult objects
+        :rtype: list
+        :raises:
+            Exception if there was a connection related issue or an
+            issue parsing headers
+        '''
+        url = '/rs/search'
+
+        doc, headers = self._getProxy().get(url=SearchHelper.appendQuery(url, {'keyword':keywords}))
+        logger.debug("REST Response:\n%s" % ParseHelper.toXml(doc))
+        return ParseHelper.toCollection(searchResult,
+                                        FilterHelper.filter(doc.get_searchResult(), kwargs))
+
+
 class InstanceMaker(object):
     '''
     Utility class to make single instances of case, solution, article, entitlement, and comment.
@@ -1530,50 +1609,48 @@ class InstanceMaker(object):
         return case.fromProps(summary=summary, product=product, version=version, **kwargs)
 
     @classmethod
-    def makeSolution(self, title=None, language=None, issue=None,
-                     environment=None, resolution=None, rootCause=None,
-                     internalDiagnosticSteps=None, externalDiagnosticSteps=None,
-                     summary=None, tags=None, case=None, tag=None, published=None,
-                     duplicateOf=None, body=None, kcsState=None,
-                     ModerationState=None, explanation=None):
-        return solution.fromProps(title=title, language=language, issue=issue,
-                                  environment=environment, resolution=resolution, rootCause=rootCause,
-                                  internalDiagnosticSteps=internalDiagnosticSteps, externalDiagnosticSteps=externalDiagnosticSteps,
-                                  summary=summary, tags=tags, case=case, tag=tag, published=published,
-                                  duplicateOf=duplicateOf, body=body, kcsState=kcsState,
-                                  ModerationState=ModerationState, explanation=explanation)
+    def makeSolution(self, createdBy=None, title=None,
+                     summary=None, kcsState=None,
+                     resolution=None, **kwargs):
+        return solution.fromProps(createdBy=createdBy, title=title,
+                                  summary=summary, kcsState=kcsState,
+                                  resolution=resolution, **kwargs)
 
     @classmethod
-    def makeArticle(self, createdBy=None, title=None, language=None, issue=None, environment=None, resolution=None,
-                    rootCause=None, internalDiagnosticSteps=None, articleBody=None, externalDiagnosticSteps=None,
-                    summary=None, tags=None, case=None, tag=None, published=None, duplicateOf=None, kcsState=None,
-                    body=None, explanation=None):
-        return article.fromProps(createdBy=createdBy, title=title, language=language, issue=issue, environment=environment, resolution=resolution,
-                                 rootCause=rootCause, internalDiagnosticSteps=internalDiagnosticSteps, articleBody=articleBody,
-                                 externalDiagnosticSteps=externalDiagnosticSteps, summary=summary, tags=tags, case=case, tag=tag,
-                                 published=published, duplicateOf=duplicateOf, kcsState=kcsState, body=body, explanation=explanation)
+    def makeArticle(self, createdBy=None, title=None,
+                    summary=None, kcsState=None,
+                    body=None, **kwargs):
+        return article.fromProps(createdBy=createdBy, title=title,
+                              summary=summary, kcsState=kcsState,
+                              body=body, **kwargs)
 
     @classmethod
-    def makeEntitlement(self, name=None, sla=None, supportLevel=None, serviceLevel=None, startDate=None, endDate=None):
-        return entitlement.fromProps(name=name, sla=sla, supportLevel=supportLevel, serviceLevel=serviceLevel, startDate=startDate, endDate=endDate)
+    def makeEntitlement(self, name=None, **kwargs):
+        return entitlement.fromProps(name=name, **kwargs)
 
     @classmethod
-    def makeComment(self, caseNumber=None, text=None, public=True, draft=False, publishedDate=None):
-        return comment.fromProps(caseNumber=caseNumber, text=text, public=public, draft=draft, publishedDate=publishedDate)
+    def makeComment(self, caseNumber=None, text=None,
+                    public=True, **kwargs):
+        return comment.fromProps(caseNumber=caseNumber,
+                                 text=text,
+                                 public=public,
+                                 **kwargs)
 
     @classmethod
-    def makeAttachment(self, caseNumber=None, etag=None, fileDate=None, fileName=None, description=None, mimeType=None, length=None,
-                       active=None, deprecated=None, private=False):
-        return attachment.fromProps(caseNumber=caseNumber, etag=etag, fileDate=fileDate, fileName=fileName,
-                                    description=description, mimeType=mimeType, length=length, active=active,
-                                    deprecated=deprecated, private=private)
+    def makeAttachment(self, caseNumber=None, public=True,
+                       fileName=None, description=None, **kwargs):
+        return attachment.fromProps(caseNumber=caseNumber, private=not public,
+                                      fileName=fileName, description=description,
+                                      **kwargs)
     @classmethod
-    def makeSymptom(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None,
-                    caseNumber=None, category=None, data=None, description=None, display=None,
-                    location=None, problemSymptomParameters=None, summary=None, timestamp=None, uri=None):
-        return symptom.fromProps(createdBy=createdBy, createdDate=createdDate, lastModifiedBy=lastModifiedBy, lastModifiedDate=lastModifiedDate,
-                                 caseNumber=caseNumber, category=category, data=data, description=description, display=display,
-                                 location=location, problemSymptomParameters=problemSymptomParameters, summary=summary, timestamp=timestamp, uri=uri)
+    def makeSymptom(self, caseNumber=None, category=None,
+                    data=None, description=None,
+                    location=None, summary=None,
+                    uri=None, **kwargs):
+        return symptom.fromProps(caseNumber=caseNumber, category=category,
+                                 data=data, description=description,
+                                 location=location, summary=summary,
+                                 uri=uri, **kwargs)
 
     @classmethod
     def makeCaseFilter(cls, endDate=None, accountNumber=None,

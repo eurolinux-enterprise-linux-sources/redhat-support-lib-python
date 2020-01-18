@@ -33,6 +33,7 @@ from redhat_support_lib.infrastructure.brokers import products
 from redhat_support_lib.infrastructure.brokers import values
 from redhat_support_lib.infrastructure.brokers import InstanceMaker
 from redhat_support_lib.infrastructure.brokers import symptoms
+from redhat_support_lib.infrastructure.brokers import search
 from redhat_support_lib.utils import reporthelper
 import redhat_support_lib.utils.confighelper as confighelper
 from redhat_support_lib.xml import report
@@ -164,6 +165,7 @@ class API(object):
         self.products = products()
         self.symptoms = symptoms()
         self.values = values()
+        self.search = search()
         self.im = InstanceMaker()
 
     def disconnect(self):

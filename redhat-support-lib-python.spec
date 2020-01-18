@@ -1,9 +1,9 @@
-%global         package_version 0.9.5-9
+%global         package_version 0.9.6-0
 %global         package_name redhat-support-lib-python
 
 Name:           %{package_name}
-Version:        0.9.5
-Release:        9%{?release_suffix}%{?dist}
+Version:        0.9.6
+Release:        0%{?release_suffix}%{?dist}
 Summary:        Red Hat Support Software Development Library
 Vendor:         Red Hat, Inc.
 Group:          Development/Libraries
@@ -64,6 +64,9 @@ make %{?_smp_mflags} install DESTDIR="%{buildroot}"
 %{python_sitelib}/redhat_support_lib/
 
 %changelog
+* Wed Feb 26 2014 Keith Robertson <kroberts@redhat.com> - 0.9.6-0
+- Resolves: bz1036697
+
 * Sun Aug 11 2013 Keith Robertson <kroberts@redhat.com> - 0.9.5-9
 - Resolves: bz967498
 

@@ -56,6 +56,8 @@ class SearchHelper(object):
                         break
                 if not hasattr(match, 'match') and value != match:
                     break
+                if value is None:
+                    break
                 value = value.encode('ascii', 'ignore')
                 if hasattr(match, 'match') and \
                     (value is None or not match.match(str(value))):

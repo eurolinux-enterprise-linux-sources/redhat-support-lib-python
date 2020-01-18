@@ -27,6 +27,7 @@ from httplib import HTTPConnection, BadStatusLine
 from M2Crypto import SSL
 from M2Crypto.httpslib import HTTPSConnection
 from redhat_support_lib.web.proxyhttpsconnection import RSLProxyHTTPSConnection
+from redhat_support_lib.infrastructure.errors import RequestError
 
 
 logger = logging.getLogger("redhat_support_lib.web.connection")
@@ -113,12 +114,12 @@ class Connection(object):
                 else:
                     raise
 
-    def doUpload(self, url, fileName, description=None):
+    def doUpload(self, url, fileName, fileChunk=None, description=None):
         '''Wrapper for _doUpload to handle connection retries'''
         attempts = 0
         while True:
             try:
-                self._doUpload(url, fileName, description)
+                self._doUpload(url, fileName, fileChunk, description)
                 return self.__connection.getresponse()
             except BadStatusLine:
                 if attempts == 0:
@@ -129,12 +130,13 @@ class Connection(object):
                 else:
                     raise
 
-    def _doUpload(self, url, fileName, description=None):
+    def _doUpload(self, url, fileName, fileChunk=None, description=None):
         '''
         Do an upload of a single file to the given URL.
         Keyword arguments:
             url -- The URL to upload to.
-            fileHandle -- An open file handle whose content needs to be sent.
+            fileName -- An open file handle whose content needs to be sent.
+            fileChunk -- Dict describing the chunk of fileName to be sent.
             description -- Optional description of the file.
         '''
         boundary = '----------%x' % time.time()
@@ -142,49 +144,81 @@ class Connection(object):
         try:
             try:
                 fh = open(fileName, 'rb')
-                # Compose the head of the form.
-                headFormAry = []
-                if description:
+                fileSize = os.path.getsize(fileName)
+                # Loop used for uploading all the chunks of split attachments
+                while True:
+                    # Compose the head of the form.
+                    headFormAry = []
+                    if description:
+                        headFormAry.append('--' + boundary)
+                        headFormAry.append(\
+                            'Content-Disposition: form-data; name="description"')
+                        headFormAry.append('')
+                        headFormAry.append(str(description))
                     headFormAry.append('--' + boundary)
+                    if fileChunk:
+                        chunkName = ("%s.%03d" % (os.path.basename(fileName),
+                                                  fileChunk['num']))
+                        fileChunk['names'].append(chunkName)
+                        header_filename = chunkName
+                    else:
+                        header_filename = os.path.basename(fileName)
                     headFormAry.append(\
-                        'Content-Disposition: form-data; name="description"')
+                        'Content-Disposition: form-data; name="%s"; filename="%s"'\
+                        % ('file', header_filename))
+                    headFormAry.append('Content-Type: %s' % \
+                                       (mimetypes.guess_type(fileName)[0] or \
+                                        'application/octet-stream'))
                     headFormAry.append('')
-                    headFormAry.append(str(description))
-                headFormAry.append('--' + boundary)
-                headFormAry.append(\
-                    'Content-Disposition: form-data; name="%s"; filename="%s"'\
-                    % ('file', os.path.basename(fileName)))
-                headFormAry.append('Content-Type: %s' % \
-                                   (mimetypes.guess_type(fileName)[0] or \
-                                    'application/octet-stream'))
-                headFormAry.append('')
-                headFormAry.append('')
-                headForm = '\r\n'.join(headFormAry)
+                    headFormAry.append('')
+                    headForm = '\r\n'.join(headFormAry)
 
-                # Compose the tail
-                tailFormAry = []
-                tailFormAry.append('')
-                tailFormAry.append('--' + boundary + '--')
-                tailFormAry.append('')
-                tailForm = '\r\n'.join(tailFormAry)
+                    # Compose the tail
+                    tailFormAry = []
+                    tailFormAry.append('')
+                    tailFormAry.append('--' + boundary + '--')
+                    tailFormAry.append('')
+                    tailForm = '\r\n'.join(tailFormAry)
 
-                totalLength = len(headForm) \
-                            + os.fstat(fh.fileno()).st_size + len(tailForm)
+                    totalLength = len(headForm) + len(tailForm)
+                    if fileChunk:
+                        totalLength += fileChunk['size']
+                    else:
+                        totalLength += fileSize
 
-                # Start sending.
-                self.__connection.putrequest(method='POST',
-                                             url=url,
-                                             skip_host=0,
-                                             skip_accept_encoding=1)
-                hdrDict = self.getHeaders({'Content-Length': str(totalLength),
-                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
-                                           'Accept': 'text/plain'})
-                for key, value in hdrDict.items():
-                    self.__connection.putheader(key, value)
-                self.__connection.endheaders()
-                self.__connection.send(headForm)
-                self.__connection.send(fh.read())
-                self.__connection.send(tailForm)
+                    # Start sending.
+                    self.__connection.putrequest(method='POST',
+                                                 url=url,
+                                                 skip_host=0,
+                                                 skip_accept_encoding=1)
+                    hdrDict = self.getHeaders({'Content-Length': str(totalLength),
+                    'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                                               'Accept': 'text/plain'})
+                    for key, value in hdrDict.items():
+                        self.__connection.putheader(key, value)
+                    self.__connection.endheaders()
+                    self.__connection.send(headForm)
+                    if fileChunk:
+                        self.__connection.send(fh.read(fileChunk['size']))
+                        self.__connection.send(tailForm)
+                        if fh.tell() >= fileSize:
+                            break
+                        else:
+                            response = self.__connection.getresponse()
+                            response.read()
+                            if response.status >= 400:
+                                logger.debug("HTTP status(%s) HTTP reason(%s) "
+                                             "HTTP response(%s)" %
+                                             (response.status, response.reason,
+                                              response.read()))
+                                raise RequestError(response.status,
+                                                   response.reason,
+                                                   response.read())
+                        fileChunk['num'] += 1
+                    else:
+                        self.__connection.send(fh.read())
+                        self.__connection.send(tailForm)
+                        break
             except:
                 raise
         finally:
@@ -298,7 +332,7 @@ class Connection(object):
 
         conn = None
         hdr = {}
-            
+
         if self.url_schema == 'http':
             (conn, hdr) = makeHTTPConnection()
         else:

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 import redhat_support_lib.utils.confighelper as confighelper
+import redhat_support_lib.utils.reporthelper as reporthelper
 from redhat_support_lib.web.connection import Connection
 from ftplib import FTP
 import base64
@@ -24,22 +25,28 @@ import datetime
 import gzip
 import logging
 import os.path
+import shutil
 import sys
 
-logger = logging.getLogger("redhat_support_lib.utils.reporthelper")
+logger = logging.getLogger("redhat_support_lib.utils.ftphelper")
 
 __author__ = 'Spenser Shumaker sshumake@redhat.com'
 __author__ = 'Keith Robertson kroberts@redhat.com'
 
 
-def ftp_attachment(fileName=None, caseNumber=None):
+def ftp_attachment(fileName=None, caseNumber=None, fileChunk=None):
 
     config = confighelper.get_config_helper()
 
     if not fileName:
         raise Exception('ftp_file(%s) cannot be empty.' % fileName)
     logger.debug("Creating connection to FTP server %s" % config.ftp_host)
+    if not caseNumber:
+        caseNumber = 'RHST-upload'
 
+    conn = None
+    ftp = None
+    fh = None
     # add http to host because if it is not prefixed it defaults to https
     try:
         if config.proxy_url != None:
@@ -83,41 +90,82 @@ def ftp_attachment(fileName=None, caseNumber=None):
             ftp.welcome = ftp.getresp()
             ftp.login(user=config.ftp_user, passwd=config.ftp_pass)
         else:
-                ftp = FTP(host=config.ftp_host, user=config.ftp_user,
-                          passwd=config.ftp_pass)
-                ftp.login()
+            ftp = FTP(host=config.ftp_host, user=config.ftp_user,
+                                            passwd=config.ftp_pass)
+            ftp.login()
         if config.ftp_dir:
-                ftp.cwd(config.ftp_dir)
-        logger.debug("Sending file %s over FTP" % fileName)
-        resp = ftp.storbinary('STOR ' + os.path.basename(fileName),
-                              open(fileName, 'rb'))
-    finally:
-        if config.proxy_url != None:
-            conn.close()
+            ftp.cwd(config.ftp_dir)
+        fh = open(fileName, 'rb')
+        if fileChunk:
+            fileSize = os.path.getsize(fileName)
+            while fh.tell() < fileSize:
+                chunkName = ("%s-%s.%03d" % (caseNumber,
+                              os.path.basename(fileName), fileChunk['num']))
+                fileChunk['names'].append(chunkName)
+                logger.debug("Sending file %s over FTP" % chunkName)
+                resp = _ftp_storbinary_chunk(ftp, 'STOR %s' % chunkName, fh,
+                                             fileChunk['size'])
+                if _ftp_error_return_code(resp):
+                    raise Exception(resp)
+                fileChunk['num'] += 1
         else:
-            ftp.close()
+            logger.debug("Sending file %s over FTP" % fileName)
+            resp = ftp.storbinary('STOR %s-%s' % 
+                                 (caseNumber, os.path.basename(fileName)), fh)
+            if _ftp_error_return_code(resp):
+                raise Exception(resp)
+    finally:
+        if fh: fh.close()
+        if config.proxy_url != None:
+            if conn: conn.close()
+        else:
+            if ftp: ftp.close()
     return resp
 
 
-def compress_attachment(fileName, caseNumber):
-    file_handle = None
-    tmp_dir = None
-    filebaseName = os.path.basename(fileName)
-    try:
-        tmp_dir = tempfile.mkdtemp()
-        utc_datetime = datetime.datetime.utcnow()
-        gzipName = (tmp_dir + '/' + filebaseName + '.gz')
-        file_handle = gzip.open(gzipName, 'w+')
-        f_in = open(fileName, 'rb')
-        file_handle.writelines(f_in)
-    finally:
-            f_in.close()
-            file_handle.close()
-    size = os.path.getsize(fileName)
+def _ftp_storbinary_chunk(ftpobj, cmd, fp, chunksize):
+    """Replacement for ftplib.storbinary that sends only a single file chunk,
+    representing a separate file on dropbox, then closes the connection
+    """
+    ftpobj.voidcmd('TYPE I')
+    conn = ftpobj.transfercmd(cmd)
+    conn.sendall(fp.read(chunksize))
+    conn.close()
+    return ftpobj.voidresp()
 
-    if size >= confighelper.get_config_helper().attachment_max_size:
-        newName = tmp_dir + '/' + caseNumber + \
-            utc_datetime.strftime("-%Y-%m-%d-%H%M%s-") + filebaseName + '.gz'
-        os.rename(gzipName, newName)
-        gzipName = newName
-    return tmp_dir, gzipName
+
+def _ftp_error_return_code(code):
+    # True if FTP return code is 4xx or 5xx signifying an error
+    if code[0] in '45':
+        return True
+    return False
+
+
+def compress_attachment(fileName):
+    try:
+        try:
+            tmp_dir = tempfile.mkdtemp()
+            gzipName = "%s/%s.gz" % (tmp_dir, os.path.basename(fileName))
+            gzf = gzip.open(gzipName, 'w+')
+            f = open(fileName, 'rb')
+            gzf.writelines(f)
+        except Exception, e:
+            err = ("Failed.\nERROR: unable to compress attachment.  Reason: %s" % e)
+            print err
+            logger.log(logging.ERROR, err)
+            if os.path.exists(tmp_dir):
+                shutil.rmtree(tmp_dir)
+            return None
+        return gzipName
+    finally:
+        f.close()
+        gzf.close()
+
+
+def is_compressed_file(fileName):
+    file_type = reporthelper.get_file_type(fileName)
+    for compressed_type in ['zip', 'x-xz', 'x-rar']:
+        if compressed_type in file_type:
+            return True
+    return False
+

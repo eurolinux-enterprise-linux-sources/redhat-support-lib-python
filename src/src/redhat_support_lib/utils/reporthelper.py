@@ -59,6 +59,7 @@ def rpm_for_file(fileName):
         ts = rpm.TransactionSet()
         # loop headers to build package name
         fileName = os.path.abspath(fileName)
+        origFileName = fileName
         while not rpmName:
             headers = ts.dbMatch('basenames', fileName)
             for h in headers:
@@ -68,6 +69,8 @@ def rpm_for_file(fileName):
             if (len(fileName) <= 1):
                 # just in case short circuit
                 break
+        if not ts.dbMatch('basenames', origFileName):
+            return None
     except ImportError:
         pass
     return rpmName
@@ -90,6 +93,27 @@ def get_file_type(fileName):
         return 'application/octet-stream; charset=binary'
 
 
+def contains_invalid_xml_chars(fileName):
+    # BZ967510 - check for certain control chars which are invalid XML
+    illegal_xml_chars = \
+        re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+
+    f = open(fileName, 'rb')
+    count = os.path.getsize(fileName)
+    try:
+        while count > 0:
+            content = f.read(4096)
+            if content is None:
+                raise Exception("Problem encountered reading %s" % (fileName))
+            count = count - len(content)
+            if re.search(illegal_xml_chars, content):
+                return True
+    finally:
+        f.close()
+
+    return False
+
+
 def _process_file(fileName,
                   report_obj,
                   tar_refs=None,
@@ -103,7 +127,8 @@ def _process_file(fileName,
         name = os.path.basename(fileName)
     mtype = get_file_type(fileName)
     if os.path.getsize(fileName) > max_file_size or \
-       str(mtype).rfind('charset=binary') >= 0:
+       str(mtype).rfind('charset=binary') >= 0 or \
+       contains_invalid_xml_chars(fileName):
         tar_refs.append(fileName)
         report_obj.add_binding(report.binding(name=name,
                                               fileName=fileName,
@@ -118,8 +143,8 @@ def _process_file(fileName,
         finally:
             f.close
 
-        if re.search('[;<>]', content):
-            # BZ967510 - handle chars that may cause invalid XML
+        # BZ967510 - handle &#.*; chars and nested CDATA sections
+        if re.search('[&;<>]', content):
             content = content.replace(']]>',']]]]><![CDATA[>')
             content = u'<![CDATA[%s]]>' % (content.decode('utf-8'))
         try:

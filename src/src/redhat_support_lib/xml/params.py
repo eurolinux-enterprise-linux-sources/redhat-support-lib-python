@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Generated Wed Mar 20 12:28:42 2013 by generateDS.py version 2.7b.
+# Generated Thu Feb 20 11:23:46 2014 by generateDS.py version 2.7b.
 #
 ## IMPORTANT!!!
 
@@ -10,7 +10,7 @@
 # in a few places as denoted by the NOT_GENERATED comments
 
 import sys
-import getopt
+# import getopt
 import re as re_
 
 # Begin NOT_GENERATED
@@ -206,7 +206,6 @@ except ImportError, exp:
             else:
                 object.__setattr__(self, item, value)
 # End NOT_GENERATED
-
 
 #
 # If you have installed IPython you can uncomment and use the following.
@@ -417,7 +416,8 @@ class strataEntity(GeneratedsSuper):
     """The base type for all API entities."""
     subclass = None
     superclass = None
-    def __init__(self, extensiontype_=None):
+    def __init__(self, label=None, extensiontype_=None):
+        self.label = label
         self.extensiontype_ = extensiontype_
     def factory(*args_, **kwargs_):
         if strataEntity.subclass:
@@ -425,6 +425,8 @@ class strataEntity(GeneratedsSuper):
         else:
             return strataEntity(*args_, **kwargs_)
     factory = staticmethod(factory)
+    def get_label(self): return self.label
+    def set_label(self, label): self.label = label
     def get_extensiontype_(self): return self.extensiontype_
     def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
     def export(self, outfile, level, namespace_='tns:', name_='strataEntity', namespacedef_=''):
@@ -435,6 +437,7 @@ class strataEntity(GeneratedsSuper):
         if self.hasContent_():
             outfile.write('>\n')
             self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
             outfile.write('</%s%s>\n' % (namespace_, name_))
         else:
             outfile.write('/>\n')
@@ -445,10 +448,12 @@ class strataEntity(GeneratedsSuper):
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
     def exportChildren(self, outfile, level, namespace_='tns:', name_='strataEntity', fromsubclass_=False):
-        pass
+        if self.label is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slabel>%s</%slabel>\n' % (namespace_, self.gds_format_string(quote_xml(self.label).encode(ExternalEncoding), input_name='label'), namespace_))
     def hasContent_(self):
         if (
-
+            self.label is not None
             ):
             return True
         else:
@@ -461,7 +466,9 @@ class strataEntity(GeneratedsSuper):
     def exportLiteralAttributes(self, outfile, level, already_processed, name_):
         pass
     def exportLiteralChildren(self, outfile, level, name_):
-        pass
+        if self.label is not None:
+            showIndent(outfile, level)
+            outfile.write('label=%s,\n' % quote_python(self.label).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -473,7 +480,10 @@ class strataEntity(GeneratedsSuper):
             already_processed.append('xsi:type')
             self.extensiontype_ = value
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
-        pass
+        if nodeName_ == 'label':
+            label_ = child_.text
+            label_ = self.gds_validate_string(label_, node, 'label')
+            self.label = label_
 # end class strataEntity
 
 
@@ -482,12 +492,15 @@ class trackedEntity(strataEntity):
     information."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, extensiontype_=None):
-        super(trackedEntity, self).__init__(extensiontype_,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, extensiontype_=None):
+        super(trackedEntity, self).__init__(label, extensiontype_,)
         self.createdBy = createdBy
         self.createdDate = createdDate
         self.lastModifiedBy = lastModifiedBy
         self.lastModifiedDate = lastModifiedDate
+        self.linked = linked
+        self.linkedBy = linkedBy
+        self.linkedAt = linkedAt
         self.extensiontype_ = extensiontype_
     def factory(*args_, **kwargs_):
         if trackedEntity.subclass:
@@ -503,6 +516,12 @@ class trackedEntity(strataEntity):
     def set_lastModifiedBy(self, lastModifiedBy): self.lastModifiedBy = lastModifiedBy
     def get_lastModifiedDate(self): return self.lastModifiedDate
     def set_lastModifiedDate(self, lastModifiedDate): self.lastModifiedDate = lastModifiedDate
+    def get_linked(self): return self.linked
+    def set_linked(self, linked): self.linked = linked
+    def get_linkedBy(self): return self.linkedBy
+    def set_linkedBy(self, linkedBy): self.linkedBy = linkedBy
+    def get_linkedAt(self): return self.linkedAt
+    def set_linkedAt(self, linkedAt): self.linkedAt = linkedAt
     def get_extensiontype_(self): return self.extensiontype_
     def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
     def export(self, outfile, level, namespace_='tns:', name_='trackedEntity', namespacedef_=''):
@@ -537,12 +556,24 @@ class trackedEntity(strataEntity):
         if self.lastModifiedDate is not None:
             showIndent(outfile, level)
             outfile.write('<%slastModifiedDate>%s</%slastModifiedDate>\n' % (namespace_, self.gds_format_string(quote_xml(self.lastModifiedDate).encode(ExternalEncoding), input_name='lastModifiedDate'), namespace_))
+        if self.linked is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slinked>%s</%slinked>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.linked)), input_name='linked'), namespace_))
+        if self.linkedBy is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slinkedBy>%s</%slinkedBy>\n' % (namespace_, self.gds_format_string(quote_xml(self.linkedBy).encode(ExternalEncoding), input_name='linkedBy'), namespace_))
+        if self.linkedAt is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slinkedAt>%s</%slinkedAt>\n' % (namespace_, self.gds_format_string(quote_xml(self.linkedAt).encode(ExternalEncoding), input_name='linkedAt'), namespace_))
     def hasContent_(self):
         if (
             self.createdBy is not None or
             self.createdDate is not None or
             self.lastModifiedBy is not None or
             self.lastModifiedDate is not None or
+            self.linked is not None or
+            self.linkedBy is not None or
+            self.linkedAt is not None or
             super(trackedEntity, self).hasContent_()
             ):
             return True
@@ -569,6 +600,15 @@ class trackedEntity(strataEntity):
         if self.lastModifiedDate is not None:
             showIndent(outfile, level)
             outfile.write('lastModifiedDate=%s,\n' % quote_python(self.lastModifiedDate).encode(ExternalEncoding))
+        if self.linked is not None:
+            showIndent(outfile, level)
+            outfile.write('linked=%s,\n' % self.linked)
+        if self.linkedBy is not None:
+            showIndent(outfile, level)
+            outfile.write('linkedBy=%s,\n' % quote_python(self.linkedBy).encode(ExternalEncoding))
+        if self.linkedAt is not None:
+            showIndent(outfile, level)
+            outfile.write('linkedAt=%s,\n' % quote_python(self.linkedAt).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -597,6 +637,24 @@ class trackedEntity(strataEntity):
             lastModifiedDate_ = child_.text
             lastModifiedDate_ = self.gds_validate_string(lastModifiedDate_, node, 'lastModifiedDate')
             self.lastModifiedDate = lastModifiedDate_
+        elif nodeName_ == 'linked':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'linked')
+            self.linked = ival_
+        elif nodeName_ == 'linkedBy':
+            linkedBy_ = child_.text
+            linkedBy_ = self.gds_validate_string(linkedBy_, node, 'linkedBy')
+            self.linkedBy = linkedBy_
+        elif nodeName_ == 'linkedAt':
+            linkedAt_ = child_.text
+            linkedAt_ = self.gds_validate_string(linkedAt_, node, 'linkedAt')
+            self.linkedAt = linkedAt_
         super(trackedEntity, self).buildChildren(child_, node, nodeName_, True)
 # end class trackedEntity
 
@@ -605,8 +663,8 @@ class base_link(strataEntity):
     """ATOM link type."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, href=None, type_=None, uri=None, rel=None, title=None, value=None, extensiontype_=None):
-        super(base_link, self).__init__(extensiontype_,)
+    def __init__(self, label=None, href=None, type_=None, uri=None, rel=None, title=None, value=None, extensiontype_=None):
+        super(base_link, self).__init__(label, extensiontype_,)
         self.href = _cast(None, href)
         self.type_ = _cast(None, type_)
         self.uri = _cast(None, uri)
@@ -875,12 +933,13 @@ class problem(GeneratedsSuper):
     """A problem report."""
     subclass = None
     superclass = None
-    def __init__(self, source=None, link=None):
+    def __init__(self, source=None, link=None, explainSbr=None):
         self.source = source
         if link is None:
             self.link = []
         else:
             self.link = link
+        self.explainSbr = explainSbr
     def factory(*args_, **kwargs_):
         if problem.subclass:
             return problem.subclass(*args_, **kwargs_)
@@ -893,6 +952,8 @@ class problem(GeneratedsSuper):
     def set_link(self, link): self.link = link
     def add_link(self, value): self.link.append(value)
     def insert_link(self, index, value): self.link[index] = value
+    def get_explainSbr(self): return self.explainSbr
+    def set_explainSbr(self, explainSbr): self.explainSbr = explainSbr
     def export(self, outfile, level, namespace_='tns:', name_='problem', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -913,10 +974,13 @@ class problem(GeneratedsSuper):
             outfile.write('<%ssource>%s</%ssource>\n' % (namespace_, self.gds_format_string(quote_xml(self.source).encode(ExternalEncoding), input_name='source'), namespace_))
         for link_ in self.link:
             link_.export(outfile, level, namespace_, name_='link')
+        if self.explainSbr is not None:
+            self.explainSbr.export(outfile, level, namespace_, name_='explainSbr')
     def hasContent_(self):
         if (
             self.source is not None or
-            self.link
+            self.link or
+            self.explainSbr is not None
             ):
             return True
         else:
@@ -944,6 +1008,12 @@ class problem(GeneratedsSuper):
         level -= 1
         showIndent(outfile, level)
         outfile.write('],\n')
+        if self.explainSbr is not None:
+            showIndent(outfile, level)
+            outfile.write('explainSbr=model_.explainSbr(\n')
+            self.explainSbr.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -960,7 +1030,221 @@ class problem(GeneratedsSuper):
             obj_ = link.factory()
             obj_.build(child_)
             self.link.append(obj_)
+        elif nodeName_ == 'explainSbr':
+            obj_ = explainSbr.factory()
+            obj_.build(child_)
+            self.set_explainSbr(obj_)
 # end class problem
+
+
+class explainSbr(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, sbrs=None):
+        self.sbrs = sbrs
+    def factory(*args_, **kwargs_):
+        if explainSbr.subclass:
+            return explainSbr.subclass(*args_, **kwargs_)
+        else:
+            return explainSbr(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_sbrs(self): return self.sbrs
+    def set_sbrs(self, sbrs): self.sbrs = sbrs
+    def export(self, outfile, level, namespace_='tns:', name_='explainSbr', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='explainSbr')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='explainSbr'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='explainSbr', fromsubclass_=False):
+        if self.sbrs is not None:
+            self.sbrs.export(outfile, level, namespace_, name_='sbrs',)
+    def hasContent_(self):
+        if (
+            self.sbrs is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='explainSbr'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.sbrs is not None:
+            showIndent(outfile, level)
+            outfile.write('sbrs=model_.sbrs(\n')
+            self.sbrs.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'sbrs':
+            obj_ = sbrs.factory()
+            obj_.build(child_)
+            self.set_sbrs(obj_)
+# end class explainSbr
+
+
+class sbrs(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, sbr=None):
+        self.sbr = sbr
+    def factory(*args_, **kwargs_):
+        if sbrs.subclass:
+            return sbrs.subclass(*args_, **kwargs_)
+        else:
+            return sbrs(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_sbr(self): return self.sbr
+    def set_sbr(self, sbr): self.sbr = sbr
+    def export(self, outfile, level, namespace_='tns:', name_='sbrs', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='sbrs')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='sbrs'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='sbrs', fromsubclass_=False):
+        if self.sbr is not None:
+            self.sbr.export(outfile, level, namespace_, name_='sbr',)
+    def hasContent_(self):
+        if (
+            self.sbr is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='sbrs'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.sbr is not None:
+            showIndent(outfile, level)
+            outfile.write('sbr=model_.sbr(\n')
+            self.sbr.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'sbr':
+            obj_ = sbr.factory()
+            obj_.build(child_)
+            self.set_sbr(obj_)
+# end class sbrs
+
+
+class sbr(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, name=None, score=None):
+        self.name = name
+        self.score = score
+    def factory(*args_, **kwargs_):
+        if sbr.subclass:
+            return sbr.subclass(*args_, **kwargs_)
+        else:
+            return sbr(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_score(self): return self.score
+    def set_score(self, score): self.score = score
+    def export(self, outfile, level, namespace_='tns:', name_='sbr', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='sbr')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='sbr'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='sbr', fromsubclass_=False):
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        if self.score is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sscore>%s</%sscore>\n' % (namespace_, self.gds_format_string(quote_xml(self.score).encode(ExternalEncoding), input_name='score'), namespace_))
+    def hasContent_(self):
+        if (
+            self.name is not None or
+            self.score is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='sbr'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        if self.score is not None:
+            showIndent(outfile, level)
+            outfile.write('score=%s,\n' % quote_python(self.score).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'score':
+            score_ = child_.text
+            score_ = self.gds_validate_string(score_, node, 'score')
+            self.score = score_
+# end class sbr
 
 
 class solutions(GeneratedsSuper):
@@ -1123,8 +1407,8 @@ class sqiRating(trackedEntity):
     """An SQI Rating for a KCS Solution."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, solution=None, completeTitle=None, adheresToContentStandard=None, accuratelyReflectsProblem=None, isUnique=None, clearAndConcise=None, metadataSetCorrectly=None):
-        super(sqiRating, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, solution=None, completeTitle=None, adheresToContentStandard=None, accuratelyReflectsProblem=None, isUnique=None, clearAndConcise=None, metadataSetCorrectly=None):
+        super(sqiRating, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.solution = solution
         self.completeTitle = completeTitle
         self.adheresToContentStandard = adheresToContentStandard
@@ -1307,9 +1591,10 @@ class solution(trackedEntity):
     is the editable field that may contain markdown."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, id=None, uri=None, uidName=None, view_uri=None, title=None, authorSSOName=None, lastModifiedBySSOName=None, language=None, issue=None, environment=None, resolution=None, rootCause=None, internalDiagnosticSteps=None, externalDiagnosticSteps=None, summary=None, tags=None, case=None, supportNeed=None, tag=None, published=None, hasPublishedRevision=None, isLocked=None, lockedBy=None, lockedAt=None, lockExpiresAt=None, duplicateOf=None, body=None, kcsState=None, sbrs=None, products=None, ModerationState=None, caseCount=None, abstract=None, extract=None, explanation=None, detectedLanguage=None, setLanguage=None, indexedDate=None):
-        super(solution, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, id=None, tnid=None, uri=None, uidName=None, view_uri=None, title=None, authorSSOName=None, lastModifiedBySSOName=None, language=None, issue=None, environment=None, resolution=None, rootCause=None, internalDiagnosticSteps=None, externalDiagnosticSteps=None, privateNotes=None, summary=None, score=None, case=None, supportNeed=None, published=None, hasPublishedRevision=None, isLocked=None, lockedBy=None, lockedAt=None, lockExpiresAt=None, duplicateOf=None, kcsState=None, sbrs=None, tags=None, products=None, LinkedProducts=None, productFamily=None, ModerationState=None, caseCount=None, kcsProductCount=None, abstract=None, extract=None, explanation=None, detectedLanguage=None, setLanguage=None, indexedDate=None):
+        super(solution, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.id = id
+        self.tnid = tnid
         self.uri = uri
         self.uidName = uidName
         self.view_uri = view_uri
@@ -1323,11 +1608,9 @@ class solution(trackedEntity):
         self.rootCause = rootCause
         self.internalDiagnosticSteps = internalDiagnosticSteps
         self.externalDiagnosticSteps = externalDiagnosticSteps
+        self.privateNotes = privateNotes
         self.summary = summary
-        if tags is None:
-            self.tags = []
-        else:
-            self.tags = tags
+        self.score = score
         if case is None:
             self.case = []
         else:
@@ -1336,10 +1619,6 @@ class solution(trackedEntity):
             self.supportNeed = []
         else:
             self.supportNeed = supportNeed
-        if tag is None:
-            self.tag = []
-        else:
-            self.tag = tag
         self.published = published
         self.hasPublishedRevision = hasPublishedRevision
         self.isLocked = isLocked
@@ -1350,12 +1629,15 @@ class solution(trackedEntity):
             self.duplicateOf = []
         else:
             self.duplicateOf = duplicateOf
-        self.body = body
         self.kcsState = kcsState
         self.sbrs = sbrs
+        self.tags = tags
         self.products = products
+        self.LinkedProducts = LinkedProducts
+        self.productFamily = productFamily
         self.ModerationState = ModerationState
         self.caseCount = caseCount
+        self.kcsProductCount = kcsProductCount
         self.abstract = abstract
         self.extract = extract
         self.explanation = explanation
@@ -1368,90 +1650,42 @@ class solution(trackedEntity):
         else:
             return solution(*args_, **kwargs_)
     factory = staticmethod(factory)
-    @set_docstring('''
-    Get the solution ID number
-
-    :returns: solution ID
-    :rtype: integer''')
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
-    @set_docstring('''
-    Get the solution REST API URI
-
-    :returns: API URL for solution object
-    :rtype: string''')
+    def get_tnid(self): return self.tnid
+    def set_tnid(self, tnid): self.tnid = tnid
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
     def get_uidName(self): return self.uidName
     def set_uidName(self, uidName): self.uidName = uidName
-    @set_docstring('''
-    Get the public solution URL
-
-    :returns: Red Hat Customer Portal URL for the solution
-    :rtype: string''')
     def get_view_uri(self): return self.view_uri
     def set_view_uri(self, view_uri): self.view_uri = view_uri
-    @set_docstring('''
-    Get the solution title field
-
-    :returns: Solution title
-    :rtype: string''')
     def get_title(self): return self.title
     def set_title(self, title): self.title = title
     def get_authorSSOName(self): return self.authorSSOName
     def set_authorSSOName(self, authorSSOName): self.authorSSOName = authorSSOName
     def get_lastModifiedBySSOName(self): return self.lastModifiedBySSOName
     def set_lastModifiedBySSOName(self, lastModifiedBySSOName): self.lastModifiedBySSOName = lastModifiedBySSOName
-    @set_docstring('''
-    Get the solution language
-
-    :returns: Language of the retrieved solution
-    :rtype: string''')
     def get_language(self): return self.language
     def set_language(self, language): self.language = language
-    @set_docstring('''
-    Get the solution issue field
-
-    :returns: Plain text formatted contents of the solution issue
-    :rtype: string or None''')
     def get_issue(self): return self.issue
     def set_issue(self, issue): self.issue = issue
-    @set_docstring('''
-    Get the solution environment field
-
-    :returns: Plain text formatted contents of the solution environment
-    :rtype: string or None''')
     def get_environment(self): return self.environment
     def set_environment(self, environment): self.environment = environment
-    @set_docstring('''
-    Get the solution resolution field
-
-    :returns: Plain text formatted contents of the solution resolution
-    :rtype: string or None''')
     def get_resolution(self): return self.resolution
     def set_resolution(self, resolution): self.resolution = resolution
-    @set_docstring('''
-    Get the solution root cause field
-
-    :returns: Plain text formatted contents of the solution root cause
-    :rtype: string or None''')
     def get_rootCause(self): return self.rootCause
     def set_rootCause(self, rootCause): self.rootCause = rootCause
     def get_internalDiagnosticSteps(self): return self.internalDiagnosticSteps
     def set_internalDiagnosticSteps(self, internalDiagnosticSteps): self.internalDiagnosticSteps = internalDiagnosticSteps
-    @set_docstring('''
-    Get the solution diagnostic steps field
-
-    :returns: Plain text formatted contents of the solution diagnostic steps
-    :rtype: string or None''')
     def get_externalDiagnosticSteps(self): return self.externalDiagnosticSteps
     def set_externalDiagnosticSteps(self, externalDiagnosticSteps): self.externalDiagnosticSteps = externalDiagnosticSteps
+    def get_privateNotes(self): return self.privateNotes
+    def set_privateNotes(self, privateNotes): self.privateNotes = privateNotes
     def get_summary(self): return self.summary
     def set_summary(self, summary): self.summary = summary
-    def get_tags(self): return self.tags
-    def set_tags(self, tags): self.tags = tags
-    def add_tags(self, value): self.tags.append(value)
-    def insert_tags(self, index, value): self.tags[index] = value
+    def get_score(self): return self.score
+    def set_score(self, score): self.score = score
     def get_case(self): return self.case
     def set_case(self, case): self.case = case
     def add_case(self, value): self.case.append(value)
@@ -1460,10 +1694,6 @@ class solution(trackedEntity):
     def set_supportNeed(self, supportNeed): self.supportNeed = supportNeed
     def add_supportNeed(self, value): self.supportNeed.append(value)
     def insert_supportNeed(self, index, value): self.supportNeed[index] = value
-    def get_tag(self): return self.tag
-    def set_tag(self, tag): self.tag = tag
-    def add_tag(self, value): self.tag.append(value)
-    def insert_tag(self, index, value): self.tag[index] = value
     def get_published(self): return self.published
     def set_published(self, published): self.published = published
     def get_hasPublishedRevision(self): return self.hasPublishedRevision
@@ -1480,23 +1710,24 @@ class solution(trackedEntity):
     def set_duplicateOf(self, duplicateOf): self.duplicateOf = duplicateOf
     def add_duplicateOf(self, value): self.duplicateOf.append(value)
     def insert_duplicateOf(self, index, value): self.duplicateOf[index] = value
-    def get_body(self): return self.body
-    def set_body(self, body): self.body = body
-    @set_docstring('''
-    Get the state of the solution
-
-    :returns: The article state, either 'wip', 'unverified' or 'verified'
-    :rtype: string''')
     def get_kcsState(self): return self.kcsState
     def set_kcsState(self, kcsState): self.kcsState = kcsState
     def get_sbrs(self): return self.sbrs
     def set_sbrs(self, sbrs): self.sbrs = sbrs
+    def get_tags(self): return self.tags
+    def set_tags(self, tags): self.tags = tags
     def get_products(self): return self.products
     def set_products(self, products): self.products = products
+    def get_LinkedProducts(self): return self.LinkedProducts
+    def set_LinkedProducts(self, LinkedProducts): self.LinkedProducts = LinkedProducts
+    def get_productFamily(self): return self.productFamily
+    def set_productFamily(self, productFamily): self.productFamily = productFamily
     def get_ModerationState(self): return self.ModerationState
     def set_ModerationState(self, ModerationState): self.ModerationState = ModerationState
     def get_caseCount(self): return self.caseCount
     def set_caseCount(self, caseCount): self.caseCount = caseCount
+    def get_kcsProductCount(self): return self.kcsProductCount
+    def set_kcsProductCount(self, kcsProductCount): self.kcsProductCount = kcsProductCount
     def get_abstract(self): return self.abstract
     def set_abstract(self, abstract): self.abstract = abstract
     def get_extract(self): return self.extract
@@ -1528,6 +1759,9 @@ class solution(trackedEntity):
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.tnid is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stnid>%s</%stnid>\n' % (namespace_, self.gds_format_string(quote_xml(self.tnid).encode(ExternalEncoding), input_name='tnid'), namespace_))
         if self.uri is not None:
             showIndent(outfile, level)
             outfile.write('<%suri>%s</%suri>\n' % (namespace_, self.gds_format_string(quote_xml(self.uri).encode(ExternalEncoding), input_name='uri'), namespace_))
@@ -1562,20 +1796,20 @@ class solution(trackedEntity):
         if self.externalDiagnosticSteps is not None:
             showIndent(outfile, level)
             outfile.write('<%sexternalDiagnosticSteps>%s</%sexternalDiagnosticSteps>\n' % (namespace_, self.gds_format_string(quote_xml(self.externalDiagnosticSteps).encode(ExternalEncoding), input_name='externalDiagnosticSteps'), namespace_))
+        if self.privateNotes is not None:
+            self.privateNotes.export(outfile, level, namespace_, name_='privateNotes')
         if self.summary is not None:
             showIndent(outfile, level)
             outfile.write('<%ssummary>%s</%ssummary>\n' % (namespace_, self.gds_format_string(quote_xml(self.summary).encode(ExternalEncoding), input_name='summary'), namespace_))
-        for tags_ in self.tags:
+        if self.score is not None:
             showIndent(outfile, level)
-            outfile.write('<%stags>%s</%stags>\n' % (namespace_, self.gds_format_string(quote_xml(tags_).encode(ExternalEncoding), input_name='tags'), namespace_))
+            outfile.write('<%sscore>%s</%sscore>\n' % (namespace_, self.gds_format_string(quote_xml(self.score).encode(ExternalEncoding), input_name='score'), namespace_))
         for case_ in self.case:
             showIndent(outfile, level)
             outfile.write('<%scase>%s</%scase>\n' % (namespace_, self.gds_format_string(quote_xml(case_).encode(ExternalEncoding), input_name='case'), namespace_))
         for supportNeed_ in self.supportNeed:
             showIndent(outfile, level)
             outfile.write('<%ssupportNeed>%s</%ssupportNeed>\n' % (namespace_, self.gds_format_string(quote_xml(supportNeed_).encode(ExternalEncoding), input_name='supportNeed'), namespace_))
-        for tag_ in self.tag:
-            tag_.export(outfile, level, namespace_, name_='tag')
         if self.published is not None:
             showIndent(outfile, level)
             outfile.write('<%spublished>%s</%spublished>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.published)), input_name='published'), namespace_))
@@ -1596,21 +1830,28 @@ class solution(trackedEntity):
             outfile.write('<%slockExpiresAt>%s</%slockExpiresAt>\n' % (namespace_, self.gds_format_string(quote_xml(self.lockExpiresAt).encode(ExternalEncoding), input_name='lockExpiresAt'), namespace_))
         for duplicateOf_ in self.duplicateOf:
             duplicateOf_.export(outfile, level, namespace_, name_='duplicateOf')
-        if self.body is not None:
-            self.body.export(outfile, level, namespace_, name_='body')
         if self.kcsState is not None:
             showIndent(outfile, level)
             outfile.write('<%skcsState>%s</%skcsState>\n' % (namespace_, self.gds_format_string(quote_xml(self.kcsState).encode(ExternalEncoding), input_name='kcsState'), namespace_))
         if self.sbrs is not None:
             self.sbrs.export(outfile, level, namespace_, name_='sbrs',)
+        if self.tags is not None:
+            self.tags.export(outfile, level, namespace_, name_='tags',)
         if self.products is not None:
             self.products.export(outfile, level, namespace_, name_='products',)
+        if self.LinkedProducts is not None:
+            self.LinkedProducts.export(outfile, level, namespace_, name_='LinkedProducts',)
+        if self.productFamily is not None:
+            self.productFamily.export(outfile, level, namespace_, name_='productFamily',)
         if self.ModerationState is not None:
             showIndent(outfile, level)
             outfile.write('<%sModerationState>%s</%sModerationState>\n' % (namespace_, self.gds_format_string(quote_xml(self.ModerationState).encode(ExternalEncoding), input_name='ModerationState'), namespace_))
         if self.caseCount is not None:
             showIndent(outfile, level)
             outfile.write('<%scaseCount>%s</%scaseCount>\n' % (namespace_, self.gds_format_integer(self.caseCount, input_name='caseCount'), namespace_))
+        if self.kcsProductCount is not None:
+            showIndent(outfile, level)
+            outfile.write('<%skcsProductCount>%s</%skcsProductCount>\n' % (namespace_, self.gds_format_integer(self.kcsProductCount, input_name='kcsProductCount'), namespace_))
         if self.abstract is not None:
             showIndent(outfile, level)
             outfile.write('<%sabstract>%s</%sabstract>\n' % (namespace_, self.gds_format_string(quote_xml(self.abstract).encode(ExternalEncoding), input_name='abstract'), namespace_))
@@ -1632,6 +1873,7 @@ class solution(trackedEntity):
     def hasContent_(self):
         if (
             self.id is not None or
+            self.tnid is not None or
             self.uri is not None or
             self.uidName is not None or
             self.view_uri is not None or
@@ -1645,11 +1887,11 @@ class solution(trackedEntity):
             self.rootCause is not None or
             self.internalDiagnosticSteps is not None or
             self.externalDiagnosticSteps is not None or
+            self.privateNotes is not None or
             self.summary is not None or
-            self.tags or
+            self.score is not None or
             self.case or
             self.supportNeed or
-            self.tag or
             self.published is not None or
             self.hasPublishedRevision is not None or
             self.isLocked is not None or
@@ -1657,12 +1899,15 @@ class solution(trackedEntity):
             self.lockedAt is not None or
             self.lockExpiresAt is not None or
             self.duplicateOf or
-            self.body is not None or
             self.kcsState is not None or
             self.sbrs is not None or
+            self.tags is not None or
             self.products is not None or
+            self.LinkedProducts is not None or
+            self.productFamily is not None or
             self.ModerationState is not None or
             self.caseCount is not None or
+            self.kcsProductCount is not None or
             self.abstract is not None or
             self.extract is not None or
             self.explanation is not None or
@@ -1686,6 +1931,9 @@ class solution(trackedEntity):
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.tnid is not None:
+            showIndent(outfile, level)
+            outfile.write('tnid=%s,\n' % quote_python(self.tnid).encode(ExternalEncoding))
         if self.uri is not None:
             showIndent(outfile, level)
             outfile.write('uri=%s,\n' % quote_python(self.uri).encode(ExternalEncoding))
@@ -1740,18 +1988,18 @@ class solution(trackedEntity):
         if self.externalDiagnosticSteps is not None:
             showIndent(outfile, level)
             outfile.write('externalDiagnosticSteps=%s,\n' % quote_python(self.externalDiagnosticSteps).encode(ExternalEncoding))
+        if self.privateNotes is not None:
+            showIndent(outfile, level)
+            outfile.write('privateNotes=model_.privateNotes(\n')
+            self.privateNotes.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
         if self.summary is not None:
             showIndent(outfile, level)
             outfile.write('summary=%s,\n' % quote_python(self.summary).encode(ExternalEncoding))
-        showIndent(outfile, level)
-        outfile.write('tags=[\n')
-        level += 1
-        for tags_ in self.tags:
+        if self.score is not None:
             showIndent(outfile, level)
-            outfile.write('%s,\n' % quote_python(tags_).encode(ExternalEncoding))
-        level -= 1
-        showIndent(outfile, level)
-        outfile.write('],\n')
+            outfile.write('score=%s,\n' % quote_python(self.score).encode(ExternalEncoding))
         showIndent(outfile, level)
         outfile.write('case=[\n')
         level += 1
@@ -1767,18 +2015,6 @@ class solution(trackedEntity):
         for supportNeed_ in self.supportNeed:
             showIndent(outfile, level)
             outfile.write('%s,\n' % quote_python(supportNeed_).encode(ExternalEncoding))
-        level -= 1
-        showIndent(outfile, level)
-        outfile.write('],\n')
-        showIndent(outfile, level)
-        outfile.write('tag=[\n')
-        level += 1
-        for tag_ in self.tag:
-            showIndent(outfile, level)
-            outfile.write('model_.tagType(\n')
-            tag_.exportLiteral(outfile, level, name_='tagType')
-            showIndent(outfile, level)
-            outfile.write('),\n')
         level -= 1
         showIndent(outfile, level)
         outfile.write('],\n')
@@ -1812,12 +2048,6 @@ class solution(trackedEntity):
         level -= 1
         showIndent(outfile, level)
         outfile.write('],\n')
-        if self.body is not None:
-            showIndent(outfile, level)
-            outfile.write('body=model_.bodyType(\n')
-            self.body.exportLiteral(outfile, level, name_='body')
-            showIndent(outfile, level)
-            outfile.write('),\n')
         if self.kcsState is not None:
             showIndent(outfile, level)
             outfile.write('kcsState=%s,\n' % quote_python(self.kcsState).encode(ExternalEncoding))
@@ -1827,10 +2057,28 @@ class solution(trackedEntity):
             self.sbrs.exportLiteral(outfile, level, name_='sbrs')
             showIndent(outfile, level)
             outfile.write('),\n')
+        if self.tags is not None:
+            showIndent(outfile, level)
+            outfile.write('tags=model_.tagsType(\n')
+            self.tags.exportLiteral(outfile, level, name_='tags')
+            showIndent(outfile, level)
+            outfile.write('),\n')
         if self.products is not None:
             showIndent(outfile, level)
             outfile.write('products=model_.productsType(\n')
             self.products.exportLiteral(outfile, level, name_='products')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.LinkedProducts is not None:
+            showIndent(outfile, level)
+            outfile.write('LinkedProducts=model_.LinkedProductsType(\n')
+            self.LinkedProducts.exportLiteral(outfile, level, name_='LinkedProducts')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.productFamily is not None:
+            showIndent(outfile, level)
+            outfile.write('productFamily=model_.productFamilyType(\n')
+            self.productFamily.exportLiteral(outfile, level, name_='productFamily')
             showIndent(outfile, level)
             outfile.write('),\n')
         if self.ModerationState is not None:
@@ -1839,6 +2087,9 @@ class solution(trackedEntity):
         if self.caseCount is not None:
             showIndent(outfile, level)
             outfile.write('caseCount=%d,\n' % self.caseCount)
+        if self.kcsProductCount is not None:
+            showIndent(outfile, level)
+            outfile.write('kcsProductCount=%d,\n' % self.kcsProductCount)
         if self.abstract is not None:
             showIndent(outfile, level)
             outfile.write('abstract=%s,\n' % quote_python(self.abstract).encode(ExternalEncoding))
@@ -1869,6 +2120,10 @@ class solution(trackedEntity):
             id_ = child_.text
             id_ = self.gds_validate_string(id_, node, 'id')
             self.id = id_
+        elif nodeName_ == 'tnid':
+            tnid_ = child_.text
+            tnid_ = self.gds_validate_string(tnid_, node, 'tnid')
+            self.tnid = tnid_
         elif nodeName_ == 'uri':
             uri_ = child_.text
             uri_ = self.gds_validate_string(uri_, node, 'uri')
@@ -1921,14 +2176,18 @@ class solution(trackedEntity):
             externalDiagnosticSteps_ = child_.text
             externalDiagnosticSteps_ = self.gds_validate_string(externalDiagnosticSteps_, node, 'externalDiagnosticSteps')
             self.externalDiagnosticSteps = externalDiagnosticSteps_
+        elif nodeName_ == 'privateNotes':
+            obj_ = privateNotes.factory()
+            obj_.build(child_)
+            self.set_privateNotes(obj_)
         elif nodeName_ == 'summary':
             summary_ = child_.text
             summary_ = self.gds_validate_string(summary_, node, 'summary')
             self.summary = summary_
-        elif nodeName_ == 'tags':
-            tags_ = child_.text
-            tags_ = self.gds_validate_string(tags_, node, 'tags')
-            self.tags.append(tags_)
+        elif nodeName_ == 'score':
+            score_ = child_.text
+            score_ = self.gds_validate_string(score_, node, 'score')
+            self.score = score_
         elif nodeName_ == 'case':
             case_ = child_.text
             case_ = self.gds_validate_string(case_, node, 'case')
@@ -1937,10 +2196,6 @@ class solution(trackedEntity):
             supportNeed_ = child_.text
             supportNeed_ = self.gds_validate_string(supportNeed_, node, 'supportNeed')
             self.supportNeed.append(supportNeed_)
-        elif nodeName_ == 'tag':
-            obj_ = tagType.factory()
-            obj_.build(child_)
-            self.tag.append(obj_)
         elif nodeName_ == 'published':
             sval_ = child_.text
             if sval_ in ('true', '1'):
@@ -1987,10 +2242,6 @@ class solution(trackedEntity):
             obj_ = duplicateOfType.factory()
             obj_.build(child_)
             self.duplicateOf.append(obj_)
-        elif nodeName_ == 'body':
-            obj_ = bodyType.factory()
-            obj_.build(child_)
-            self.set_body(obj_)
         elif nodeName_ == 'kcsState':
             kcsState_ = child_.text
             kcsState_ = self.gds_validate_string(kcsState_, node, 'kcsState')
@@ -1999,10 +2250,22 @@ class solution(trackedEntity):
             obj_ = sbrsType.factory()
             obj_.build(child_)
             self.set_sbrs(obj_)
+        elif nodeName_ == 'tags':
+            obj_ = tagsType.factory()
+            obj_.build(child_)
+            self.set_tags(obj_)
         elif nodeName_ == 'products':
             obj_ = productsType.factory()
             obj_.build(child_)
             self.set_products(obj_)
+        elif nodeName_ == 'LinkedProducts':
+            obj_ = LinkedProductsType.factory()
+            obj_.build(child_)
+            self.set_LinkedProducts(obj_)
+        elif nodeName_ == 'productFamily':
+            obj_ = productFamilyType.factory()
+            obj_.build(child_)
+            self.set_productFamily(obj_)
         elif nodeName_ == 'ModerationState':
             ModerationState_ = child_.text
             ModerationState_ = self.gds_validate_string(ModerationState_, node, 'ModerationState')
@@ -2015,6 +2278,14 @@ class solution(trackedEntity):
                 raise_parse_error(child_, 'requires integer: %s' % exp)
             ival_ = self.gds_validate_integer(ival_, node, 'caseCount')
             self.caseCount = ival_
+        elif nodeName_ == 'kcsProductCount':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'kcsProductCount')
+            self.kcsProductCount = ival_
         elif nodeName_ == 'abstract':
             abstract_ = child_.text
             abstract_ = self.gds_validate_string(abstract_, node, 'abstract')
@@ -2051,9 +2322,10 @@ class article(trackedEntity):
     that may contain HTML markup."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, id=None, uri=None, uidName=None, view_uri=None, title=None, authorSSOName=None, lastModifiedBySSOName=None, language=None, issue=None, environment=None, resolution=None, rootCause=None, internalDiagnosticSteps=None, articleBody=None, externalDiagnosticSteps=None, summary=None, tags=None, case=None, tag=None, published=None, duplicateOf=None, kcsState=None, body=None, explanation=None):
-        super(article, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, id=None, tnid=None, uri=None, uidName=None, view_uri=None, title=None, authorSSOName=None, lastModifiedBySSOName=None, language=None, issue=None, environment=None, resolution=None, rootCause=None, internalDiagnosticSteps=None, articleBody=None, externalDiagnosticSteps=None, summary=None, hasPublishedRevision=None, score=None, tags=None, categories=None, case=None, tag=None, published=None, duplicateOf=None, kcsState=None, body=None, sbrs=None, products=None, LinkedProducts=None, productFamily=None, ModerationState=None, link=None, caseCount=None, abstract=None, extract=None, explanation=None, detectedLanguage=None, setLanguage=None, indexedDate=None):
+        super(article, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.id = id
+        self.tnid = tnid
         self.uri = uri
         self.uidName = uidName
         self.view_uri = view_uri
@@ -2069,10 +2341,10 @@ class article(trackedEntity):
         self.articleBody = articleBody
         self.externalDiagnosticSteps = externalDiagnosticSteps
         self.summary = summary
-        if tags is None:
-            self.tags = []
-        else:
-            self.tags = tags
+        self.hasPublishedRevision = hasPublishedRevision
+        self.score = score
+        self.tags = tags
+        self.categories = categories
         if case is None:
             self.case = []
         else:
@@ -2088,52 +2360,44 @@ class article(trackedEntity):
             self.duplicateOf = duplicateOf
         self.kcsState = kcsState
         self.body = body
+        self.sbrs = sbrs
+        self.products = products
+        self.LinkedProducts = LinkedProducts
+        self.productFamily = productFamily
+        self.ModerationState = ModerationState
+        if link is None:
+            self.link = []
+        else:
+            self.link = link
+        self.caseCount = caseCount
+        self.abstract = abstract
+        self.extract = extract
         self.explanation = explanation
+        self.detectedLanguage = detectedLanguage
+        self.setLanguage = setLanguage
+        self.indexedDate = indexedDate
     def factory(*args_, **kwargs_):
         if article.subclass:
             return article.subclass(*args_, **kwargs_)
         else:
             return article(*args_, **kwargs_)
     factory = staticmethod(factory)
-    @set_docstring('''
-    Get the article ID number
-
-    :returns: article ID
-    :rtype: integer''')
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
-    @set_docstring('''
-    Get the article's REST API URI
-
-    :returns: API URL for article object
-    :rtype: string''')
+    def get_tnid(self): return self.tnid
+    def set_tnid(self, tnid): self.tnid = tnid
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
     def get_uidName(self): return self.uidName
     def set_uidName(self, uidName): self.uidName = uidName
-    @set_docstring('''
-    Get the public article URL
-
-    :returns: Red Hat Customer Portal URL for the article
-    :rtype: string''')
     def get_view_uri(self): return self.view_uri
     def set_view_uri(self, view_uri): self.view_uri = view_uri
-    @set_docstring('''
-    Get the article title field
-
-    :returns: Article title
-    :rtype: string''')
     def get_title(self): return self.title
     def set_title(self, title): self.title = title
     def get_authorSSOName(self): return self.authorSSOName
     def set_authorSSOName(self, authorSSOName): self.authorSSOName = authorSSOName
     def get_lastModifiedBySSOName(self): return self.lastModifiedBySSOName
     def set_lastModifiedBySSOName(self, lastModifiedBySSOName): self.lastModifiedBySSOName = lastModifiedBySSOName
-    @set_docstring('''
-    Get the article language
-
-    :returns: Language of the retrieved article
-    :rtype: string''')
     def get_language(self): return self.language
     def set_language(self, language): self.language = language
     def get_issue(self): return self.issue
@@ -2146,21 +2410,20 @@ class article(trackedEntity):
     def set_rootCause(self, rootCause): self.rootCause = rootCause
     def get_internalDiagnosticSteps(self): return self.internalDiagnosticSteps
     def set_internalDiagnosticSteps(self, internalDiagnosticSteps): self.internalDiagnosticSteps = internalDiagnosticSteps
-    @set_docstring('''
-    Get the article content
-
-    :returns: Plain text formatted contents of the article
-    :rtype: string or None''')
     def get_articleBody(self): return self.articleBody
     def set_articleBody(self, articleBody): self.articleBody = articleBody
     def get_externalDiagnosticSteps(self): return self.externalDiagnosticSteps
     def set_externalDiagnosticSteps(self, externalDiagnosticSteps): self.externalDiagnosticSteps = externalDiagnosticSteps
     def get_summary(self): return self.summary
     def set_summary(self, summary): self.summary = summary
+    def get_hasPublishedRevision(self): return self.hasPublishedRevision
+    def set_hasPublishedRevision(self, hasPublishedRevision): self.hasPublishedRevision = hasPublishedRevision
+    def get_score(self): return self.score
+    def set_score(self, score): self.score = score
     def get_tags(self): return self.tags
     def set_tags(self, tags): self.tags = tags
-    def add_tags(self, value): self.tags.append(value)
-    def insert_tags(self, index, value): self.tags[index] = value
+    def get_categories(self): return self.categories
+    def set_categories(self, categories): self.categories = categories
     def get_case(self): return self.case
     def set_case(self, case): self.case = case
     def add_case(self, value): self.case.append(value)
@@ -2179,8 +2442,34 @@ class article(trackedEntity):
     def set_kcsState(self, kcsState): self.kcsState = kcsState
     def get_body(self): return self.body
     def set_body(self, body): self.body = body
+    def get_sbrs(self): return self.sbrs
+    def set_sbrs(self, sbrs): self.sbrs = sbrs
+    def get_products(self): return self.products
+    def set_products(self, products): self.products = products
+    def get_LinkedProducts(self): return self.LinkedProducts
+    def set_LinkedProducts(self, LinkedProducts): self.LinkedProducts = LinkedProducts
+    def get_productFamily(self): return self.productFamily
+    def set_productFamily(self, productFamily): self.productFamily = productFamily
+    def get_ModerationState(self): return self.ModerationState
+    def set_ModerationState(self, ModerationState): self.ModerationState = ModerationState
+    def get_link(self): return self.link
+    def set_link(self, link): self.link = link
+    def add_link(self, value): self.link.append(value)
+    def insert_link(self, index, value): self.link[index] = value
+    def get_caseCount(self): return self.caseCount
+    def set_caseCount(self, caseCount): self.caseCount = caseCount
+    def get_abstract(self): return self.abstract
+    def set_abstract(self, abstract): self.abstract = abstract
+    def get_extract(self): return self.extract
+    def set_extract(self, extract): self.extract = extract
     def get_explanation(self): return self.explanation
     def set_explanation(self, explanation): self.explanation = explanation
+    def get_detectedLanguage(self): return self.detectedLanguage
+    def set_detectedLanguage(self, detectedLanguage): self.detectedLanguage = detectedLanguage
+    def get_setLanguage(self): return self.setLanguage
+    def set_setLanguage(self, setLanguage): self.setLanguage = setLanguage
+    def get_indexedDate(self): return self.indexedDate
+    def set_indexedDate(self, indexedDate): self.indexedDate = indexedDate
     def export(self, outfile, level, namespace_='tns:', name_='article', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -2200,6 +2489,9 @@ class article(trackedEntity):
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.tnid is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stnid>%s</%stnid>\n' % (namespace_, self.gds_format_string(quote_xml(self.tnid).encode(ExternalEncoding), input_name='tnid'), namespace_))
         if self.uri is not None:
             showIndent(outfile, level)
             outfile.write('<%suri>%s</%suri>\n' % (namespace_, self.gds_format_string(quote_xml(self.uri).encode(ExternalEncoding), input_name='uri'), namespace_))
@@ -2239,9 +2531,16 @@ class article(trackedEntity):
         if self.summary is not None:
             showIndent(outfile, level)
             outfile.write('<%ssummary>%s</%ssummary>\n' % (namespace_, self.gds_format_string(quote_xml(self.summary).encode(ExternalEncoding), input_name='summary'), namespace_))
-        for tags_ in self.tags:
+        if self.hasPublishedRevision is not None:
             showIndent(outfile, level)
-            outfile.write('<%stags>%s</%stags>\n' % (namespace_, self.gds_format_string(quote_xml(tags_).encode(ExternalEncoding), input_name='tags'), namespace_))
+            outfile.write('<%shasPublishedRevision>%s</%shasPublishedRevision>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.hasPublishedRevision)), input_name='hasPublishedRevision'), namespace_))
+        if self.score is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sscore>%s</%sscore>\n' % (namespace_, self.gds_format_string(quote_xml(self.score).encode(ExternalEncoding), input_name='score'), namespace_))
+        if self.tags is not None:
+            self.tags.export(outfile, level, namespace_, name_='tags',)
+        if self.categories is not None:
+            self.categories.export(outfile, level, namespace_, name_='categories',)
         for case_ in self.case:
             showIndent(outfile, level)
             outfile.write('<%scase>%s</%scase>\n' % (namespace_, self.gds_format_string(quote_xml(case_).encode(ExternalEncoding), input_name='case'), namespace_))
@@ -2258,12 +2557,44 @@ class article(trackedEntity):
         if self.body is not None:
             showIndent(outfile, level)
             outfile.write('<%sbody>%s</%sbody>\n' % (namespace_, self.gds_format_string(quote_xml(self.body).encode(ExternalEncoding), input_name='body'), namespace_))
+        if self.sbrs is not None:
+            self.sbrs.export(outfile, level, namespace_, name_='sbrs',)
+        if self.products is not None:
+            self.products.export(outfile, level, namespace_, name_='products',)
+        if self.LinkedProducts is not None:
+            self.LinkedProducts.export(outfile, level, namespace_, name_='LinkedProducts',)
+        if self.productFamily is not None:
+            self.productFamily.export(outfile, level, namespace_, name_='productFamily',)
+        if self.ModerationState is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sModerationState>%s</%sModerationState>\n' % (namespace_, self.gds_format_string(quote_xml(self.ModerationState).encode(ExternalEncoding), input_name='ModerationState'), namespace_))
+        for link_ in self.link:
+            link_.export(outfile, level, namespace_, name_='link')
+        if self.caseCount is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scaseCount>%s</%scaseCount>\n' % (namespace_, self.gds_format_integer(self.caseCount, input_name='caseCount'), namespace_))
+        if self.abstract is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sabstract>%s</%sabstract>\n' % (namespace_, self.gds_format_string(quote_xml(self.abstract).encode(ExternalEncoding), input_name='abstract'), namespace_))
+        if self.extract is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sextract>%s</%sextract>\n' % (namespace_, self.gds_format_string(quote_xml(self.extract).encode(ExternalEncoding), input_name='extract'), namespace_))
         if self.explanation is not None:
             showIndent(outfile, level)
             outfile.write('<%sexplanation>%s</%sexplanation>\n' % (namespace_, self.gds_format_string(quote_xml(self.explanation).encode(ExternalEncoding), input_name='explanation'), namespace_))
+        if self.detectedLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdetectedLanguage>%s</%sdetectedLanguage>\n' % (namespace_, self.gds_format_string(quote_xml(self.detectedLanguage).encode(ExternalEncoding), input_name='detectedLanguage'), namespace_))
+        if self.setLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssetLanguage>%s</%ssetLanguage>\n' % (namespace_, self.gds_format_string(quote_xml(self.setLanguage).encode(ExternalEncoding), input_name='setLanguage'), namespace_))
+        if self.indexedDate is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sindexedDate>%s</%sindexedDate>\n' % (namespace_, self.gds_format_string(quote_xml(self.indexedDate).encode(ExternalEncoding), input_name='indexedDate'), namespace_))
     def hasContent_(self):
         if (
             self.id is not None or
+            self.tnid is not None or
             self.uri is not None or
             self.uidName is not None or
             self.view_uri is not None or
@@ -2279,14 +2610,29 @@ class article(trackedEntity):
             self.articleBody is not None or
             self.externalDiagnosticSteps is not None or
             self.summary is not None or
-            self.tags or
+            self.hasPublishedRevision is not None or
+            self.score is not None or
+            self.tags is not None or
+            self.categories is not None or
             self.case or
             self.tag or
             self.published is not None or
             self.duplicateOf or
             self.kcsState is not None or
             self.body is not None or
+            self.sbrs is not None or
+            self.products is not None or
+            self.LinkedProducts is not None or
+            self.productFamily is not None or
+            self.ModerationState is not None or
+            self.link or
+            self.caseCount is not None or
+            self.abstract is not None or
+            self.extract is not None or
             self.explanation is not None or
+            self.detectedLanguage is not None or
+            self.setLanguage is not None or
+            self.indexedDate is not None or
             super(article, self).hasContent_()
             ):
             return True
@@ -2304,6 +2650,9 @@ class article(trackedEntity):
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.tnid is not None:
+            showIndent(outfile, level)
+            outfile.write('tnid=%s,\n' % quote_python(self.tnid).encode(ExternalEncoding))
         if self.uri is not None:
             showIndent(outfile, level)
             outfile.write('uri=%s,\n' % quote_python(self.uri).encode(ExternalEncoding))
@@ -2367,15 +2716,24 @@ class article(trackedEntity):
         if self.summary is not None:
             showIndent(outfile, level)
             outfile.write('summary=%s,\n' % quote_python(self.summary).encode(ExternalEncoding))
-        showIndent(outfile, level)
-        outfile.write('tags=[\n')
-        level += 1
-        for tags_ in self.tags:
+        if self.hasPublishedRevision is not None:
             showIndent(outfile, level)
-            outfile.write('%s,\n' % quote_python(tags_).encode(ExternalEncoding))
-        level -= 1
-        showIndent(outfile, level)
-        outfile.write('],\n')
+            outfile.write('hasPublishedRevision=%s,\n' % self.hasPublishedRevision)
+        if self.score is not None:
+            showIndent(outfile, level)
+            outfile.write('score=%s,\n' % quote_python(self.score).encode(ExternalEncoding))
+        if self.tags is not None:
+            showIndent(outfile, level)
+            outfile.write('tags=model_.tagsType1(\n')
+            self.tags.exportLiteral(outfile, level, name_='tags')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.categories is not None:
+            showIndent(outfile, level)
+            outfile.write('categories=model_.categoriesType(\n')
+            self.categories.exportLiteral(outfile, level, name_='categories')
+            showIndent(outfile, level)
+            outfile.write('),\n')
         showIndent(outfile, level)
         outfile.write('case=[\n')
         level += 1
@@ -2390,8 +2748,8 @@ class article(trackedEntity):
         level += 1
         for tag_ in self.tag:
             showIndent(outfile, level)
-            outfile.write('model_.tagType1(\n')
-            tag_.exportLiteral(outfile, level, name_='tagType1')
+            outfile.write('model_.tagType(\n')
+            tag_.exportLiteral(outfile, level, name_='tagType')
             showIndent(outfile, level)
             outfile.write('),\n')
         level -= 1
@@ -2418,9 +2776,66 @@ class article(trackedEntity):
         if self.body is not None:
             showIndent(outfile, level)
             outfile.write('body=%s,\n' % quote_python(self.body).encode(ExternalEncoding))
+        if self.sbrs is not None:
+            showIndent(outfile, level)
+            outfile.write('sbrs=model_.sbrsType1(\n')
+            self.sbrs.exportLiteral(outfile, level, name_='sbrs')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.products is not None:
+            showIndent(outfile, level)
+            outfile.write('products=model_.productsType1(\n')
+            self.products.exportLiteral(outfile, level, name_='products')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.LinkedProducts is not None:
+            showIndent(outfile, level)
+            outfile.write('LinkedProducts=model_.LinkedProductsType1(\n')
+            self.LinkedProducts.exportLiteral(outfile, level, name_='LinkedProducts')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.productFamily is not None:
+            showIndent(outfile, level)
+            outfile.write('productFamily=model_.productFamilyType1(\n')
+            self.productFamily.exportLiteral(outfile, level, name_='productFamily')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.ModerationState is not None:
+            showIndent(outfile, level)
+            outfile.write('ModerationState=%s,\n' % quote_python(self.ModerationState).encode(ExternalEncoding))
+        showIndent(outfile, level)
+        outfile.write('link=[\n')
+        level += 1
+        for link_ in self.link:
+            showIndent(outfile, level)
+            outfile.write('model_.linkType(\n')
+            link_.exportLiteral(outfile, level, name_='linkType')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+        if self.caseCount is not None:
+            showIndent(outfile, level)
+            outfile.write('caseCount=%d,\n' % self.caseCount)
+        if self.abstract is not None:
+            showIndent(outfile, level)
+            outfile.write('abstract=%s,\n' % quote_python(self.abstract).encode(ExternalEncoding))
+        if self.extract is not None:
+            showIndent(outfile, level)
+            outfile.write('extract=%s,\n' % quote_python(self.extract).encode(ExternalEncoding))
         if self.explanation is not None:
             showIndent(outfile, level)
             outfile.write('explanation=%s,\n' % quote_python(self.explanation).encode(ExternalEncoding))
+        if self.detectedLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('detectedLanguage=%s,\n' % quote_python(self.detectedLanguage).encode(ExternalEncoding))
+        if self.setLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('setLanguage=%s,\n' % quote_python(self.setLanguage).encode(ExternalEncoding))
+        if self.indexedDate is not None:
+            showIndent(outfile, level)
+            outfile.write('indexedDate=%s,\n' % quote_python(self.indexedDate).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -2433,6 +2848,10 @@ class article(trackedEntity):
             id_ = child_.text
             id_ = self.gds_validate_string(id_, node, 'id')
             self.id = id_
+        elif nodeName_ == 'tnid':
+            tnid_ = child_.text
+            tnid_ = self.gds_validate_string(tnid_, node, 'tnid')
+            self.tnid = tnid_
         elif nodeName_ == 'uri':
             uri_ = child_.text
             uri_ = self.gds_validate_string(uri_, node, 'uri')
@@ -2493,16 +2912,34 @@ class article(trackedEntity):
             summary_ = child_.text
             summary_ = self.gds_validate_string(summary_, node, 'summary')
             self.summary = summary_
+        elif nodeName_ == 'hasPublishedRevision':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'hasPublishedRevision')
+            self.hasPublishedRevision = ival_
+        elif nodeName_ == 'score':
+            score_ = child_.text
+            score_ = self.gds_validate_string(score_, node, 'score')
+            self.score = score_
         elif nodeName_ == 'tags':
-            tags_ = child_.text
-            tags_ = self.gds_validate_string(tags_, node, 'tags')
-            self.tags.append(tags_)
+            obj_ = tagsType1.factory()
+            obj_.build(child_)
+            self.set_tags(obj_)
+        elif nodeName_ == 'categories':
+            obj_ = categoriesType.factory()
+            obj_.build(child_)
+            self.set_categories(obj_)
         elif nodeName_ == 'case':
             case_ = child_.text
             case_ = self.gds_validate_string(case_, node, 'case')
             self.case.append(case_)
         elif nodeName_ == 'tag':
-            obj_ = tagType1.factory()
+            obj_ = tagType.factory()
             obj_.build(child_)
             self.tag.append(obj_)
         elif nodeName_ == 'published':
@@ -2527,10 +2964,62 @@ class article(trackedEntity):
             body_ = child_.text
             body_ = self.gds_validate_string(body_, node, 'body')
             self.body = body_
+        elif nodeName_ == 'sbrs':
+            obj_ = sbrsType1.factory()
+            obj_.build(child_)
+            self.set_sbrs(obj_)
+        elif nodeName_ == 'products':
+            obj_ = productsType1.factory()
+            obj_.build(child_)
+            self.set_products(obj_)
+        elif nodeName_ == 'LinkedProducts':
+            obj_ = LinkedProductsType1.factory()
+            obj_.build(child_)
+            self.set_LinkedProducts(obj_)
+        elif nodeName_ == 'productFamily':
+            obj_ = productFamilyType1.factory()
+            obj_.build(child_)
+            self.set_productFamily(obj_)
+        elif nodeName_ == 'ModerationState':
+            ModerationState_ = child_.text
+            ModerationState_ = self.gds_validate_string(ModerationState_, node, 'ModerationState')
+            self.ModerationState = ModerationState_
+        elif nodeName_ == 'link':
+            obj_ = linkType.factory()
+            obj_.build(child_)
+            self.link.append(obj_)
+        elif nodeName_ == 'caseCount':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'caseCount')
+            self.caseCount = ival_
+        elif nodeName_ == 'abstract':
+            abstract_ = child_.text
+            abstract_ = self.gds_validate_string(abstract_, node, 'abstract')
+            self.abstract = abstract_
+        elif nodeName_ == 'extract':
+            extract_ = child_.text
+            extract_ = self.gds_validate_string(extract_, node, 'extract')
+            self.extract = extract_
         elif nodeName_ == 'explanation':
             explanation_ = child_.text
             explanation_ = self.gds_validate_string(explanation_, node, 'explanation')
             self.explanation = explanation_
+        elif nodeName_ == 'detectedLanguage':
+            detectedLanguage_ = child_.text
+            detectedLanguage_ = self.gds_validate_string(detectedLanguage_, node, 'detectedLanguage')
+            self.detectedLanguage = detectedLanguage_
+        elif nodeName_ == 'setLanguage':
+            setLanguage_ = child_.text
+            setLanguage_ = self.gds_validate_string(setLanguage_, node, 'setLanguage')
+            self.setLanguage = setLanguage_
+        elif nodeName_ == 'indexedDate':
+            indexedDate_ = child_.text
+            indexedDate_ = self.gds_validate_string(indexedDate_, node, 'indexedDate')
+            self.indexedDate = indexedDate_
         super(article, self).buildChildren(child_, node, nodeName_, True)
 # end class article
 
@@ -2539,8 +3028,8 @@ class link(base_link):
     """Simple ATOM link type."""
     subclass = None
     superclass = base_link
-    def __init__(self, href=None, type_=None, uri=None, rel=None, title=None, value=None, ssoUsername=None, explanation=None):
-        super(link, self).__init__(href, type_, uri, rel, title, value,)
+    def __init__(self, label=None, href=None, type_=None, uri=None, rel=None, title=None, value=None, ssoUsername=None, explanation=None):
+        super(link, self).__init__(label, href, type_, uri, rel, title, value,)
         self.ssoUsername = _cast(None, ssoUsername)
         self.explanation = _cast(None, explanation)
         pass
@@ -2697,8 +3186,8 @@ class attachments(strataEntity):
     """A list of attachments."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, attachment=None):
-        super(attachments, self).__init__()
+    def __init__(self, label=None, attachment=None):
+        super(attachments, self).__init__(label,)
         if attachment is None:
             self.attachment = []
         else:
@@ -2780,8 +3269,8 @@ class attachment(trackedEntity):
     """A file attachment and related meta data."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, caseNumber=None, caseId=None, uuid=None, etag=None, uri=None, fileDate=None, fileName=None, description=None, mimeType=None, length=None, active=None, deprecated=None, private=False):
-        super(attachment, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, caseNumber=None, caseId=None, uuid=None, etag=None, uri=None, fileDate=None, fileName=None, description=None, mimeType=None, length=None, active=None, deprecated=None, private=False):
+        super(attachment, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.caseNumber = _cast(None, caseNumber)
         self.caseId = caseId
         self.uuid = uuid
@@ -2803,50 +3292,20 @@ class attachment(trackedEntity):
     factory = staticmethod(factory)
     def get_caseId(self): return self.caseId
     def set_caseId(self, caseId): self.caseId = caseId
-    @set_docstring('''
-    Get the attachment UUID
-
-    :returns: attachment UUID
-    :rtype: string (uuid)''')
     def get_uuid(self): return self.uuid
     def set_uuid(self, uuid): self.uuid = uuid
     def get_etag(self): return self.etag
     def set_etag(self, etag): self.etag = etag
-    @set_docstring('''
-    Get the attachment REST API URI
-
-    :returns: API URL for attachment object
-    :rtype: string''')
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
     def get_fileDate(self): return self.fileDate
     def set_fileDate(self, fileDate): self.fileDate = fileDate
-    @set_docstring('''
-    Get the attachment filename
-
-    :returns: Filename of the attachment
-    :rtype: string''')
     def get_fileName(self): return self.fileName
     def set_fileName(self, fileName): self.fileName = fileName
-    @set_docstring('''
-    Get the attachment description
-
-    :returns: The description of the attachment object
-    :rtype: string''')
     def get_description(self): return self.description
     def set_description(self, description): self.description = description
-    @set_docstring('''
-    Get the MIME type of the attached file
-
-    :returns: Attachment's MIME type
-    :rtype: string''')
     def get_mimeType(self): return self.mimeType
     def set_mimeType(self, mimeType): self.mimeType = mimeType
-    @set_docstring('''
-    Get the file length of the attached file
-
-    :returns: File length in bytes
-    :rtype: int''')
     def get_length(self): return self.length
     def set_length(self, length): self.length = length
     def get_active(self): return self.active
@@ -3070,8 +3529,8 @@ class backtrace(trackedEntity):
     """An extracted backtrace."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, uri=None, taskid=None, password=None, filename=None, bt=None, status=None):
-        super(backtrace, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, uri=None, taskid=None, password=None, filename=None, bt=None, status=None):
+        super(backtrace, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.uri = uri
         self.taskid = taskid
         self.password = password
@@ -3117,7 +3576,7 @@ class backtrace(trackedEntity):
             outfile.write('<%suri>%s</%suri>\n' % (namespace_, self.gds_format_string(quote_xml(self.uri).encode(ExternalEncoding), input_name='uri'), namespace_))
         if self.taskid is not None:
             showIndent(outfile, level)
-            outfile.write('<%staskid>%s</%staskid>\n' % (namespace_, self.gds_format_integer(self.taskid, input_name='taskid'), namespace_))
+            outfile.write('<%staskid>%s</%staskid>\n' % (namespace_, self.gds_format_string(quote_xml(self.taskid).encode(ExternalEncoding), input_name='taskid'), namespace_))
         if self.password is not None:
             showIndent(outfile, level)
             outfile.write('<%spassword>%s</%spassword>\n' % (namespace_, self.gds_format_string(quote_xml(self.password).encode(ExternalEncoding), input_name='password'), namespace_))
@@ -3157,7 +3616,7 @@ class backtrace(trackedEntity):
             outfile.write('uri=%s,\n' % quote_python(self.uri).encode(ExternalEncoding))
         if self.taskid is not None:
             showIndent(outfile, level)
-            outfile.write('taskid=%d,\n' % self.taskid)
+            outfile.write('taskid=%s,\n' % quote_python(self.taskid).encode(ExternalEncoding))
         if self.password is not None:
             showIndent(outfile, level)
             outfile.write('password=%s,\n' % quote_python(self.password).encode(ExternalEncoding))
@@ -3183,15 +3642,9 @@ class backtrace(trackedEntity):
             uri_ = self.gds_validate_string(uri_, node, 'uri')
             self.uri = uri_
         elif nodeName_ == 'taskid':
-            sval_ = child_.text
-            try:
-                ival_ = int(sval_)
-            except (TypeError, ValueError), exp:
-                raise_parse_error(child_, 'requires integer: %s' % exp)
-            if ival_ <= 0:
-                raise_parse_error(child_, 'requires positiveInteger')
-            ival_ = self.gds_validate_integer(ival_, node, 'taskid')
-            self.taskid = ival_
+            taskid_ = child_.text
+            taskid_ = self.gds_validate_string(taskid_, node, 'taskid')
+            self.taskid = taskid_
         elif nodeName_ == 'password':
             password_ = child_.text
             password_ = self.gds_validate_string(password_, node, 'password')
@@ -3216,8 +3669,8 @@ class recommendations(strataEntity):
     """A list of suggestions."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, recommendation=None):
-        super(recommendations, self).__init__()
+    def __init__(self, label=None, recommendation=None):
+        super(recommendations, self).__init__(label,)
         if recommendation is None:
             self.recommendation = []
         else:
@@ -3299,8 +3752,10 @@ class recommendation(trackedEntity):
     """A suggestion referring to a solution and related meta data."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, algorithmScore=None, analysisAlgorithm=None, analysisAlgorithmVersion=None, analysisCategory=None, analysisModule=None, analysisService=None, analysisServiceVersion=None, bucket=None, caseNumber=None, client=None, clientVersion=None, display=None, analysisStatus=None, firstSuggestedDate=None, keywords=None, lastSuggestedDate=None, linked=None, linkedAt=None, linkedBy=None, location=None, luceneScore=None, message=None, note=None, origin=None, pinnedAt=None, pinnedBy=None, relevanceScore=None, resource=None, resourceId=None, resourceType=None, resourceURI=None, resourceViewURI=None, rule=None, ruleVersion=None, scoringAlgorithmVersion=None, solutionId=None, solutionKcsState=None, solutionOwnerSSOName=None, solutionTitle=None, solutionAbstract=None, solutionUrl=None, suggestedCount=None, suggestionRelevanceScore=None, explanation=None, title=None, tracebackUrl=None, solutionCaseCount=None, language=None, detectedLanguage=None, setLanguage=None, ModerationState=None, hasPublishedVersion=None, product=None, indexedDate=None, sbrs=None, tags=None, products=None):
-        super(recommendation, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, solution=None, article=None, algorithmScore=None, analysisAlgorithm=None, analysisAlgorithmVersion=None, analysisCategory=None, analysisModule=None, analysisService=None, analysisServiceVersion=None, bucket=None, caseNumber=None, client=None, clientVersion=None, display=None, maturityLevel=None, analysisStatus=None, firstSuggestedDate=None, keywords=None, lastSuggestedDate=None, location=None, luceneScore=None, message=None, note=None, origin=None, pinnedAt=None, pinnedBy=None, relevanceScore=None, resource=None, resourceId=None, resourceType=None, resourceURI=None, resourceViewURI=None, rule=None, ruleVersion=None, scoringAlgorithmVersion=None, solutionId=None, solutionKcsState=None, solutionOwnerSSOName=None, solutionTitle=None, solutionAbstract=None, solutionUrl=None, suggestedCount=None, suggestionRelevanceScore=None, explanation=None, title=None, tracebackUrl=None, solutionCaseCount=None, language=None, detectedLanguage=None, setLanguage=None, ModerationState=None, hasPublishedVersion=None, product=None, indexedDate=None, sbrs=None, tags=None, products=None, linkedProducts=None, productFamily=None, kcsProductCount=None):
+        super(recommendation, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.solution = solution
+        self.article = article
         self.algorithmScore = algorithmScore
         self.analysisAlgorithm = analysisAlgorithm
         self.analysisAlgorithmVersion = analysisAlgorithmVersion
@@ -3313,13 +3768,11 @@ class recommendation(trackedEntity):
         self.client = client
         self.clientVersion = clientVersion
         self.display = display
+        self.maturityLevel = maturityLevel
         self.analysisStatus = analysisStatus
         self.firstSuggestedDate = firstSuggestedDate
         self.keywords = keywords
         self.lastSuggestedDate = lastSuggestedDate
-        self.linked = linked
-        self.linkedAt = linkedAt
-        self.linkedBy = linkedBy
         self.location = location
         self.luceneScore = luceneScore
         self.message = message
@@ -3358,12 +3811,19 @@ class recommendation(trackedEntity):
         self.sbrs = sbrs
         self.tags = tags
         self.products = products
+        self.linkedProducts = linkedProducts
+        self.productFamily = productFamily
+        self.kcsProductCount = kcsProductCount
     def factory(*args_, **kwargs_):
         if recommendation.subclass:
             return recommendation.subclass(*args_, **kwargs_)
         else:
             return recommendation(*args_, **kwargs_)
     factory = staticmethod(factory)
+    def get_solution(self): return self.solution
+    def set_solution(self, solution): self.solution = solution
+    def get_article(self): return self.article
+    def set_article(self, article): self.article = article
     def get_algorithmScore(self): return self.algorithmScore
     def set_algorithmScore(self, algorithmScore): self.algorithmScore = algorithmScore
     def get_analysisAlgorithm(self): return self.analysisAlgorithm
@@ -3388,6 +3848,8 @@ class recommendation(trackedEntity):
     def set_clientVersion(self, clientVersion): self.clientVersion = clientVersion
     def get_display(self): return self.display
     def set_display(self, display): self.display = display
+    def get_maturityLevel(self): return self.maturityLevel
+    def set_maturityLevel(self, maturityLevel): self.maturityLevel = maturityLevel
     def get_analysisStatus(self): return self.analysisStatus
     def set_analysisStatus(self, analysisStatus): self.analysisStatus = analysisStatus
     def get_firstSuggestedDate(self): return self.firstSuggestedDate
@@ -3396,12 +3858,6 @@ class recommendation(trackedEntity):
     def set_keywords(self, keywords): self.keywords = keywords
     def get_lastSuggestedDate(self): return self.lastSuggestedDate
     def set_lastSuggestedDate(self, lastSuggestedDate): self.lastSuggestedDate = lastSuggestedDate
-    def get_linked(self): return self.linked
-    def set_linked(self, linked): self.linked = linked
-    def get_linkedAt(self): return self.linkedAt
-    def set_linkedAt(self, linkedAt): self.linkedAt = linkedAt
-    def get_linkedBy(self): return self.linkedBy
-    def set_linkedBy(self, linkedBy): self.linkedBy = linkedBy
     def get_location(self): return self.location
     def set_location(self, location): self.location = location
     def get_luceneScore(self): return self.luceneScore
@@ -3478,6 +3934,12 @@ class recommendation(trackedEntity):
     def set_tags(self, tags): self.tags = tags
     def get_products(self): return self.products
     def set_products(self, products): self.products = products
+    def get_linkedProducts(self): return self.linkedProducts
+    def set_linkedProducts(self, linkedProducts): self.linkedProducts = linkedProducts
+    def get_productFamily(self): return self.productFamily
+    def set_productFamily(self, productFamily): self.productFamily = productFamily
+    def get_kcsProductCount(self): return self.kcsProductCount
+    def set_kcsProductCount(self, kcsProductCount): self.kcsProductCount = kcsProductCount
     def export(self, outfile, level, namespace_='tns:', name_='recommendation', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -3494,6 +3956,10 @@ class recommendation(trackedEntity):
         super(recommendation, self).exportAttributes(outfile, level, already_processed, namespace_, name_='recommendation')
     def exportChildren(self, outfile, level, namespace_='tns:', name_='recommendation', fromsubclass_=False):
         super(recommendation, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.solution is not None:
+            self.solution.export(outfile, level, namespace_, name_='solution',)
+        if self.article is not None:
+            self.article.export(outfile, level, namespace_, name_='article',)
         if self.algorithmScore is not None:
             showIndent(outfile, level)
             outfile.write('<%salgorithmScore>%s</%salgorithmScore>\n' % (namespace_, self.gds_format_double(self.algorithmScore, input_name='algorithmScore'), namespace_))
@@ -3530,6 +3996,9 @@ class recommendation(trackedEntity):
         if self.display is not None:
             showIndent(outfile, level)
             outfile.write('<%sdisplay>%s</%sdisplay>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.display)), input_name='display'), namespace_))
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('<%smaturityLevel>%s</%smaturityLevel>\n' % (namespace_, self.gds_format_string(quote_xml(self.maturityLevel).encode(ExternalEncoding), input_name='maturityLevel'), namespace_))
         if self.analysisStatus is not None:
             showIndent(outfile, level)
             outfile.write('<%sanalysisStatus>%s</%sanalysisStatus>\n' % (namespace_, self.gds_format_string(quote_xml(self.analysisStatus).encode(ExternalEncoding), input_name='analysisStatus'), namespace_))
@@ -3542,15 +4011,6 @@ class recommendation(trackedEntity):
         if self.lastSuggestedDate is not None:
             showIndent(outfile, level)
             outfile.write('<%slastSuggestedDate>%s</%slastSuggestedDate>\n' % (namespace_, self.gds_format_string(quote_xml(self.lastSuggestedDate).encode(ExternalEncoding), input_name='lastSuggestedDate'), namespace_))
-        if self.linked is not None:
-            showIndent(outfile, level)
-            outfile.write('<%slinked>%s</%slinked>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.linked)), input_name='linked'), namespace_))
-        if self.linkedAt is not None:
-            showIndent(outfile, level)
-            outfile.write('<%slinkedAt>%s</%slinkedAt>\n' % (namespace_, self.gds_format_string(quote_xml(self.linkedAt).encode(ExternalEncoding), input_name='linkedAt'), namespace_))
-        if self.linkedBy is not None:
-            showIndent(outfile, level)
-            outfile.write('<%slinkedBy>%s</%slinkedBy>\n' % (namespace_, self.gds_format_string(quote_xml(self.linkedBy).encode(ExternalEncoding), input_name='linkedBy'), namespace_))
         if self.location is not None:
             showIndent(outfile, level)
             outfile.write('<%slocation>%s</%slocation>\n' % (namespace_, self.gds_format_string(quote_xml(self.location).encode(ExternalEncoding), input_name='location'), namespace_))
@@ -3662,8 +4122,17 @@ class recommendation(trackedEntity):
             self.tags.export(outfile, level, namespace_, name_='tags',)
         if self.products is not None:
             self.products.export(outfile, level, namespace_, name_='products',)
+        if self.linkedProducts is not None:
+            self.linkedProducts.export(outfile, level, namespace_, name_='linkedProducts',)
+        if self.productFamily is not None:
+            self.productFamily.export(outfile, level, namespace_, name_='productFamily',)
+        if self.kcsProductCount is not None:
+            showIndent(outfile, level)
+            outfile.write('<%skcsProductCount>%s</%skcsProductCount>\n' % (namespace_, self.gds_format_integer(self.kcsProductCount, input_name='kcsProductCount'), namespace_))
     def hasContent_(self):
         if (
+            self.solution is not None or
+            self.article is not None or
             self.algorithmScore is not None or
             self.analysisAlgorithm is not None or
             self.analysisAlgorithmVersion is not None or
@@ -3676,13 +4145,11 @@ class recommendation(trackedEntity):
             self.client is not None or
             self.clientVersion is not None or
             self.display is not None or
+            self.maturityLevel is not None or
             self.analysisStatus is not None or
             self.firstSuggestedDate is not None or
             self.keywords is not None or
             self.lastSuggestedDate is not None or
-            self.linked is not None or
-            self.linkedAt is not None or
-            self.linkedBy is not None or
             self.location is not None or
             self.luceneScore is not None or
             self.message is not None or
@@ -3721,6 +4188,9 @@ class recommendation(trackedEntity):
             self.sbrs is not None or
             self.tags is not None or
             self.products is not None or
+            self.linkedProducts is not None or
+            self.productFamily is not None or
+            self.kcsProductCount is not None or
             super(recommendation, self).hasContent_()
             ):
             return True
@@ -3735,6 +4205,18 @@ class recommendation(trackedEntity):
         super(recommendation, self).exportLiteralAttributes(outfile, level, already_processed, name_)
     def exportLiteralChildren(self, outfile, level, name_):
         super(recommendation, self).exportLiteralChildren(outfile, level, name_)
+        if self.solution is not None:
+            showIndent(outfile, level)
+            outfile.write('solution=model_.solution(\n')
+            self.solution.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.article is not None:
+            showIndent(outfile, level)
+            outfile.write('article=model_.article(\n')
+            self.article.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
         if self.algorithmScore is not None:
             showIndent(outfile, level)
             outfile.write('algorithmScore=%e,\n' % self.algorithmScore)
@@ -3771,6 +4253,9 @@ class recommendation(trackedEntity):
         if self.display is not None:
             showIndent(outfile, level)
             outfile.write('display=%s,\n' % self.display)
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('maturityLevel=%s,\n' % quote_python(self.maturityLevel).encode(ExternalEncoding))
         if self.analysisStatus is not None:
             showIndent(outfile, level)
             outfile.write('analysisStatus=%s,\n' % quote_python(self.analysisStatus).encode(ExternalEncoding))
@@ -3783,15 +4268,6 @@ class recommendation(trackedEntity):
         if self.lastSuggestedDate is not None:
             showIndent(outfile, level)
             outfile.write('lastSuggestedDate=%s,\n' % quote_python(self.lastSuggestedDate).encode(ExternalEncoding))
-        if self.linked is not None:
-            showIndent(outfile, level)
-            outfile.write('linked=%s,\n' % self.linked)
-        if self.linkedAt is not None:
-            showIndent(outfile, level)
-            outfile.write('linkedAt=%s,\n' % quote_python(self.linkedAt).encode(ExternalEncoding))
-        if self.linkedBy is not None:
-            showIndent(outfile, level)
-            outfile.write('linkedBy=%s,\n' % quote_python(self.linkedBy).encode(ExternalEncoding))
         if self.location is not None:
             showIndent(outfile, level)
             outfile.write('location=%s,\n' % quote_python(self.location).encode(ExternalEncoding))
@@ -3899,7 +4375,7 @@ class recommendation(trackedEntity):
             outfile.write('indexedDate=%s,\n' % quote_python(self.indexedDate).encode(ExternalEncoding))
         if self.sbrs is not None:
             showIndent(outfile, level)
-            outfile.write('sbrs=model_.sbrsType1(\n')
+            outfile.write('sbrs=model_.sbrsType2(\n')
             self.sbrs.exportLiteral(outfile, level, name_='sbrs')
             showIndent(outfile, level)
             outfile.write('),\n')
@@ -3911,10 +4387,25 @@ class recommendation(trackedEntity):
             outfile.write('),\n')
         if self.products is not None:
             showIndent(outfile, level)
-            outfile.write('products=model_.productsType1(\n')
+            outfile.write('products=model_.productsType2(\n')
             self.products.exportLiteral(outfile, level, name_='products')
             showIndent(outfile, level)
             outfile.write('),\n')
+        if self.linkedProducts is not None:
+            showIndent(outfile, level)
+            outfile.write('linkedProducts=model_.linkedProductsType(\n')
+            self.linkedProducts.exportLiteral(outfile, level, name_='linkedProducts')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.productFamily is not None:
+            showIndent(outfile, level)
+            outfile.write('productFamily=model_.productFamilyType2(\n')
+            self.productFamily.exportLiteral(outfile, level, name_='productFamily')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.kcsProductCount is not None:
+            showIndent(outfile, level)
+            outfile.write('kcsProductCount=%d,\n' % self.kcsProductCount)
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -3923,7 +4414,15 @@ class recommendation(trackedEntity):
     def buildAttributes(self, node, attrs, already_processed):
         super(recommendation, self).buildAttributes(node, attrs, already_processed)
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
-        if nodeName_ == 'algorithmScore':
+        if nodeName_ == 'solution':
+            obj_ = solution.factory()
+            obj_.build(child_)
+            self.set_solution(obj_)
+        elif nodeName_ == 'article':
+            obj_ = article.factory()
+            obj_.build(child_)
+            self.set_article(obj_)
+        elif nodeName_ == 'algorithmScore':
             sval_ = child_.text
             try:
                 fval_ = float(sval_)
@@ -3981,6 +4480,10 @@ class recommendation(trackedEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'display')
             self.display = ival_
+        elif nodeName_ == 'maturityLevel':
+            maturityLevel_ = child_.text
+            maturityLevel_ = self.gds_validate_string(maturityLevel_, node, 'maturityLevel')
+            self.maturityLevel = maturityLevel_
         elif nodeName_ == 'analysisStatus':
             analysisStatus_ = child_.text
             analysisStatus_ = self.gds_validate_string(analysisStatus_, node, 'analysisStatus')
@@ -3997,24 +4500,6 @@ class recommendation(trackedEntity):
             lastSuggestedDate_ = child_.text
             lastSuggestedDate_ = self.gds_validate_string(lastSuggestedDate_, node, 'lastSuggestedDate')
             self.lastSuggestedDate = lastSuggestedDate_
-        elif nodeName_ == 'linked':
-            sval_ = child_.text
-            if sval_ in ('true', '1'):
-                ival_ = True
-            elif sval_ in ('false', '0'):
-                ival_ = False
-            else:
-                raise_parse_error(child_, 'requires boolean')
-            ival_ = self.gds_validate_boolean(ival_, node, 'linked')
-            self.linked = ival_
-        elif nodeName_ == 'linkedAt':
-            linkedAt_ = child_.text
-            linkedAt_ = self.gds_validate_string(linkedAt_, node, 'linkedAt')
-            self.linkedAt = linkedAt_
-        elif nodeName_ == 'linkedBy':
-            linkedBy_ = child_.text
-            linkedBy_ = self.gds_validate_string(linkedBy_, node, 'linkedBy')
-            self.linkedBy = linkedBy_
         elif nodeName_ == 'location':
             location_ = child_.text
             location_ = self.gds_validate_string(location_, node, 'location')
@@ -4180,7 +4665,7 @@ class recommendation(trackedEntity):
             indexedDate_ = self.gds_validate_string(indexedDate_, node, 'indexedDate')
             self.indexedDate = indexedDate_
         elif nodeName_ == 'sbrs':
-            obj_ = sbrsType1.factory()
+            obj_ = sbrsType2.factory()
             obj_.build(child_)
             self.set_sbrs(obj_)
         elif nodeName_ == 'tags':
@@ -4188,19 +4673,276 @@ class recommendation(trackedEntity):
             obj_.build(child_)
             self.set_tags(obj_)
         elif nodeName_ == 'products':
-            obj_ = productsType1.factory()
+            obj_ = productsType2.factory()
             obj_.build(child_)
             self.set_products(obj_)
+        elif nodeName_ == 'linkedProducts':
+            obj_ = linkedProductsType.factory()
+            obj_.build(child_)
+            self.set_linkedProducts(obj_)
+        elif nodeName_ == 'productFamily':
+            obj_ = productFamilyType2.factory()
+            obj_.build(child_)
+            self.set_productFamily(obj_)
+        elif nodeName_ == 'kcsProductCount':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'kcsProductCount')
+            self.kcsProductCount = ival_
         super(recommendation, self).buildChildren(child_, node, nodeName_, True)
 # end class recommendation
+
+
+class searchResults(strataEntity):
+    """A list of searchResult."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, searchResult=None):
+        super(searchResults, self).__init__(label,)
+        if searchResult is None:
+            self.searchResult = []
+        else:
+            self.searchResult = searchResult
+    def factory(*args_, **kwargs_):
+        if searchResults.subclass:
+            return searchResults.subclass(*args_, **kwargs_)
+        else:
+            return searchResults(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_searchResult(self): return self.searchResult
+    def set_searchResult(self, searchResult): self.searchResult = searchResult
+    def add_searchResult(self, value): self.searchResult.append(value)
+    def insert_searchResult(self, index, value): self.searchResult[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='searchResults', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='searchResults')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='searchResults'):
+        super(searchResults, self).exportAttributes(outfile, level, already_processed, namespace_, name_='searchResults')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='searchResults', fromsubclass_=False):
+        super(searchResults, self).exportChildren(outfile, level, namespace_, name_, True)
+        for searchResult_ in self.searchResult:
+            searchResult_.export(outfile, level, namespace_, name_='searchResult')
+    def hasContent_(self):
+        if (
+            self.searchResult or
+            super(searchResults, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='searchResults'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(searchResults, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(searchResults, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('searchResult=[\n')
+        level += 1
+        for searchResult_ in self.searchResult:
+            showIndent(outfile, level)
+            outfile.write('model_.searchResult(\n')
+            searchResult_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(searchResults, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'searchResult':
+            obj_ = searchResult.factory()
+            obj_.build(child_)
+            self.searchResult.append(obj_)
+        super(searchResults, self).buildChildren(child_, node, nodeName_, True)
+# end class searchResults
+
+
+class searchResult(strataEntity):
+    """A single search result."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, displayId=None, resourceType=None, title=None, uri=None, view_uri=None, solution=None, article=None):
+        super(searchResult, self).__init__(label,)
+        self.displayId = displayId
+        self.resourceType = resourceType
+        self.title = title
+        self.uri = uri
+        self.view_uri = view_uri
+        self.solution = solution
+        self.article = article
+    def factory(*args_, **kwargs_):
+        if searchResult.subclass:
+            return searchResult.subclass(*args_, **kwargs_)
+        else:
+            return searchResult(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_displayId(self): return self.displayId
+    def set_displayId(self, displayId): self.displayId = displayId
+    def get_resourceType(self): return self.resourceType
+    def set_resourceType(self, resourceType): self.resourceType = resourceType
+    def get_title(self): return self.title
+    def set_title(self, title): self.title = title
+    def get_uri(self): return self.uri
+    def set_uri(self, uri): self.uri = uri
+    def get_view_uri(self): return self.view_uri
+    def set_view_uri(self, view_uri): self.view_uri = view_uri
+    def get_solution(self): return self.solution
+    def set_solution(self, solution): self.solution = solution
+    def get_article(self): return self.article
+    def set_article(self, article): self.article = article
+    def export(self, outfile, level, namespace_='tns:', name_='searchResult', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='searchResult')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='searchResult'):
+        super(searchResult, self).exportAttributes(outfile, level, already_processed, namespace_, name_='searchResult')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='searchResult', fromsubclass_=False):
+        super(searchResult, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.displayId is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdisplayId>%s</%sdisplayId>\n' % (namespace_, self.gds_format_string(quote_xml(self.displayId).encode(ExternalEncoding), input_name='displayId'), namespace_))
+        if self.resourceType is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sresourceType>%s</%sresourceType>\n' % (namespace_, self.gds_format_string(quote_xml(self.resourceType).encode(ExternalEncoding), input_name='resourceType'), namespace_))
+        if self.title is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stitle>%s</%stitle>\n' % (namespace_, self.gds_format_string(quote_xml(self.title).encode(ExternalEncoding), input_name='title'), namespace_))
+        if self.uri is not None:
+            showIndent(outfile, level)
+            outfile.write('<%suri>%s</%suri>\n' % (namespace_, self.gds_format_string(quote_xml(self.uri).encode(ExternalEncoding), input_name='uri'), namespace_))
+        if self.view_uri is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sview_uri>%s</%sview_uri>\n' % (namespace_, self.gds_format_string(quote_xml(self.view_uri).encode(ExternalEncoding), input_name='view_uri'), namespace_))
+        if self.solution is not None:
+            self.solution.export(outfile, level, namespace_, name_='solution',)
+        if self.article is not None:
+            self.article.export(outfile, level, namespace_, name_='article',)
+    def hasContent_(self):
+        if (
+            self.displayId is not None or
+            self.resourceType is not None or
+            self.title is not None or
+            self.uri is not None or
+            self.view_uri is not None or
+            self.solution is not None or
+            self.article is not None or
+            super(searchResult, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='searchResult'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(searchResult, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(searchResult, self).exportLiteralChildren(outfile, level, name_)
+        if self.displayId is not None:
+            showIndent(outfile, level)
+            outfile.write('displayId=%s,\n' % quote_python(self.displayId).encode(ExternalEncoding))
+        if self.resourceType is not None:
+            showIndent(outfile, level)
+            outfile.write('resourceType=%s,\n' % quote_python(self.resourceType).encode(ExternalEncoding))
+        if self.title is not None:
+            showIndent(outfile, level)
+            outfile.write('title=%s,\n' % quote_python(self.title).encode(ExternalEncoding))
+        if self.uri is not None:
+            showIndent(outfile, level)
+            outfile.write('uri=%s,\n' % quote_python(self.uri).encode(ExternalEncoding))
+        if self.view_uri is not None:
+            showIndent(outfile, level)
+            outfile.write('view_uri=%s,\n' % quote_python(self.view_uri).encode(ExternalEncoding))
+        if self.solution is not None:
+            showIndent(outfile, level)
+            outfile.write('solution=model_.solution(\n')
+            self.solution.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.article is not None:
+            showIndent(outfile, level)
+            outfile.write('article=model_.article(\n')
+            self.article.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(searchResult, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'displayId':
+            displayId_ = child_.text
+            displayId_ = self.gds_validate_string(displayId_, node, 'displayId')
+            self.displayId = displayId_
+        elif nodeName_ == 'resourceType':
+            resourceType_ = child_.text
+            resourceType_ = self.gds_validate_string(resourceType_, node, 'resourceType')
+            self.resourceType = resourceType_
+        elif nodeName_ == 'title':
+            title_ = child_.text
+            title_ = self.gds_validate_string(title_, node, 'title')
+            self.title = title_
+        elif nodeName_ == 'uri':
+            uri_ = child_.text
+            uri_ = self.gds_validate_string(uri_, node, 'uri')
+            self.uri = uri_
+        elif nodeName_ == 'view_uri':
+            view_uri_ = child_.text
+            view_uri_ = self.gds_validate_string(view_uri_, node, 'view_uri')
+            self.view_uri = view_uri_
+        elif nodeName_ == 'solution':
+            obj_ = solution.factory()
+            obj_.build(child_)
+            self.set_solution(obj_)
+        elif nodeName_ == 'article':
+            obj_ = article.factory()
+            obj_.build(child_)
+            self.set_article(obj_)
+        super(searchResult, self).buildChildren(child_, node, nodeName_, True)
+# end class searchResult
 
 
 class groups(strataEntity):
     """A list of groups."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, group=None):
-        super(groups, self).__init__()
+    def __init__(self, label=None, group=None):
+        super(groups, self).__init__(label,)
         if group is None:
             self.group = []
         else:
@@ -4282,12 +5024,14 @@ class group(strataEntity):
     """A group that may contain zero or more cases."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, number=None, name=None, uri=None, isPrivate=None):
-        super(group, self).__init__()
+    def __init__(self, label=None, number=None, contactSsoName=None, name=None, uri=None, isPrivate=None, isDefault=None):
+        super(group, self).__init__(label,)
         self.number = number
+        self.contactSsoName = contactSsoName
         self.name = name
         self.uri = uri
         self.isPrivate = isPrivate
+        self.isDefault = isDefault
     def factory(*args_, **kwargs_):
         if group.subclass:
             return group.subclass(*args_, **kwargs_)
@@ -4296,12 +5040,16 @@ class group(strataEntity):
     factory = staticmethod(factory)
     def get_number(self): return self.number
     def set_number(self, number): self.number = number
+    def get_contactSsoName(self): return self.contactSsoName
+    def set_contactSsoName(self, contactSsoName): self.contactSsoName = contactSsoName
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
     def get_isPrivate(self): return self.isPrivate
     def set_isPrivate(self, isPrivate): self.isPrivate = isPrivate
+    def get_isDefault(self): return self.isDefault
+    def set_isDefault(self, isDefault): self.isDefault = isDefault
     def export(self, outfile, level, namespace_='tns:', name_='group', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -4321,6 +5069,9 @@ class group(strataEntity):
         if self.number is not None:
             showIndent(outfile, level)
             outfile.write('<%snumber>%s</%snumber>\n' % (namespace_, self.gds_format_string(quote_xml(self.number).encode(ExternalEncoding), input_name='number'), namespace_))
+        if self.contactSsoName is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scontactSsoName>%s</%scontactSsoName>\n' % (namespace_, self.gds_format_string(quote_xml(self.contactSsoName).encode(ExternalEncoding), input_name='contactSsoName'), namespace_))
         if self.name is not None:
             showIndent(outfile, level)
             outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
@@ -4330,12 +5081,17 @@ class group(strataEntity):
         if self.isPrivate is not None:
             showIndent(outfile, level)
             outfile.write('<%sisPrivate>%s</%sisPrivate>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isPrivate)), input_name='isPrivate'), namespace_))
+        if self.isDefault is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sisDefault>%s</%sisDefault>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isDefault)), input_name='isDefault'), namespace_))
     def hasContent_(self):
         if (
             self.number is not None or
+            self.contactSsoName is not None or
             self.name is not None or
             self.uri is not None or
             self.isPrivate is not None or
+            self.isDefault is not None or
             super(group, self).hasContent_()
             ):
             return True
@@ -4353,6 +5109,9 @@ class group(strataEntity):
         if self.number is not None:
             showIndent(outfile, level)
             outfile.write('number=%s,\n' % quote_python(self.number).encode(ExternalEncoding))
+        if self.contactSsoName is not None:
+            showIndent(outfile, level)
+            outfile.write('contactSsoName=%s,\n' % quote_python(self.contactSsoName).encode(ExternalEncoding))
         if self.name is not None:
             showIndent(outfile, level)
             outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
@@ -4362,6 +5121,9 @@ class group(strataEntity):
         if self.isPrivate is not None:
             showIndent(outfile, level)
             outfile.write('isPrivate=%s,\n' % self.isPrivate)
+        if self.isDefault is not None:
+            showIndent(outfile, level)
+            outfile.write('isDefault=%s,\n' % self.isDefault)
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -4374,6 +5136,10 @@ class group(strataEntity):
             number_ = child_.text
             number_ = self.gds_validate_string(number_, node, 'number')
             self.number = number_
+        elif nodeName_ == 'contactSsoName':
+            contactSsoName_ = child_.text
+            contactSsoName_ = self.gds_validate_string(contactSsoName_, node, 'contactSsoName')
+            self.contactSsoName = contactSsoName_
         elif nodeName_ == 'name':
             name_ = child_.text
             name_ = self.gds_validate_string(name_, node, 'name')
@@ -4392,6 +5158,16 @@ class group(strataEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'isPrivate')
             self.isPrivate = ival_
+        elif nodeName_ == 'isDefault':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'isDefault')
+            self.isDefault = ival_
         super(group, self).buildChildren(child_, node, nodeName_, True)
 # end class group
 
@@ -4401,11 +5177,12 @@ class account(strataEntity):
     simplified manner on the Strata API."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, number=None, hasGroupACLs=None, isSecure=None):
-        super(account, self).__init__()
+    def __init__(self, label=None, number=None, hasGroupACLs=None, isSecure=None, name=None):
+        super(account, self).__init__(label,)
         self.number = _cast(None, number)
         self.hasGroupACLs = hasGroupACLs
         self.isSecure = isSecure
+        self.name = name
     def factory(*args_, **kwargs_):
         if account.subclass:
             return account.subclass(*args_, **kwargs_)
@@ -4416,6 +5193,8 @@ class account(strataEntity):
     def set_hasGroupACLs(self, hasGroupACLs): self.hasGroupACLs = hasGroupACLs
     def get_isSecure(self): return self.isSecure
     def set_isSecure(self, isSecure): self.isSecure = isSecure
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
     def get_number(self): return self.number
     def set_number(self, number): self.number = number
     def export(self, outfile, level, namespace_='tns:', name_='account', namespacedef_=''):
@@ -4443,10 +5222,14 @@ class account(strataEntity):
         if self.isSecure is not None:
             showIndent(outfile, level)
             outfile.write('<%sisSecure>%s</%sisSecure>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isSecure)), input_name='isSecure'), namespace_))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
     def hasContent_(self):
         if (
             self.hasGroupACLs is not None or
             self.isSecure is not None or
+            self.name is not None or
             super(account, self).hasContent_()
             ):
             return True
@@ -4471,6 +5254,9 @@ class account(strataEntity):
         if self.isSecure is not None:
             showIndent(outfile, level)
             outfile.write('isSecure=%s,\n' % self.isSecure)
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -4503,20 +5289,204 @@ class account(strataEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'isSecure')
             self.isSecure = ival_
+        elif nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
         super(account, self).buildChildren(child_, node, nodeName_, True)
 # end class account
+
+
+class userGroupsType(strataEntity):
+    """A user's groups."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, group=None):
+        super(userGroupsType, self).__init__(label,)
+        if group is None:
+            self.group = []
+        else:
+            self.group = group
+    def factory(*args_, **kwargs_):
+        if userGroupsType.subclass:
+            return userGroupsType.subclass(*args_, **kwargs_)
+        else:
+            return userGroupsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_group(self): return self.group
+    def set_group(self, group): self.group = group
+    def add_group(self, value): self.group.append(value)
+    def insert_group(self, index, value): self.group[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='userGroupsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='userGroupsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='userGroupsType'):
+        super(userGroupsType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='userGroupsType')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='userGroupsType', fromsubclass_=False):
+        super(userGroupsType, self).exportChildren(outfile, level, namespace_, name_, True)
+        for group_ in self.group:
+            group_.export(outfile, level, namespace_, name_='group')
+    def hasContent_(self):
+        if (
+            self.group or
+            super(userGroupsType, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='userGroupsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(userGroupsType, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(userGroupsType, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('group=[\n')
+        level += 1
+        for group_ in self.group:
+            showIndent(outfile, level)
+            outfile.write('model_.userGroupType(\n')
+            group_.exportLiteral(outfile, level, name_='userGroupType')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(userGroupsType, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'group':
+            obj_ = userGroupType.factory()
+            obj_.build(child_)
+            self.group.append(obj_)
+        super(userGroupsType, self).buildChildren(child_, node, nodeName_, True)
+# end class userGroupsType
+
+
+class userGroupType(strataEntity):
+    """A user's group."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, name=None, role=None):
+        super(userGroupType, self).__init__(label,)
+        self.name = name
+        if role is None:
+            self.role = []
+        else:
+            self.role = role
+    def factory(*args_, **kwargs_):
+        if userGroupType.subclass:
+            return userGroupType.subclass(*args_, **kwargs_)
+        else:
+            return userGroupType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_role(self): return self.role
+    def set_role(self, role): self.role = role
+    def add_role(self, value): self.role.append(value)
+    def insert_role(self, index, value): self.role[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='userGroupType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='userGroupType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='userGroupType'):
+        super(userGroupType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='userGroupType')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='userGroupType', fromsubclass_=False):
+        super(userGroupType, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        for role_ in self.role:
+            showIndent(outfile, level)
+            outfile.write('<%srole>%s</%srole>\n' % (namespace_, self.gds_format_string(quote_xml(role_).encode(ExternalEncoding), input_name='role'), namespace_))
+    def hasContent_(self):
+        if (
+            self.name is not None or
+            self.role or
+            super(userGroupType, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='userGroupType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(userGroupType, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(userGroupType, self).exportLiteralChildren(outfile, level, name_)
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        showIndent(outfile, level)
+        outfile.write('role=[\n')
+        level += 1
+        for role_ in self.role:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(role_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(userGroupType, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'role':
+            role_ = child_.text
+            role_ = self.gds_validate_string(role_, node, 'role')
+            self.role.append(role_)
+        super(userGroupType, self).buildChildren(child_, node, nodeName_, True)
+# end class userGroupType
 
 
 class users(strataEntity):
     """A list of users."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, user=None):
-        super(users, self).__init__()
+    def __init__(self, label=None, user=None, previous=None, next=None):
+        super(users, self).__init__(label,)
         if user is None:
             self.user = []
         else:
             self.user = user
+        self.previous = previous
+        self.next = next
     def factory(*args_, **kwargs_):
         if users.subclass:
             return users.subclass(*args_, **kwargs_)
@@ -4527,6 +5497,10 @@ class users(strataEntity):
     def set_user(self, user): self.user = user
     def add_user(self, value): self.user.append(value)
     def insert_user(self, index, value): self.user[index] = value
+    def get_previous(self): return self.previous
+    def set_previous(self, previous): self.previous = previous
+    def get_next(self): return self.next
+    def set_next(self, next): self.next = next
     def export(self, outfile, level, namespace_='tns:', name_='users', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -4545,9 +5519,17 @@ class users(strataEntity):
         super(users, self).exportChildren(outfile, level, namespace_, name_, True)
         for user_ in self.user:
             user_.export(outfile, level, namespace_, name_='user')
+        if self.previous is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sprevious>%s</%sprevious>\n' % (namespace_, self.gds_format_string(quote_xml(self.previous).encode(ExternalEncoding), input_name='previous'), namespace_))
+        if self.next is not None:
+            showIndent(outfile, level)
+            outfile.write('<%snext>%s</%snext>\n' % (namespace_, self.gds_format_string(quote_xml(self.next).encode(ExternalEncoding), input_name='next'), namespace_))
     def hasContent_(self):
         if (
             self.user or
+            self.previous is not None or
+            self.next is not None or
             super(users, self).hasContent_()
             ):
             return True
@@ -4574,6 +5556,12 @@ class users(strataEntity):
         level -= 1
         showIndent(outfile, level)
         outfile.write('],\n')
+        if self.previous is not None:
+            showIndent(outfile, level)
+            outfile.write('previous=%s,\n' % quote_python(self.previous).encode(ExternalEncoding))
+        if self.next is not None:
+            showIndent(outfile, level)
+            outfile.write('next=%s,\n' % quote_python(self.next).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -4586,53 +5574,114 @@ class users(strataEntity):
             obj_ = user.factory()
             obj_.build(child_)
             self.user.append(obj_)
+        elif nodeName_ == 'previous':
+            previous_ = child_.text
+            previous_ = self.gds_validate_string(previous_, node, 'previous')
+            self.previous = previous_
+        elif nodeName_ == 'next':
+            next_ = child_.text
+            next_ = self.gds_validate_string(next_, node, 'next')
+            self.next = next_
         super(users, self).buildChildren(child_, node, nodeName_, True)
 # end class users
 
 
-class user(strataEntity):
+class user(trackedEntity):
     """The user entity reflects a Red Hat Login user."""
     subclass = None
-    superclass = strataEntity
-    def __init__(self, ssoUsername=None, uri=None, id=None, firstName=None, lastName=None, email=None, accountId=None, preferredLanguage=None, title=None, timezone=None, orgAdmin=None, tamContact=None, access=None, hasChat=None, sessionId=None):
-        super(user, self).__init__()
+    superclass = trackedEntity
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, ssoUsername=None, uri=None, login=None, userType=None, oracleContactId=None, isActive=None, company=None, department=None, phoneNumber=None, faxNumber=None, id=None, firstName=None, lastName=None, orgId=None, system=None, password=None, loginUppercase=None, email=None, emailConfirmed=None, accountId=None, preferredLanguage=None, title=None, suffix=None, greeting=None, timezone=None, locale=None, orgAdmin=None, tamContact=None, access=None, hasChat=None, sessionId=None, permissions=None, roles=None, isInternal=None, address=None, groups=None):
+        super(user, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.ssoUsername = _cast(None, ssoUsername)
         self.uri = _cast(None, uri)
+        self.login = login
+        self.userType = userType
+        self.oracleContactId = oracleContactId
+        self.isActive = isActive
+        self.company = company
+        self.department = department
+        self.phoneNumber = phoneNumber
+        self.faxNumber = faxNumber
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
+        self.orgId = orgId
+        self.system = system
+        self.password = password
+        self.loginUppercase = loginUppercase
         self.email = email
+        self.emailConfirmed = emailConfirmed
         self.accountId = accountId
         self.preferredLanguage = preferredLanguage
         self.title = title
+        self.suffix = suffix
+        self.greeting = greeting
         self.timezone = timezone
+        self.locale = locale
         self.orgAdmin = orgAdmin
         self.tamContact = tamContact
         self.access = access
         self.hasChat = hasChat
         self.sessionId = sessionId
+        self.permissions = permissions
+        self.roles = roles
+        self.isInternal = isInternal
+        self.address = address
+        self.groups = groups
     def factory(*args_, **kwargs_):
         if user.subclass:
             return user.subclass(*args_, **kwargs_)
         else:
             return user(*args_, **kwargs_)
     factory = staticmethod(factory)
+    def get_login(self): return self.login
+    def set_login(self, login): self.login = login
+    def get_userType(self): return self.userType
+    def set_userType(self, userType): self.userType = userType
+    def get_oracleContactId(self): return self.oracleContactId
+    def set_oracleContactId(self, oracleContactId): self.oracleContactId = oracleContactId
+    def get_isActive(self): return self.isActive
+    def set_isActive(self, isActive): self.isActive = isActive
+    def get_company(self): return self.company
+    def set_company(self, company): self.company = company
+    def get_department(self): return self.department
+    def set_department(self, department): self.department = department
+    def get_phoneNumber(self): return self.phoneNumber
+    def set_phoneNumber(self, phoneNumber): self.phoneNumber = phoneNumber
+    def get_faxNumber(self): return self.faxNumber
+    def set_faxNumber(self, faxNumber): self.faxNumber = faxNumber
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
     def get_firstName(self): return self.firstName
     def set_firstName(self, firstName): self.firstName = firstName
     def get_lastName(self): return self.lastName
     def set_lastName(self, lastName): self.lastName = lastName
+    def get_orgId(self): return self.orgId
+    def set_orgId(self, orgId): self.orgId = orgId
+    def get_system(self): return self.system
+    def set_system(self, system): self.system = system
+    def get_password(self): return self.password
+    def set_password(self, password): self.password = password
+    def get_loginUppercase(self): return self.loginUppercase
+    def set_loginUppercase(self, loginUppercase): self.loginUppercase = loginUppercase
     def get_email(self): return self.email
     def set_email(self, email): self.email = email
+    def get_emailConfirmed(self): return self.emailConfirmed
+    def set_emailConfirmed(self, emailConfirmed): self.emailConfirmed = emailConfirmed
     def get_accountId(self): return self.accountId
     def set_accountId(self, accountId): self.accountId = accountId
     def get_preferredLanguage(self): return self.preferredLanguage
     def set_preferredLanguage(self, preferredLanguage): self.preferredLanguage = preferredLanguage
     def get_title(self): return self.title
     def set_title(self, title): self.title = title
+    def get_suffix(self): return self.suffix
+    def set_suffix(self, suffix): self.suffix = suffix
+    def get_greeting(self): return self.greeting
+    def set_greeting(self, greeting): self.greeting = greeting
     def get_timezone(self): return self.timezone
     def set_timezone(self, timezone): self.timezone = timezone
+    def get_locale(self): return self.locale
+    def set_locale(self, locale): self.locale = locale
     def get_orgAdmin(self): return self.orgAdmin
     def set_orgAdmin(self, orgAdmin): self.orgAdmin = orgAdmin
     def get_tamContact(self): return self.tamContact
@@ -4643,6 +5692,16 @@ class user(strataEntity):
     def set_hasChat(self, hasChat): self.hasChat = hasChat
     def get_sessionId(self): return self.sessionId
     def set_sessionId(self, sessionId): self.sessionId = sessionId
+    def get_permissions(self): return self.permissions
+    def set_permissions(self, permissions): self.permissions = permissions
+    def get_roles(self): return self.roles
+    def set_roles(self, roles): self.roles = roles
+    def get_isInternal(self): return self.isInternal
+    def set_isInternal(self, isInternal): self.isInternal = isInternal
+    def get_address(self): return self.address
+    def set_address(self, address): self.address = address
+    def get_groups(self): return self.groups
+    def set_groups(self, groups): self.groups = groups
     def get_ssoUsername(self): return self.ssoUsername
     def set_ssoUsername(self, ssoUsername): self.ssoUsername = ssoUsername
     def get_uri(self): return self.uri
@@ -4669,6 +5728,30 @@ class user(strataEntity):
             outfile.write(' uri=%s' % (self.gds_format_string(quote_attrib(self.uri).encode(ExternalEncoding), input_name='uri'),))
     def exportChildren(self, outfile, level, namespace_='tns:', name_='user', fromsubclass_=False):
         super(user, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.login is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slogin>%s</%slogin>\n' % (namespace_, self.gds_format_string(quote_xml(self.login).encode(ExternalEncoding), input_name='login'), namespace_))
+        if self.userType is not None:
+            showIndent(outfile, level)
+            outfile.write('<%suserType>%s</%suserType>\n' % (namespace_, self.gds_format_string(quote_xml(self.userType).encode(ExternalEncoding), input_name='userType'), namespace_))
+        if self.oracleContactId is not None:
+            showIndent(outfile, level)
+            outfile.write('<%soracleContactId>%s</%soracleContactId>\n' % (namespace_, self.gds_format_string(quote_xml(self.oracleContactId).encode(ExternalEncoding), input_name='oracleContactId'), namespace_))
+        if self.isActive is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sisActive>%s</%sisActive>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isActive)), input_name='isActive'), namespace_))
+        if self.company is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scompany>%s</%scompany>\n' % (namespace_, self.gds_format_string(quote_xml(self.company).encode(ExternalEncoding), input_name='company'), namespace_))
+        if self.department is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdepartment>%s</%sdepartment>\n' % (namespace_, self.gds_format_string(quote_xml(self.department).encode(ExternalEncoding), input_name='department'), namespace_))
+        if self.phoneNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sphoneNumber>%s</%sphoneNumber>\n' % (namespace_, self.gds_format_string(quote_xml(self.phoneNumber).encode(ExternalEncoding), input_name='phoneNumber'), namespace_))
+        if self.faxNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sfaxNumber>%s</%sfaxNumber>\n' % (namespace_, self.gds_format_string(quote_xml(self.faxNumber).encode(ExternalEncoding), input_name='faxNumber'), namespace_))
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
@@ -4678,9 +5761,24 @@ class user(strataEntity):
         if self.lastName is not None:
             showIndent(outfile, level)
             outfile.write('<%slastName>%s</%slastName>\n' % (namespace_, self.gds_format_string(quote_xml(self.lastName).encode(ExternalEncoding), input_name='lastName'), namespace_))
+        if self.orgId is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sorgId>%s</%sorgId>\n' % (namespace_, self.gds_format_string(quote_xml(self.orgId).encode(ExternalEncoding), input_name='orgId'), namespace_))
+        if self.system is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssystem>%s</%ssystem>\n' % (namespace_, self.gds_format_string(quote_xml(self.system).encode(ExternalEncoding), input_name='system'), namespace_))
+        if self.password is not None:
+            showIndent(outfile, level)
+            outfile.write('<%spassword>%s</%spassword>\n' % (namespace_, self.gds_format_string(quote_xml(self.password).encode(ExternalEncoding), input_name='password'), namespace_))
+        if self.loginUppercase is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sloginUppercase>%s</%sloginUppercase>\n' % (namespace_, self.gds_format_string(quote_xml(self.loginUppercase).encode(ExternalEncoding), input_name='loginUppercase'), namespace_))
         if self.email is not None:
             showIndent(outfile, level)
             outfile.write('<%semail>%s</%semail>\n' % (namespace_, self.gds_format_string(quote_xml(self.email).encode(ExternalEncoding), input_name='email'), namespace_))
+        if self.emailConfirmed is not None:
+            showIndent(outfile, level)
+            outfile.write('<%semailConfirmed>%s</%semailConfirmed>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.emailConfirmed)), input_name='emailConfirmed'), namespace_))
         if self.accountId is not None:
             showIndent(outfile, level)
             outfile.write('<%saccountId>%s</%saccountId>\n' % (namespace_, self.gds_format_string(quote_xml(self.accountId).encode(ExternalEncoding), input_name='accountId'), namespace_))
@@ -4690,9 +5788,18 @@ class user(strataEntity):
         if self.title is not None:
             showIndent(outfile, level)
             outfile.write('<%stitle>%s</%stitle>\n' % (namespace_, self.gds_format_string(quote_xml(self.title).encode(ExternalEncoding), input_name='title'), namespace_))
+        if self.suffix is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssuffix>%s</%ssuffix>\n' % (namespace_, self.gds_format_string(quote_xml(self.suffix).encode(ExternalEncoding), input_name='suffix'), namespace_))
+        if self.greeting is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sgreeting>%s</%sgreeting>\n' % (namespace_, self.gds_format_string(quote_xml(self.greeting).encode(ExternalEncoding), input_name='greeting'), namespace_))
         if self.timezone is not None:
             showIndent(outfile, level)
             outfile.write('<%stimezone>%s</%stimezone>\n' % (namespace_, self.gds_format_string(quote_xml(self.timezone).encode(ExternalEncoding), input_name='timezone'), namespace_))
+        if self.locale is not None:
+            showIndent(outfile, level)
+            outfile.write('<%slocale>%s</%slocale>\n' % (namespace_, self.gds_format_string(quote_xml(self.locale).encode(ExternalEncoding), input_name='locale'), namespace_))
         if self.orgAdmin is not None:
             showIndent(outfile, level)
             outfile.write('<%sorgAdmin>%s</%sorgAdmin>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.orgAdmin)), input_name='orgAdmin'), namespace_))
@@ -4708,21 +5815,53 @@ class user(strataEntity):
         if self.sessionId is not None:
             showIndent(outfile, level)
             outfile.write('<%ssessionId>%s</%ssessionId>\n' % (namespace_, self.gds_format_string(quote_xml(self.sessionId).encode(ExternalEncoding), input_name='sessionId'), namespace_))
+        if self.permissions is not None:
+            self.permissions.export(outfile, level, namespace_, name_='permissions',)
+        if self.roles is not None:
+            self.roles.export(outfile, level, namespace_, name_='roles',)
+        if self.isInternal is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sisInternal>%s</%sisInternal>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isInternal)), input_name='isInternal'), namespace_))
+        if self.address is not None:
+            self.address.export(outfile, level, namespace_, name_='address')
+        if self.groups is not None:
+            self.groups.export(outfile, level, namespace_, name_='groups')
     def hasContent_(self):
         if (
+            self.login is not None or
+            self.userType is not None or
+            self.oracleContactId is not None or
+            self.isActive is not None or
+            self.company is not None or
+            self.department is not None or
+            self.phoneNumber is not None or
+            self.faxNumber is not None or
             self.id is not None or
             self.firstName is not None or
             self.lastName is not None or
+            self.orgId is not None or
+            self.system is not None or
+            self.password is not None or
+            self.loginUppercase is not None or
             self.email is not None or
+            self.emailConfirmed is not None or
             self.accountId is not None or
             self.preferredLanguage is not None or
             self.title is not None or
+            self.suffix is not None or
+            self.greeting is not None or
             self.timezone is not None or
+            self.locale is not None or
             self.orgAdmin is not None or
             self.tamContact is not None or
             self.access is not None or
             self.hasChat is not None or
             self.sessionId is not None or
+            self.permissions is not None or
+            self.roles is not None or
+            self.isInternal is not None or
+            self.address is not None or
+            self.groups is not None or
             super(user, self).hasContent_()
             ):
             return True
@@ -4745,6 +5884,30 @@ class user(strataEntity):
         super(user, self).exportLiteralAttributes(outfile, level, already_processed, name_)
     def exportLiteralChildren(self, outfile, level, name_):
         super(user, self).exportLiteralChildren(outfile, level, name_)
+        if self.login is not None:
+            showIndent(outfile, level)
+            outfile.write('login=%s,\n' % quote_python(self.login).encode(ExternalEncoding))
+        if self.userType is not None:
+            showIndent(outfile, level)
+            outfile.write('userType=%s,\n' % quote_python(self.userType).encode(ExternalEncoding))
+        if self.oracleContactId is not None:
+            showIndent(outfile, level)
+            outfile.write('oracleContactId=%s,\n' % quote_python(self.oracleContactId).encode(ExternalEncoding))
+        if self.isActive is not None:
+            showIndent(outfile, level)
+            outfile.write('isActive=%s,\n' % self.isActive)
+        if self.company is not None:
+            showIndent(outfile, level)
+            outfile.write('company=%s,\n' % quote_python(self.company).encode(ExternalEncoding))
+        if self.department is not None:
+            showIndent(outfile, level)
+            outfile.write('department=%s,\n' % quote_python(self.department).encode(ExternalEncoding))
+        if self.phoneNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('phoneNumber=%s,\n' % quote_python(self.phoneNumber).encode(ExternalEncoding))
+        if self.faxNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('faxNumber=%s,\n' % quote_python(self.faxNumber).encode(ExternalEncoding))
         if self.id is not None:
             showIndent(outfile, level)
             outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
@@ -4754,9 +5917,24 @@ class user(strataEntity):
         if self.lastName is not None:
             showIndent(outfile, level)
             outfile.write('lastName=%s,\n' % quote_python(self.lastName).encode(ExternalEncoding))
+        if self.orgId is not None:
+            showIndent(outfile, level)
+            outfile.write('orgId=%s,\n' % quote_python(self.orgId).encode(ExternalEncoding))
+        if self.system is not None:
+            showIndent(outfile, level)
+            outfile.write('system=%s,\n' % quote_python(self.system).encode(ExternalEncoding))
+        if self.password is not None:
+            showIndent(outfile, level)
+            outfile.write('password=%s,\n' % quote_python(self.password).encode(ExternalEncoding))
+        if self.loginUppercase is not None:
+            showIndent(outfile, level)
+            outfile.write('loginUppercase=%s,\n' % quote_python(self.loginUppercase).encode(ExternalEncoding))
         if self.email is not None:
             showIndent(outfile, level)
             outfile.write('email=%s,\n' % quote_python(self.email).encode(ExternalEncoding))
+        if self.emailConfirmed is not None:
+            showIndent(outfile, level)
+            outfile.write('emailConfirmed=%s,\n' % self.emailConfirmed)
         if self.accountId is not None:
             showIndent(outfile, level)
             outfile.write('accountId=%s,\n' % quote_python(self.accountId).encode(ExternalEncoding))
@@ -4766,9 +5944,18 @@ class user(strataEntity):
         if self.title is not None:
             showIndent(outfile, level)
             outfile.write('title=%s,\n' % quote_python(self.title).encode(ExternalEncoding))
+        if self.suffix is not None:
+            showIndent(outfile, level)
+            outfile.write('suffix=%s,\n' % quote_python(self.suffix).encode(ExternalEncoding))
+        if self.greeting is not None:
+            showIndent(outfile, level)
+            outfile.write('greeting=%s,\n' % quote_python(self.greeting).encode(ExternalEncoding))
         if self.timezone is not None:
             showIndent(outfile, level)
             outfile.write('timezone=%s,\n' % quote_python(self.timezone).encode(ExternalEncoding))
+        if self.locale is not None:
+            showIndent(outfile, level)
+            outfile.write('locale=%s,\n' % quote_python(self.locale).encode(ExternalEncoding))
         if self.orgAdmin is not None:
             showIndent(outfile, level)
             outfile.write('orgAdmin=%s,\n' % self.orgAdmin)
@@ -4784,6 +5971,33 @@ class user(strataEntity):
         if self.sessionId is not None:
             showIndent(outfile, level)
             outfile.write('sessionId=%s,\n' % quote_python(self.sessionId).encode(ExternalEncoding))
+        if self.permissions is not None:
+            showIndent(outfile, level)
+            outfile.write('permissions=model_.permissions(\n')
+            self.permissions.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.roles is not None:
+            showIndent(outfile, level)
+            outfile.write('roles=model_.roles(\n')
+            self.roles.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.isInternal is not None:
+            showIndent(outfile, level)
+            outfile.write('isInternal=%s,\n' % self.isInternal)
+        if self.address is not None:
+            showIndent(outfile, level)
+            outfile.write('address=model_.address(\n')
+            self.address.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.groups is not None:
+            showIndent(outfile, level)
+            outfile.write('groups=model_.userGroupsType(\n')
+            self.groups.exportLiteral(outfile, level, name_='groups')
+            showIndent(outfile, level)
+            outfile.write('),\n')
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -4800,7 +6014,45 @@ class user(strataEntity):
             self.uri = value
         super(user, self).buildAttributes(node, attrs, already_processed)
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
-        if nodeName_ == 'id':
+        if nodeName_ == 'login':
+            login_ = child_.text
+            login_ = self.gds_validate_string(login_, node, 'login')
+            self.login = login_
+        elif nodeName_ == 'userType':
+            userType_ = child_.text
+            userType_ = self.gds_validate_string(userType_, node, 'userType')
+            self.userType = userType_
+        elif nodeName_ == 'oracleContactId':
+            oracleContactId_ = child_.text
+            oracleContactId_ = self.gds_validate_string(oracleContactId_, node, 'oracleContactId')
+            self.oracleContactId = oracleContactId_
+        elif nodeName_ == 'isActive':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'isActive')
+            self.isActive = ival_
+        elif nodeName_ == 'company':
+            company_ = child_.text
+            company_ = self.gds_validate_string(company_, node, 'company')
+            self.company = company_
+        elif nodeName_ == 'department':
+            department_ = child_.text
+            department_ = self.gds_validate_string(department_, node, 'department')
+            self.department = department_
+        elif nodeName_ == 'phoneNumber':
+            phoneNumber_ = child_.text
+            phoneNumber_ = self.gds_validate_string(phoneNumber_, node, 'phoneNumber')
+            self.phoneNumber = phoneNumber_
+        elif nodeName_ == 'faxNumber':
+            faxNumber_ = child_.text
+            faxNumber_ = self.gds_validate_string(faxNumber_, node, 'faxNumber')
+            self.faxNumber = faxNumber_
+        elif nodeName_ == 'id':
             id_ = child_.text
             id_ = self.gds_validate_string(id_, node, 'id')
             self.id = id_
@@ -4812,10 +6064,36 @@ class user(strataEntity):
             lastName_ = child_.text
             lastName_ = self.gds_validate_string(lastName_, node, 'lastName')
             self.lastName = lastName_
+        elif nodeName_ == 'orgId':
+            orgId_ = child_.text
+            orgId_ = self.gds_validate_string(orgId_, node, 'orgId')
+            self.orgId = orgId_
+        elif nodeName_ == 'system':
+            system_ = child_.text
+            system_ = self.gds_validate_string(system_, node, 'system')
+            self.system = system_
+        elif nodeName_ == 'password':
+            password_ = child_.text
+            password_ = self.gds_validate_string(password_, node, 'password')
+            self.password = password_
+        elif nodeName_ == 'loginUppercase':
+            loginUppercase_ = child_.text
+            loginUppercase_ = self.gds_validate_string(loginUppercase_, node, 'loginUppercase')
+            self.loginUppercase = loginUppercase_
         elif nodeName_ == 'email':
             email_ = child_.text
             email_ = self.gds_validate_string(email_, node, 'email')
             self.email = email_
+        elif nodeName_ == 'emailConfirmed':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'emailConfirmed')
+            self.emailConfirmed = ival_
         elif nodeName_ == 'accountId':
             accountId_ = child_.text
             accountId_ = self.gds_validate_string(accountId_, node, 'accountId')
@@ -4828,10 +6106,22 @@ class user(strataEntity):
             title_ = child_.text
             title_ = self.gds_validate_string(title_, node, 'title')
             self.title = title_
+        elif nodeName_ == 'suffix':
+            suffix_ = child_.text
+            suffix_ = self.gds_validate_string(suffix_, node, 'suffix')
+            self.suffix = suffix_
+        elif nodeName_ == 'greeting':
+            greeting_ = child_.text
+            greeting_ = self.gds_validate_string(greeting_, node, 'greeting')
+            self.greeting = greeting_
         elif nodeName_ == 'timezone':
             timezone_ = child_.text
             timezone_ = self.gds_validate_string(timezone_, node, 'timezone')
             self.timezone = timezone_
+        elif nodeName_ == 'locale':
+            locale_ = child_.text
+            locale_ = self.gds_validate_string(locale_, node, 'locale')
+            self.locale = locale_
         elif nodeName_ == 'orgAdmin':
             sval_ = child_.text
             if sval_ in ('true', '1'):
@@ -4876,8 +6166,560 @@ class user(strataEntity):
             sessionId_ = child_.text
             sessionId_ = self.gds_validate_string(sessionId_, node, 'sessionId')
             self.sessionId = sessionId_
+        elif nodeName_ == 'permissions':
+            obj_ = permissions.factory()
+            obj_.build(child_)
+            self.set_permissions(obj_)
+        elif nodeName_ == 'roles':
+            obj_ = roles.factory()
+            obj_.build(child_)
+            self.set_roles(obj_)
+        elif nodeName_ == 'isInternal':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'isInternal')
+            self.isInternal = ival_
+        elif nodeName_ == 'address':
+            obj_ = address.factory()
+            obj_.build(child_)
+            self.set_address(obj_)
+        elif nodeName_ == 'groups':
+            obj_ = userGroupsType.factory()
+            obj_.build(child_)
+            self.set_groups(obj_)
         super(user, self).buildChildren(child_, node, nodeName_, True)
 # end class user
+
+
+class permissions(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, allowEmailContact=None, allowFaxContact=None, allowMailContact=None, allowPhoneContact=None, allowThirdPartyContact=None):
+        self.allowEmailContact = allowEmailContact
+        self.allowFaxContact = allowFaxContact
+        self.allowMailContact = allowMailContact
+        self.allowPhoneContact = allowPhoneContact
+        self.allowThirdPartyContact = allowThirdPartyContact
+    def factory(*args_, **kwargs_):
+        if permissions.subclass:
+            return permissions.subclass(*args_, **kwargs_)
+        else:
+            return permissions(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_allowEmailContact(self): return self.allowEmailContact
+    def set_allowEmailContact(self, allowEmailContact): self.allowEmailContact = allowEmailContact
+    def get_allowFaxContact(self): return self.allowFaxContact
+    def set_allowFaxContact(self, allowFaxContact): self.allowFaxContact = allowFaxContact
+    def get_allowMailContact(self): return self.allowMailContact
+    def set_allowMailContact(self, allowMailContact): self.allowMailContact = allowMailContact
+    def get_allowPhoneContact(self): return self.allowPhoneContact
+    def set_allowPhoneContact(self, allowPhoneContact): self.allowPhoneContact = allowPhoneContact
+    def get_allowThirdPartyContact(self): return self.allowThirdPartyContact
+    def set_allowThirdPartyContact(self, allowThirdPartyContact): self.allowThirdPartyContact = allowThirdPartyContact
+    def export(self, outfile, level, namespace_='tns:', name_='permissions', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='permissions')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='permissions'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='permissions', fromsubclass_=False):
+        if self.allowEmailContact is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sallowEmailContact>%s</%sallowEmailContact>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.allowEmailContact)), input_name='allowEmailContact'), namespace_))
+        if self.allowFaxContact is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sallowFaxContact>%s</%sallowFaxContact>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.allowFaxContact)), input_name='allowFaxContact'), namespace_))
+        if self.allowMailContact is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sallowMailContact>%s</%sallowMailContact>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.allowMailContact)), input_name='allowMailContact'), namespace_))
+        if self.allowPhoneContact is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sallowPhoneContact>%s</%sallowPhoneContact>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.allowPhoneContact)), input_name='allowPhoneContact'), namespace_))
+        if self.allowThirdPartyContact is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sallowThirdPartyContact>%s</%sallowThirdPartyContact>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.allowThirdPartyContact)), input_name='allowThirdPartyContact'), namespace_))
+    def hasContent_(self):
+        if (
+            self.allowEmailContact is not None or
+            self.allowFaxContact is not None or
+            self.allowMailContact is not None or
+            self.allowPhoneContact is not None or
+            self.allowThirdPartyContact is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='permissions'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.allowEmailContact is not None:
+            showIndent(outfile, level)
+            outfile.write('allowEmailContact=%s,\n' % self.allowEmailContact)
+        if self.allowFaxContact is not None:
+            showIndent(outfile, level)
+            outfile.write('allowFaxContact=%s,\n' % self.allowFaxContact)
+        if self.allowMailContact is not None:
+            showIndent(outfile, level)
+            outfile.write('allowMailContact=%s,\n' % self.allowMailContact)
+        if self.allowPhoneContact is not None:
+            showIndent(outfile, level)
+            outfile.write('allowPhoneContact=%s,\n' % self.allowPhoneContact)
+        if self.allowThirdPartyContact is not None:
+            showIndent(outfile, level)
+            outfile.write('allowThirdPartyContact=%s,\n' % self.allowThirdPartyContact)
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'allowEmailContact':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'allowEmailContact')
+            self.allowEmailContact = ival_
+        elif nodeName_ == 'allowFaxContact':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'allowFaxContact')
+            self.allowFaxContact = ival_
+        elif nodeName_ == 'allowMailContact':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'allowMailContact')
+            self.allowMailContact = ival_
+        elif nodeName_ == 'allowPhoneContact':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'allowPhoneContact')
+            self.allowPhoneContact = ival_
+        elif nodeName_ == 'allowThirdPartyContact':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'allowThirdPartyContact')
+            self.allowThirdPartyContact = ival_
+# end class permissions
+
+
+class address(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, address1=None, address2=None, address3=None, address4=None, county=None, countryCode=None, poBox=None, postalCode=None, state=None, city=None):
+        self.address1 = address1
+        self.address2 = address2
+        self.address3 = address3
+        self.address4 = address4
+        self.county = county
+        self.countryCode = countryCode
+        self.poBox = poBox
+        self.postalCode = postalCode
+        self.state = state
+        self.city = city
+    def factory(*args_, **kwargs_):
+        if address.subclass:
+            return address.subclass(*args_, **kwargs_)
+        else:
+            return address(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_address1(self): return self.address1
+    def set_address1(self, address1): self.address1 = address1
+    def get_address2(self): return self.address2
+    def set_address2(self, address2): self.address2 = address2
+    def get_address3(self): return self.address3
+    def set_address3(self, address3): self.address3 = address3
+    def get_address4(self): return self.address4
+    def set_address4(self, address4): self.address4 = address4
+    def get_county(self): return self.county
+    def set_county(self, county): self.county = county
+    def get_countryCode(self): return self.countryCode
+    def set_countryCode(self, countryCode): self.countryCode = countryCode
+    def get_poBox(self): return self.poBox
+    def set_poBox(self, poBox): self.poBox = poBox
+    def get_postalCode(self): return self.postalCode
+    def set_postalCode(self, postalCode): self.postalCode = postalCode
+    def get_state(self): return self.state
+    def set_state(self, state): self.state = state
+    def get_city(self): return self.city
+    def set_city(self, city): self.city = city
+    def export(self, outfile, level, namespace_='tns:', name_='address', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='address')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='address'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='address', fromsubclass_=False):
+        if self.address1 is not None:
+            showIndent(outfile, level)
+            outfile.write('<%saddress1>%s</%saddress1>\n' % (namespace_, self.gds_format_string(quote_xml(self.address1).encode(ExternalEncoding), input_name='address1'), namespace_))
+        if self.address2 is not None:
+            showIndent(outfile, level)
+            outfile.write('<%saddress2>%s</%saddress2>\n' % (namespace_, self.gds_format_string(quote_xml(self.address2).encode(ExternalEncoding), input_name='address2'), namespace_))
+        if self.address3 is not None:
+            showIndent(outfile, level)
+            outfile.write('<%saddress3>%s</%saddress3>\n' % (namespace_, self.gds_format_string(quote_xml(self.address3).encode(ExternalEncoding), input_name='address3'), namespace_))
+        if self.address4 is not None:
+            showIndent(outfile, level)
+            outfile.write('<%saddress4>%s</%saddress4>\n' % (namespace_, self.gds_format_string(quote_xml(self.address4).encode(ExternalEncoding), input_name='address4'), namespace_))
+        if self.county is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scounty>%s</%scounty>\n' % (namespace_, self.gds_format_string(quote_xml(self.county).encode(ExternalEncoding), input_name='county'), namespace_))
+        if self.countryCode is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scountryCode>%s</%scountryCode>\n' % (namespace_, self.gds_format_string(quote_xml(self.countryCode).encode(ExternalEncoding), input_name='countryCode'), namespace_))
+        if self.poBox is not None:
+            showIndent(outfile, level)
+            outfile.write('<%spoBox>%s</%spoBox>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.poBox)), input_name='poBox'), namespace_))
+        if self.postalCode is not None:
+            showIndent(outfile, level)
+            outfile.write('<%spostalCode>%s</%spostalCode>\n' % (namespace_, self.gds_format_string(quote_xml(self.postalCode).encode(ExternalEncoding), input_name='postalCode'), namespace_))
+        if self.state is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sstate>%s</%sstate>\n' % (namespace_, self.gds_format_string(quote_xml(self.state).encode(ExternalEncoding), input_name='state'), namespace_))
+        if self.city is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scity>%s</%scity>\n' % (namespace_, self.gds_format_string(quote_xml(self.city).encode(ExternalEncoding), input_name='city'), namespace_))
+    def hasContent_(self):
+        if (
+            self.address1 is not None or
+            self.address2 is not None or
+            self.address3 is not None or
+            self.address4 is not None or
+            self.county is not None or
+            self.countryCode is not None or
+            self.poBox is not None or
+            self.postalCode is not None or
+            self.state is not None or
+            self.city is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='address'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.address1 is not None:
+            showIndent(outfile, level)
+            outfile.write('address1=%s,\n' % quote_python(self.address1).encode(ExternalEncoding))
+        if self.address2 is not None:
+            showIndent(outfile, level)
+            outfile.write('address2=%s,\n' % quote_python(self.address2).encode(ExternalEncoding))
+        if self.address3 is not None:
+            showIndent(outfile, level)
+            outfile.write('address3=%s,\n' % quote_python(self.address3).encode(ExternalEncoding))
+        if self.address4 is not None:
+            showIndent(outfile, level)
+            outfile.write('address4=%s,\n' % quote_python(self.address4).encode(ExternalEncoding))
+        if self.county is not None:
+            showIndent(outfile, level)
+            outfile.write('county=%s,\n' % quote_python(self.county).encode(ExternalEncoding))
+        if self.countryCode is not None:
+            showIndent(outfile, level)
+            outfile.write('countryCode=%s,\n' % quote_python(self.countryCode).encode(ExternalEncoding))
+        if self.poBox is not None:
+            showIndent(outfile, level)
+            outfile.write('poBox=%s,\n' % self.poBox)
+        if self.postalCode is not None:
+            showIndent(outfile, level)
+            outfile.write('postalCode=%s,\n' % quote_python(self.postalCode).encode(ExternalEncoding))
+        if self.state is not None:
+            showIndent(outfile, level)
+            outfile.write('state=%s,\n' % quote_python(self.state).encode(ExternalEncoding))
+        if self.city is not None:
+            showIndent(outfile, level)
+            outfile.write('city=%s,\n' % quote_python(self.city).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'address1':
+            address1_ = child_.text
+            address1_ = self.gds_validate_string(address1_, node, 'address1')
+            self.address1 = address1_
+        elif nodeName_ == 'address2':
+            address2_ = child_.text
+            address2_ = self.gds_validate_string(address2_, node, 'address2')
+            self.address2 = address2_
+        elif nodeName_ == 'address3':
+            address3_ = child_.text
+            address3_ = self.gds_validate_string(address3_, node, 'address3')
+            self.address3 = address3_
+        elif nodeName_ == 'address4':
+            address4_ = child_.text
+            address4_ = self.gds_validate_string(address4_, node, 'address4')
+            self.address4 = address4_
+        elif nodeName_ == 'county':
+            county_ = child_.text
+            county_ = self.gds_validate_string(county_, node, 'county')
+            self.county = county_
+        elif nodeName_ == 'countryCode':
+            countryCode_ = child_.text
+            countryCode_ = self.gds_validate_string(countryCode_, node, 'countryCode')
+            self.countryCode = countryCode_
+        elif nodeName_ == 'poBox':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'poBox')
+            self.poBox = ival_
+        elif nodeName_ == 'postalCode':
+            postalCode_ = child_.text
+            postalCode_ = self.gds_validate_string(postalCode_, node, 'postalCode')
+            self.postalCode = postalCode_
+        elif nodeName_ == 'state':
+            state_ = child_.text
+            state_ = self.gds_validate_string(state_, node, 'state')
+            self.state = state_
+        elif nodeName_ == 'city':
+            city_ = child_.text
+            city_ = self.gds_validate_string(city_, node, 'city')
+            self.city = city_
+# end class address
+
+
+class roles(strataEntity):
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, role=None):
+        super(roles, self).__init__(label,)
+        if role is None:
+            self.role = []
+        else:
+            self.role = role
+    def factory(*args_, **kwargs_):
+        if roles.subclass:
+            return roles.subclass(*args_, **kwargs_)
+        else:
+            return roles(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_role(self): return self.role
+    def set_role(self, role): self.role = role
+    def add_role(self, value): self.role.append(value)
+    def insert_role(self, index, value): self.role[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='roles', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='roles')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='roles'):
+        super(roles, self).exportAttributes(outfile, level, already_processed, namespace_, name_='roles')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='roles', fromsubclass_=False):
+        super(roles, self).exportChildren(outfile, level, namespace_, name_, True)
+        for role_ in self.role:
+            role_.export(outfile, level, namespace_, name_='role')
+    def hasContent_(self):
+        if (
+            self.role or
+            super(roles, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='roles'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(roles, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(roles, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('role=[\n')
+        level += 1
+        for role_ in self.role:
+            showIndent(outfile, level)
+            outfile.write('model_.role(\n')
+            role_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(roles, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'role':
+            obj_ = role.factory()
+            obj_.build(child_)
+            self.role.append(obj_)
+        super(roles, self).buildChildren(child_, node, nodeName_, True)
+# end class roles
+
+
+class role(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, description=None, roleLabel=None, isRoleAccess=None):
+        self.description = description
+        self.roleLabel = roleLabel
+        self.isRoleAccess = isRoleAccess
+    def factory(*args_, **kwargs_):
+        if role.subclass:
+            return role.subclass(*args_, **kwargs_)
+        else:
+            return role(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_description(self): return self.description
+    def set_description(self, description): self.description = description
+    def get_roleLabel(self): return self.roleLabel
+    def set_roleLabel(self, roleLabel): self.roleLabel = roleLabel
+    def get_isRoleAccess(self): return self.isRoleAccess
+    def set_isRoleAccess(self, isRoleAccess): self.isRoleAccess = isRoleAccess
+    def export(self, outfile, level, namespace_='tns:', name_='role', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='role')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='role'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='role', fromsubclass_=False):
+        if self.description is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdescription>%s</%sdescription>\n' % (namespace_, self.gds_format_string(quote_xml(self.description).encode(ExternalEncoding), input_name='description'), namespace_))
+        if self.roleLabel is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sroleLabel>%s</%sroleLabel>\n' % (namespace_, self.gds_format_string(quote_xml(self.roleLabel).encode(ExternalEncoding), input_name='roleLabel'), namespace_))
+        if self.isRoleAccess is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sisRoleAccess>%s</%sisRoleAccess>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.isRoleAccess)), input_name='isRoleAccess'), namespace_))
+    def hasContent_(self):
+        if (
+            self.description is not None or
+            self.roleLabel is not None or
+            self.isRoleAccess is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='role'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.description is not None:
+            showIndent(outfile, level)
+            outfile.write('description=%s,\n' % quote_python(self.description).encode(ExternalEncoding))
+        if self.roleLabel is not None:
+            showIndent(outfile, level)
+            outfile.write('roleLabel=%s,\n' % quote_python(self.roleLabel).encode(ExternalEncoding))
+        if self.isRoleAccess is not None:
+            showIndent(outfile, level)
+            outfile.write('isRoleAccess=%s,\n' % self.isRoleAccess)
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'description':
+            description_ = child_.text
+            description_ = self.gds_validate_string(description_, node, 'description')
+            self.description = description_
+        elif nodeName_ == 'roleLabel':
+            roleLabel_ = child_.text
+            roleLabel_ = self.gds_validate_string(roleLabel_, node, 'roleLabel')
+            self.roleLabel = roleLabel_
+        elif nodeName_ == 'isRoleAccess':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'isRoleAccess')
+            self.isRoleAccess = ival_
+# end class role
 
 
 class cases(strataEntity):
@@ -4891,14 +6733,15 @@ class cases(strataEntity):
     This element is not required to contain any child case elements."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, case=None, previous=None, next=None):
-        super(cases, self).__init__()
+    def __init__(self, label=None, case=None, previous=None, next=None, totalCount=None):
+        super(cases, self).__init__(label,)
         if case is None:
             self.case = []
         else:
             self.case = case
         self.previous = previous
         self.next = next
+        self.totalCount = totalCount
     def factory(*args_, **kwargs_):
         if cases.subclass:
             return cases.subclass(*args_, **kwargs_)
@@ -4913,6 +6756,8 @@ class cases(strataEntity):
     def set_previous(self, previous): self.previous = previous
     def get_next(self): return self.next
     def set_next(self, next): self.next = next
+    def get_totalCount(self): return self.totalCount
+    def set_totalCount(self, totalCount): self.totalCount = totalCount
     def export(self, outfile, level, namespace_='tns:', name_='cases', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -4937,11 +6782,15 @@ class cases(strataEntity):
         if self.next is not None:
             showIndent(outfile, level)
             outfile.write('<%snext>%s</%snext>\n' % (namespace_, self.gds_format_string(quote_xml(self.next).encode(ExternalEncoding), input_name='next'), namespace_))
+        if self.totalCount is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stotalCount>%s</%stotalCount>\n' % (namespace_, self.gds_format_integer(self.totalCount, input_name='totalCount'), namespace_))
     def hasContent_(self):
         if (
             self.case or
             self.previous is not None or
             self.next is not None or
+            self.totalCount is not None or
             super(cases, self).hasContent_()
             ):
             return True
@@ -4974,6 +6823,9 @@ class cases(strataEntity):
         if self.next is not None:
             showIndent(outfile, level)
             outfile.write('next=%s,\n' % quote_python(self.next).encode(ExternalEncoding))
+        if self.totalCount is not None:
+            showIndent(outfile, level)
+            outfile.write('totalCount=%d,\n' % self.totalCount)
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -4994,6 +6846,14 @@ class cases(strataEntity):
             next_ = child_.text
             next_ = self.gds_validate_string(next_, node, 'next')
             self.next = next_
+        elif nodeName_ == 'totalCount':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'totalCount')
+            self.totalCount = ival_
         super(cases, self).buildChildren(child_, node, nodeName_, True)
 # end class cases
 
@@ -5002,8 +6862,9 @@ class case(trackedEntity):
     """A support case."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, alternateId=None, caseNumber=None, closed=None, id=None, uri=None, summary=None, description=None, status=None, product=None, component=None, version=None, type_=None, accountNumber=None, view_uri=None, reference=None, notes=None, escalated=None, contactName=None, contactSsoUsername=None, origin=None, owner=None, internalPriority=None, internalStatus=None, suppliedName=None, suppliedPhone=None, suppliedEmail=None, severity=None, folderNumber=None, comments=None, notified_users=None, entitlement=None, recommendations=None, fts=None):
-        super(case, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, contactInfo24x7=None, alternateId=None, caseNumber=None, closed=None, id=None, uri=None, summary=None, description=None, status=None, product=None, component=None, version=None, type_=None, accountNumber=None, view_uri=None, reference=None, notes=None, escalated=None, contactName=None, contactSsoUsername=None, origin=None, owner=None, internalPriority=None, internalStatus=None, suppliedName=None, suppliedPhone=None, suppliedEmail=None, severity=None, tags=None, folderNumber=None, comments=None, notified_users=None, entitlement=None, recommendations=None, fts=None, bugzillas=None):
+        super(case, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.contactInfo24x7 = _cast(None, contactInfo24x7)
         self.alternateId = _cast(None, alternateId)
         self.caseNumber = _cast(None, caseNumber)
         self.closed = _cast(bool, closed)
@@ -5031,106 +6892,40 @@ class case(trackedEntity):
         self.suppliedPhone = suppliedPhone
         self.suppliedEmail = suppliedEmail
         self.severity = severity
+        self.tags = tags
         self.folderNumber = folderNumber
         self.comments = comments
         self.notified_users = notified_users
         self.entitlement = entitlement
         self.recommendations = recommendations
         self.fts = fts
+        self.bugzillas = bugzillas
     def factory(*args_, **kwargs_):
         if case.subclass:
             return case.subclass(*args_, **kwargs_)
         else:
             return case(*args_, **kwargs_)
     factory = staticmethod(factory)
-    @set_docstring('''
-    Get the case ID number
-
-    :returns: Case number for the case object
-    :rtype: string''')
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
-    @set_docstring('''
-    Get the case REST API URI
-
-    :returns: API URL for case object
-    :rtype: string''')
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
-    @set_docstring('''
-    Get the case's one-line summary/title
-
-    :returns: Title/Summary of the case object
-    :rtype: string''')
     def get_summary(self): return self.summary
     def set_summary(self, summary): self.summary = summary
-    @set_docstring('''
-    Get the case description/initial opening text
-
-    :returns: Case description from the support case
-    :rtype: string''')
     def get_description(self): return self.description
     def set_description(self, description): self.description = description
-    @set_docstring('''
-    Get the case status
-
-    Possible values are:
-      * Waiting on Red Hat
-      * Waiting on Customer
-      * Pending Closure
-      * Closed
-
-    :returns: Current status of the support case
-    :rtype: string''')
     def get_status(self): return self.status
     def set_status(self, status): self.status = status
-    @set_docstring('''
-    Get the product name that the case object relates to
-
-    :returns: Name of the associated product
-    :rtype: string''')
     def get_product(self): return self.product
-    @set_docstring('''
-    Set a different product on the case
-
-    .. IMPORTANT::
-        If the version (:func:`get_version`) set on the case is not valid
-        for the set product, updating the case object without calling
-        :func:`set_version` will result in failure.
-
-    :param product: The name of the product to set
-    :type product: string
-    :returns: Nothing''')
     def set_product(self, product): self.product = product
     def get_component(self): return self.component
     def set_component(self, component): self.component = component
-    @set_docstring('''
-    Get the version that the case object relates to
-
-    :returns: Version of the product set by :func:`set_product`
-    :rtype: string''')
     def get_version(self): return self.version
-    @set_docstring('''
-    Set a different version number on the case
-
-    :param version: The version number to set
-    :type version: string
-    :returns: Nothing''')
     def set_version(self, version): self.version = version
     def get_type(self): return self.type_
     def set_type(self, type_): self.type_ = type_
-    @set_docstring('''
-    Get the account number associated with the case
-
-    :returns: Case number
-    :rtype: string''')
     def get_accountNumber(self): return self.accountNumber
     def set_accountNumber(self, accountNumber): self.accountNumber = accountNumber
-    @set_docstring('''
-    Get the public case URL
-
-    :returns: Red Hat Customer Portal URL for the case
-    :rtype: string''')
     def get_view_uri(self): return self.view_uri
     def set_view_uri(self, view_uri): self.view_uri = view_uri
     def get_reference(self): return self.reference
@@ -5139,27 +6934,12 @@ class case(trackedEntity):
     def set_notes(self, notes): self.notes = notes
     def get_escalated(self): return self.escalated
     def set_escalated(self, escalated): self.escalated = escalated
-    @set_docstring('''
-    Get the customer contact associated with the case
-
-    :returns: Name of the customer contact
-    :rtype: string''')
     def get_contactName(self): return self.contactName
     def set_contactName(self, contactName): self.contactName = contactName
-    @set_docstring('''
-    Get the customer contact's Customer Portal username
-
-    :returns: Red Hat Customer Portal username of the customer contact
-    :rtype: string''')
     def get_contactSsoUsername(self): return self.contactSsoUsername
     def set_contactSsoUsername(self, contactSsoUsername): self.contactSsoUsername = contactSsoUsername
     def get_origin(self): return self.origin
     def set_origin(self, origin): self.origin = origin
-    @set_docstring('''
-    Get the Red Hat Support case owner
-
-    :returns: Name of the Red Hat Support Representative assigned to the case
-    :rtype: string''')
     def get_owner(self): return self.owner
     def set_owner(self, owner): self.owner = owner
     def get_internalPriority(self): return self.internalPriority
@@ -5172,44 +6952,30 @@ class case(trackedEntity):
     def set_suppliedPhone(self, suppliedPhone): self.suppliedPhone = suppliedPhone
     def get_suppliedEmail(self): return self.suppliedEmail
     def set_suppliedEmail(self, suppliedEmail): self.suppliedEmail = suppliedEmail
-    @set_docstring('''
-    Get the case severity
-
-    :returns: Severity level of the case
-    :rtype: string''')
     def get_severity(self): return self.severity
     def set_severity(self, severity): self.severity = severity
+    def get_tags(self): return self.tags
+    def set_tags(self, tags): self.tags = tags
     def get_folderNumber(self): return self.folderNumber
     def set_folderNumber(self, folderNumber): self.folderNumber = folderNumber
-    @set_docstring('''
-    Get the comments associated with the case
-
-    :returns: A list of :mod:`comment` objects
-    :rtype: string''')
     def get_comments(self): return self.comments
     def set_comments(self, comments): self.comments = comments
     def get_notified_users(self): return self.notified_users
     def set_notified_users(self, notified_users): self.notified_users = notified_users
     def get_entitlement(self): return self.entitlement
     def set_entitlement(self, entitlement): self.entitlement = entitlement
-    @set_docstring('''
-    Get recommendations from Red Hat based on the case
-
-    :returns: A list of :mod:`recommendation` objects
-    :rtype: string''')
     def get_recommendations(self): return self.recommendations
     def set_recommendations(self, recommendations): self.recommendations = recommendations
     def get_fts(self): return self.fts
     def set_fts(self, fts): self.fts = fts
+    def get_bugzillas(self): return self.bugzillas
+    def set_bugzillas(self, bugzillas): self.bugzillas = bugzillas
+    def get_contactInfo24x7(self): return self.contactInfo24x7
+    def set_contactInfo24x7(self, contactInfo24x7): self.contactInfo24x7 = contactInfo24x7
     def get_alternateId(self): return self.alternateId
     def set_alternateId(self, alternateId): self.alternateId = alternateId
     def get_caseNumber(self): return self.caseNumber
     def set_caseNumber(self, caseNumber): self.caseNumber = caseNumber
-    @set_docstring('''
-    Get the case number
-
-    :returns: The case number for the related case object
-    :rtype: string''')
     def get_closed(self): return self.closed
     def set_closed(self, closed): self.closed = closed
     def export(self, outfile, level, namespace_='tns:', name_='case', namespacedef_=''):
@@ -5226,6 +6992,9 @@ class case(trackedEntity):
             outfile.write('/>\n')
     def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='case'):
         super(case, self).exportAttributes(outfile, level, already_processed, namespace_, name_='case')
+        if self.contactInfo24x7 is not None and 'contactInfo24x7' not in already_processed:
+            already_processed.append('contactInfo24x7')
+            outfile.write(' contactInfo24x7=%s' % (self.gds_format_string(quote_attrib(self.contactInfo24x7).encode(ExternalEncoding), input_name='contactInfo24x7'),))
         if self.alternateId is not None and 'alternateId' not in already_processed:
             already_processed.append('alternateId')
             outfile.write(' alternateId=%s' % (self.gds_format_string(quote_attrib(self.alternateId).encode(ExternalEncoding), input_name='alternateId'),))
@@ -5309,6 +7078,8 @@ class case(trackedEntity):
         if self.severity is not None:
             showIndent(outfile, level)
             outfile.write('<%sseverity>%s</%sseverity>\n' % (namespace_, self.gds_format_string(quote_xml(self.severity).encode(ExternalEncoding), input_name='severity'), namespace_))
+        if self.tags is not None:
+            self.tags.export(outfile, level, namespace_, name_='tags',)
         if self.folderNumber is not None:
             showIndent(outfile, level)
             outfile.write('<%sfolderNumber>%s</%sfolderNumber>\n' % (namespace_, self.gds_format_string(quote_xml(self.folderNumber).encode(ExternalEncoding), input_name='folderNumber'), namespace_))
@@ -5323,6 +7094,8 @@ class case(trackedEntity):
         if self.fts is not None:
             showIndent(outfile, level)
             outfile.write('<%sfts>%s</%sfts>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.fts)), input_name='fts'), namespace_))
+        if self.bugzillas is not None:
+            self.bugzillas.export(outfile, level, namespace_, name_='bugzillas')
     def hasContent_(self):
         if (
             self.id is not None or
@@ -5349,12 +7122,14 @@ class case(trackedEntity):
             self.suppliedPhone is not None or
             self.suppliedEmail is not None or
             self.severity is not None or
+            self.tags is not None or
             self.folderNumber is not None or
             self.comments is not None or
             self.notified_users is not None or
             self.entitlement is not None or
             self.recommendations is not None or
             self.fts is not None or
+            self.bugzillas is not None or
             super(case, self).hasContent_()
             ):
             return True
@@ -5366,6 +7141,10 @@ class case(trackedEntity):
         if self.hasContent_():
             self.exportLiteralChildren(outfile, level, name_)
     def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        if self.contactInfo24x7 is not None and 'contactInfo24x7' not in already_processed:
+            already_processed.append('contactInfo24x7')
+            showIndent(outfile, level)
+            outfile.write('contactInfo24x7 = "%s",\n' % (self.contactInfo24x7,))
         if self.alternateId is not None and 'alternateId' not in already_processed:
             already_processed.append('alternateId')
             showIndent(outfile, level)
@@ -5453,6 +7232,12 @@ class case(trackedEntity):
         if self.severity is not None:
             showIndent(outfile, level)
             outfile.write('severity=%s,\n' % quote_python(self.severity).encode(ExternalEncoding))
+        if self.tags is not None:
+            showIndent(outfile, level)
+            outfile.write('tags=model_.tagsType3(\n')
+            self.tags.exportLiteral(outfile, level, name_='tags')
+            showIndent(outfile, level)
+            outfile.write('),\n')
         if self.folderNumber is not None:
             showIndent(outfile, level)
             outfile.write('folderNumber=%s,\n' % quote_python(self.folderNumber).encode(ExternalEncoding))
@@ -5483,12 +7268,22 @@ class case(trackedEntity):
         if self.fts is not None:
             showIndent(outfile, level)
             outfile.write('fts=%s,\n' % self.fts)
+        if self.bugzillas is not None:
+            showIndent(outfile, level)
+            outfile.write('bugzillas=model_.bugzillas(\n')
+            self.bugzillas.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
     def buildAttributes(self, node, attrs, already_processed):
+        value = find_attr_value_('contactInfo24x7', node)
+        if value is not None and 'contactInfo24x7' not in already_processed:
+            already_processed.append('contactInfo24x7')
+            self.contactInfo24x7 = value
         value = find_attr_value_('alternateId', node)
         if value is not None and 'alternateId' not in already_processed:
             already_processed.append('alternateId')
@@ -5610,6 +7405,10 @@ class case(trackedEntity):
             severity_ = child_.text
             severity_ = self.gds_validate_string(severity_, node, 'severity')
             self.severity = severity_
+        elif nodeName_ == 'tags':
+            obj_ = tagsType3.factory()
+            obj_.build(child_)
+            self.set_tags(obj_)
         elif nodeName_ == 'folderNumber':
             folderNumber_ = child_.text
             folderNumber_ = self.gds_validate_string(folderNumber_, node, 'folderNumber')
@@ -5640,6 +7439,10 @@ class case(trackedEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'fts')
             self.fts = ival_
+        elif nodeName_ == 'bugzillas':
+            obj_ = bugzillas.factory()
+            obj_.build(child_)
+            self.set_bugzillas(obj_)
         super(case, self).buildChildren(child_, node, nodeName_, True)
 # end class case
 
@@ -5648,8 +7451,8 @@ class supportNeed(trackedEntity):
     """A support need."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, alternateId=None, id=None, uri=None, summary=None, description=None, status=None, product=None, component=None, version=None, type_=None, accountNumber=None, view_uri=None, reference=None, notes=None, escalated=None, contactName=None, contactSsoUsername=None, origin=None, owner=None, internalPriority=None, internalStatus=None, suppliedName=None, suppliedPhone=None, suppliedEmail=None, severity=None, folderNumber=None, comments=None, notified_users=None, entitlement=None, solutions=None):
-        super(supportNeed, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, alternateId=None, id=None, uri=None, summary=None, description=None, status=None, product=None, component=None, version=None, type_=None, accountNumber=None, view_uri=None, reference=None, notes=None, escalated=None, contactName=None, contactSsoUsername=None, origin=None, owner=None, internalPriority=None, internalStatus=None, suppliedName=None, suppliedPhone=None, suppliedEmail=None, severity=None, folderNumber=None, comments=None, notified_users=None, entitlement=None, solutions=None):
+        super(supportNeed, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.alternateId = _cast(None, alternateId)
         self.id = id
         self.uri = uri
@@ -6138,8 +7941,8 @@ class comments(strataEntity):
     """A list of comments"""
     subclass = None
     superclass = strataEntity
-    def __init__(self, comment=None):
-        super(comments, self).__init__()
+    def __init__(self, label=None, comment=None):
+        super(comments, self).__init__(label,)
         if comment is None:
             self.comment = []
         else:
@@ -6221,8 +8024,8 @@ class comment(trackedEntity):
     """A support case comment and associated metadata."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, id=None, caseNumber=None, text=None, uri=None, public=True, draft=False, publishedDate=None, view_uri=None):
-        super(comment, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, id=None, caseNumber=None, text=None, uri=None, public=True, draft=False, publishedDate=None, view_uri=None):
+        super(comment, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.id = _cast(None, id)
         self.caseNumber = _cast(None, caseNumber)
         self.text = text
@@ -6237,18 +8040,8 @@ class comment(trackedEntity):
         else:
             return comment(*args_, **kwargs_)
     factory = staticmethod(factory)
-    @set_docstring('''
-    Get the comment text
-
-    :returns: The text of the comment
-    :rtype: string''')
     def get_text(self): return self.text
     def set_text(self, text): self.text = text
-    @set_docstring('''
-    Get the comment REST API URI
-
-    :returns: API URL for comment object
-    :rtype: string''')
     def get_uri(self): return self.uri
     def set_uri(self, uri): self.uri = uri
     def get_public(self): return self.public
@@ -6257,25 +8050,10 @@ class comment(trackedEntity):
     def set_draft(self, draft): self.draft = draft
     def get_publishedDate(self): return self.publishedDate
     def set_publishedDate(self, publishedDate): self.publishedDate = publishedDate
-    @set_docstring('''
-    Get the comment publish date/time
-
-    :returns: The date when the comment was published
-    :rtype: ISO 8601 formatted string''')
     def get_view_uri(self): return self.view_uri
     def set_view_uri(self, view_uri): self.view_uri = view_uri
-    @set_docstring('''
-    Get the comment ID number
-
-    :returns: Comment ID
-    :rtype: string''')
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
-    @set_docstring('''
-    Get the case number for the associated comment
-
-    :returns: Case number
-    :rtype: string''')
     def get_caseNumber(self): return self.caseNumber
     def set_caseNumber(self, caseNumber): self.caseNumber = caseNumber
     def export(self, outfile, level, namespace_='tns:', name_='comment', namespacedef_=''):
@@ -6426,8 +8204,8 @@ class notified_users(strataEntity):
     """A list of users notified by email when the parent case is modified"""
     subclass = None
     superclass = strataEntity
-    def __init__(self, link=None):
-        super(notified_users, self).__init__()
+    def __init__(self, label=None, link=None):
+        super(notified_users, self).__init__(label,)
         if link is None:
             self.link = []
         else:
@@ -6994,8 +8772,8 @@ class entitlements(strataEntity):
     """A list of Entitlements."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, entitlement=None):
-        super(entitlements, self).__init__()
+    def __init__(self, label=None, entitlement=None):
+        super(entitlements, self).__init__(label,)
         if entitlement is None:
             self.entitlement = []
         else:
@@ -7077,8 +8855,8 @@ class entitlement(trackedEntity):
     """entitlement and related meta data."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, id=None, uri=None, name=None, sla=None, supportLevel=None, serviceLevel=None, startDate=None, endDate=None):
-        super(entitlement, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, id=None, uri=None, name=None, sla=None, supportLevel=None, serviceLevel=None, startDate=None, endDate=None):
+        super(entitlement, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.id = id
         self.uri = uri
         self.name = name
@@ -7324,8 +9102,8 @@ class systemProfiles(strataEntity):
     """A list of systemProfiles."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, systemProfile=None):
-        super(systemProfiles, self).__init__()
+    def __init__(self, label=None, systemProfile=None):
+        super(systemProfiles, self).__init__(label,)
         if systemProfile is None:
             self.systemProfile = []
         else:
@@ -7407,12 +9185,13 @@ class systemProfile(trackedEntity):
     """systemProfile and related meta data."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, accountNumber=None, caseNumber=None, attachmentHash=None, deprecated=None, hash=None, SystemProfileCategory=None):
-        super(systemProfile, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, accountNumber=None, caseNumber=None, attachmentHash=None, deprecated=None, maturityLevel=None, hash=None, SystemProfileCategory=None):
+        super(systemProfile, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.accountNumber = accountNumber
         self.caseNumber = caseNumber
         self.attachmentHash = attachmentHash
         self.deprecated = deprecated
+        self.maturityLevel = maturityLevel
         self.hash = hash
         if SystemProfileCategory is None:
             self.SystemProfileCategory = []
@@ -7432,6 +9211,8 @@ class systemProfile(trackedEntity):
     def set_attachmentHash(self, attachmentHash): self.attachmentHash = attachmentHash
     def get_deprecated(self): return self.deprecated
     def set_deprecated(self, deprecated): self.deprecated = deprecated
+    def get_maturityLevel(self): return self.maturityLevel
+    def set_maturityLevel(self, maturityLevel): self.maturityLevel = maturityLevel
     def get_hash(self): return self.hash
     def set_hash(self, hash): self.hash = hash
     def get_SystemProfileCategory(self): return self.SystemProfileCategory
@@ -7466,6 +9247,9 @@ class systemProfile(trackedEntity):
         if self.deprecated is not None:
             showIndent(outfile, level)
             outfile.write('<%sdeprecated>%s</%sdeprecated>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.deprecated)), input_name='deprecated'), namespace_))
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('<%smaturityLevel>%s</%smaturityLevel>\n' % (namespace_, self.gds_format_string(quote_xml(self.maturityLevel).encode(ExternalEncoding), input_name='maturityLevel'), namespace_))
         if self.hash is not None:
             showIndent(outfile, level)
             outfile.write('<%shash>%s</%shash>\n' % (namespace_, self.gds_format_string(quote_xml(self.hash).encode(ExternalEncoding), input_name='hash'), namespace_))
@@ -7477,6 +9261,7 @@ class systemProfile(trackedEntity):
             self.caseNumber is not None or
             self.attachmentHash is not None or
             self.deprecated is not None or
+            self.maturityLevel is not None or
             self.hash is not None or
             self.SystemProfileCategory or
             super(systemProfile, self).hasContent_()
@@ -7505,6 +9290,9 @@ class systemProfile(trackedEntity):
         if self.deprecated is not None:
             showIndent(outfile, level)
             outfile.write('deprecated=%s,\n' % self.deprecated)
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('maturityLevel=%s,\n' % quote_python(self.maturityLevel).encode(ExternalEncoding))
         if self.hash is not None:
             showIndent(outfile, level)
             outfile.write('hash=%s,\n' % quote_python(self.hash).encode(ExternalEncoding))
@@ -7550,6 +9338,10 @@ class systemProfile(trackedEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'deprecated')
             self.deprecated = ival_
+        elif nodeName_ == 'maturityLevel':
+            maturityLevel_ = child_.text
+            maturityLevel_ = self.gds_validate_string(maturityLevel_, node, 'maturityLevel')
+            self.maturityLevel = maturityLevel_
         elif nodeName_ == 'hash':
             hash_ = child_.text
             hash_ = self.gds_validate_string(hash_, node, 'hash')
@@ -7566,8 +9358,8 @@ class symptoms(strataEntity):
     """A list of Symptoms."""
     subclass = None
     superclass = strataEntity
-    def __init__(self, symptom=None):
-        super(symptoms, self).__init__()
+    def __init__(self, label=None, symptom=None):
+        super(symptoms, self).__init__(label,)
         if symptom is None:
             self.symptom = []
         else:
@@ -7649,13 +9441,14 @@ class symptom(trackedEntity):
     """symptom and related meta data."""
     subclass = None
     superclass = trackedEntity
-    def __init__(self, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, caseNumber=None, category=None, data=None, description=None, display=None, location=None, problemSymptomParameters=None, summary=None, timestamp=None, uri=None):
-        super(symptom, self).__init__(createdBy, createdDate, lastModifiedBy, lastModifiedDate,)
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, caseNumber=None, category=None, data=None, description=None, display=None, maturityLevel=None, location=None, problemSymptomParameters=None, summary=None, timestamp=None, uri=None):
+        super(symptom, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
         self.caseNumber = caseNumber
         self.category = category
         self.data = data
         self.description = description
         self.display = display
+        self.maturityLevel = maturityLevel
         self.location = location
         if problemSymptomParameters is None:
             self.problemSymptomParameters = []
@@ -7680,6 +9473,8 @@ class symptom(trackedEntity):
     def set_description(self, description): self.description = description
     def get_display(self): return self.display
     def set_display(self, display): self.display = display
+    def get_maturityLevel(self): return self.maturityLevel
+    def set_maturityLevel(self, maturityLevel): self.maturityLevel = maturityLevel
     def get_location(self): return self.location
     def set_location(self, location): self.location = location
     def get_problemSymptomParameters(self): return self.problemSymptomParameters
@@ -7723,6 +9518,9 @@ class symptom(trackedEntity):
         if self.display is not None:
             showIndent(outfile, level)
             outfile.write('<%sdisplay>%s</%sdisplay>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.display)), input_name='display'), namespace_))
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('<%smaturityLevel>%s</%smaturityLevel>\n' % (namespace_, self.gds_format_string(quote_xml(self.maturityLevel).encode(ExternalEncoding), input_name='maturityLevel'), namespace_))
         if self.location is not None:
             showIndent(outfile, level)
             outfile.write('<%slocation>%s</%slocation>\n' % (namespace_, self.gds_format_string(quote_xml(self.location).encode(ExternalEncoding), input_name='location'), namespace_))
@@ -7744,6 +9542,7 @@ class symptom(trackedEntity):
             self.data is not None or
             self.description is not None or
             self.display is not None or
+            self.maturityLevel is not None or
             self.location is not None or
             self.problemSymptomParameters or
             self.summary is not None or
@@ -7778,6 +9577,9 @@ class symptom(trackedEntity):
         if self.display is not None:
             showIndent(outfile, level)
             outfile.write('display=%s,\n' % self.display)
+        if self.maturityLevel is not None:
+            showIndent(outfile, level)
+            outfile.write('maturityLevel=%s,\n' % quote_python(self.maturityLevel).encode(ExternalEncoding))
         if self.location is not None:
             showIndent(outfile, level)
             outfile.write('location=%s,\n' % quote_python(self.location).encode(ExternalEncoding))
@@ -7836,6 +9638,10 @@ class symptom(trackedEntity):
                 raise_parse_error(child_, 'requires boolean')
             ival_ = self.gds_validate_boolean(ival_, node, 'display')
             self.display = ival_
+        elif nodeName_ == 'maturityLevel':
+            maturityLevel_ = child_.text
+            maturityLevel_ = self.gds_validate_string(maturityLevel_, node, 'maturityLevel')
+            self.maturityLevel = maturityLevel_
         elif nodeName_ == 'location':
             location_ = child_.text
             location_ = self.gds_validate_string(location_, node, 'location')
@@ -7858,6 +9664,458 @@ class symptom(trackedEntity):
             self.uri = uri_
         super(symptom, self).buildChildren(child_, node, nodeName_, True)
 # end class symptom
+
+
+class extractedSymptoms(strataEntity):
+    """A list of Extracted Symptoms."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, extractedSymptom=None):
+        super(extractedSymptoms, self).__init__(label,)
+        if extractedSymptom is None:
+            self.extractedSymptom = []
+        else:
+            self.extractedSymptom = extractedSymptom
+    def factory(*args_, **kwargs_):
+        if extractedSymptoms.subclass:
+            return extractedSymptoms.subclass(*args_, **kwargs_)
+        else:
+            return extractedSymptoms(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_extractedSymptom(self): return self.extractedSymptom
+    def set_extractedSymptom(self, extractedSymptom): self.extractedSymptom = extractedSymptom
+    def add_extractedSymptom(self, value): self.extractedSymptom.append(value)
+    def insert_extractedSymptom(self, index, value): self.extractedSymptom[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='extractedSymptoms', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='extractedSymptoms')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='extractedSymptoms'):
+        super(extractedSymptoms, self).exportAttributes(outfile, level, already_processed, namespace_, name_='extractedSymptoms')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='extractedSymptoms', fromsubclass_=False):
+        super(extractedSymptoms, self).exportChildren(outfile, level, namespace_, name_, True)
+        for extractedSymptom_ in self.extractedSymptom:
+            extractedSymptom_.export(outfile, level, namespace_, name_='extractedSymptom')
+    def hasContent_(self):
+        if (
+            self.extractedSymptom or
+            super(extractedSymptoms, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='extractedSymptoms'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(extractedSymptoms, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(extractedSymptoms, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('extractedSymptom=[\n')
+        level += 1
+        for extractedSymptom_ in self.extractedSymptom:
+            showIndent(outfile, level)
+            outfile.write('model_.extractedSymptom(\n')
+            extractedSymptom_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(extractedSymptoms, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'extractedSymptom':
+            obj_ = extractedSymptom.factory()
+            obj_.build(child_)
+            self.extractedSymptom.append(obj_)
+        super(extractedSymptoms, self).buildChildren(child_, node, nodeName_, True)
+# end class extractedSymptoms
+
+
+class symptomFields(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, field=None):
+        if field is None:
+            self.field = []
+        else:
+            self.field = field
+    def factory(*args_, **kwargs_):
+        if symptomFields.subclass:
+            return symptomFields.subclass(*args_, **kwargs_)
+        else:
+            return symptomFields(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_field(self): return self.field
+    def set_field(self, field): self.field = field
+    def add_field(self, value): self.field.append(value)
+    def insert_field(self, index, value): self.field[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='symptomFields', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='symptomFields')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='symptomFields'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='symptomFields', fromsubclass_=False):
+        for field_ in self.field:
+            field_.export(outfile, level, namespace_, name_='field')
+    def hasContent_(self):
+        if (
+            self.field
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='symptomFields'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('field=[\n')
+        level += 1
+        for field_ in self.field:
+            showIndent(outfile, level)
+            outfile.write('model_.symptomField(\n')
+            field_.exportLiteral(outfile, level, name_='symptomField')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'field':
+            obj_ = symptomField.factory()
+            obj_.build(child_)
+            self.field.append(obj_)
+# end class symptomFields
+
+
+class symptomField(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, key=None, value=None):
+        self.key = _cast(None, key)
+        if value is None:
+            self.value = []
+        else:
+            self.value = value
+    def factory(*args_, **kwargs_):
+        if symptomField.subclass:
+            return symptomField.subclass(*args_, **kwargs_)
+        else:
+            return symptomField(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_value(self): return self.value
+    def set_value(self, value): self.value = value
+    def add_value(self, value): self.value.append(value)
+    def insert_value(self, index, value): self.value[index] = value
+    def get_key(self): return self.key
+    def set_key(self, key): self.key = key
+    def export(self, outfile, level, namespace_='tns:', name_='symptomField', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='symptomField')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='symptomField'):
+        if self.key is not None and 'key' not in already_processed:
+            already_processed.append('key')
+            outfile.write(' key=%s' % (self.gds_format_string(quote_attrib(self.key).encode(ExternalEncoding), input_name='key'),))
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='symptomField', fromsubclass_=False):
+        for value_ in self.value:
+            showIndent(outfile, level)
+            outfile.write('<%svalue>%s</%svalue>\n' % (namespace_, self.gds_format_string(quote_xml(value_).encode(ExternalEncoding), input_name='value'), namespace_))
+    def hasContent_(self):
+        if (
+            self.value
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='symptomField'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        if self.key is not None and 'key' not in already_processed:
+            already_processed.append('key')
+            showIndent(outfile, level)
+            outfile.write('key = "%s",\n' % (self.key,))
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('value=[\n')
+        level += 1
+        for value_ in self.value:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(value_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        value = find_attr_value_('key', node)
+        if value is not None and 'key' not in already_processed:
+            already_processed.append('key')
+            self.key = value
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'value':
+            value_ = child_.text
+            value_ = self.gds_validate_string(value_, node, 'value')
+            self.value.append(value_)
+# end class symptomField
+
+
+class extractedSymptom(trackedEntity):
+    """Extracted Symptom with fields."""
+    subclass = None
+    superclass = trackedEntity
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, type_=None, category=None, occurrences=None, verbatim=None, fields=None, beginIndex=None, endIndex=None, summary=None, signature=None, timestamp=None):
+        super(extractedSymptom, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.type_ = type_
+        self.category = category
+        self.occurrences = occurrences
+        self.verbatim = verbatim
+        self.fields = fields
+        self.beginIndex = beginIndex
+        self.endIndex = endIndex
+        self.summary = summary
+        self.signature = signature
+        self.timestamp = timestamp
+    def factory(*args_, **kwargs_):
+        if extractedSymptom.subclass:
+            return extractedSymptom.subclass(*args_, **kwargs_)
+        else:
+            return extractedSymptom(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_type(self): return self.type_
+    def set_type(self, type_): self.type_ = type_
+    def get_category(self): return self.category
+    def set_category(self, category): self.category = category
+    def get_occurrences(self): return self.occurrences
+    def set_occurrences(self, occurrences): self.occurrences = occurrences
+    def get_verbatim(self): return self.verbatim
+    def set_verbatim(self, verbatim): self.verbatim = verbatim
+    def get_fields(self): return self.fields
+    def set_fields(self, fields): self.fields = fields
+    def get_beginIndex(self): return self.beginIndex
+    def set_beginIndex(self, beginIndex): self.beginIndex = beginIndex
+    def get_endIndex(self): return self.endIndex
+    def set_endIndex(self, endIndex): self.endIndex = endIndex
+    def get_summary(self): return self.summary
+    def set_summary(self, summary): self.summary = summary
+    def get_signature(self): return self.signature
+    def set_signature(self, signature): self.signature = signature
+    def get_timestamp(self): return self.timestamp
+    def set_timestamp(self, timestamp): self.timestamp = timestamp
+    def export(self, outfile, level, namespace_='tns:', name_='extractedSymptom', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='extractedSymptom')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='extractedSymptom'):
+        super(extractedSymptom, self).exportAttributes(outfile, level, already_processed, namespace_, name_='extractedSymptom')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='extractedSymptom', fromsubclass_=False):
+        super(extractedSymptom, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.type_ is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stype>%s</%stype>\n' % (namespace_, self.gds_format_string(quote_xml(self.type_).encode(ExternalEncoding), input_name='type'), namespace_))
+        if self.category is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scategory>%s</%scategory>\n' % (namespace_, self.gds_format_string(quote_xml(self.category).encode(ExternalEncoding), input_name='category'), namespace_))
+        if self.occurrences is not None:
+            showIndent(outfile, level)
+            outfile.write('<%soccurrences>%s</%soccurrences>\n' % (namespace_, self.gds_format_string(quote_xml(self.occurrences).encode(ExternalEncoding), input_name='occurrences'), namespace_))
+        if self.verbatim is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sverbatim>%s</%sverbatim>\n' % (namespace_, self.gds_format_string(quote_xml(self.verbatim).encode(ExternalEncoding), input_name='verbatim'), namespace_))
+        if self.fields is not None:
+            self.fields.export(outfile, level, namespace_, name_='fields',)
+        if self.beginIndex is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sbeginIndex>%s</%sbeginIndex>\n' % (namespace_, self.gds_format_integer(self.beginIndex, input_name='beginIndex'), namespace_))
+        if self.endIndex is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sendIndex>%s</%sendIndex>\n' % (namespace_, self.gds_format_integer(self.endIndex, input_name='endIndex'), namespace_))
+        if self.summary is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssummary>%s</%ssummary>\n' % (namespace_, self.gds_format_string(quote_xml(self.summary).encode(ExternalEncoding), input_name='summary'), namespace_))
+        if self.signature is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssignature>%s</%ssignature>\n' % (namespace_, self.gds_format_string(quote_xml(self.signature).encode(ExternalEncoding), input_name='signature'), namespace_))
+        if self.timestamp is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stimestamp>%s</%stimestamp>\n' % (namespace_, self.gds_format_string(quote_xml(self.timestamp).encode(ExternalEncoding), input_name='timestamp'), namespace_))
+    def hasContent_(self):
+        if (
+            self.type_ is not None or
+            self.category is not None or
+            self.occurrences is not None or
+            self.verbatim is not None or
+            self.fields is not None or
+            self.beginIndex is not None or
+            self.endIndex is not None or
+            self.summary is not None or
+            self.signature is not None or
+            self.timestamp is not None or
+            super(extractedSymptom, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='extractedSymptom'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(extractedSymptom, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(extractedSymptom, self).exportLiteralChildren(outfile, level, name_)
+        if self.type_ is not None:
+            showIndent(outfile, level)
+            outfile.write('type_=%s,\n' % quote_python(self.type_).encode(ExternalEncoding))
+        if self.category is not None:
+            showIndent(outfile, level)
+            outfile.write('category=%s,\n' % quote_python(self.category).encode(ExternalEncoding))
+        if self.occurrences is not None:
+            showIndent(outfile, level)
+            outfile.write('occurrences=%s,\n' % quote_python(self.occurrences).encode(ExternalEncoding))
+        if self.verbatim is not None:
+            showIndent(outfile, level)
+            outfile.write('verbatim=%s,\n' % quote_python(self.verbatim).encode(ExternalEncoding))
+        if self.fields is not None:
+            showIndent(outfile, level)
+            outfile.write('fields=model_.symptomFields(\n')
+            self.fields.exportLiteral(outfile, level, name_='fields')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.beginIndex is not None:
+            showIndent(outfile, level)
+            outfile.write('beginIndex=%d,\n' % self.beginIndex)
+        if self.endIndex is not None:
+            showIndent(outfile, level)
+            outfile.write('endIndex=%d,\n' % self.endIndex)
+        if self.summary is not None:
+            showIndent(outfile, level)
+            outfile.write('summary=%s,\n' % quote_python(self.summary).encode(ExternalEncoding))
+        if self.signature is not None:
+            showIndent(outfile, level)
+            outfile.write('signature=%s,\n' % quote_python(self.signature).encode(ExternalEncoding))
+        if self.timestamp is not None:
+            showIndent(outfile, level)
+            outfile.write('timestamp=%s,\n' % quote_python(self.timestamp).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(extractedSymptom, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'type':
+            type_ = child_.text
+            type_ = self.gds_validate_string(type_, node, 'type')
+            self.type_ = type_
+        elif nodeName_ == 'category':
+            category_ = child_.text
+            category_ = self.gds_validate_string(category_, node, 'category')
+            self.category = category_
+        elif nodeName_ == 'occurrences':
+            occurrences_ = child_.text
+            occurrences_ = self.gds_validate_string(occurrences_, node, 'occurrences')
+            self.occurrences = occurrences_
+        elif nodeName_ == 'verbatim':
+            verbatim_ = child_.text
+            verbatim_ = self.gds_validate_string(verbatim_, node, 'verbatim')
+            self.verbatim = verbatim_
+        elif nodeName_ == 'fields':
+            obj_ = symptomFields.factory()
+            obj_.build(child_)
+            self.set_fields(obj_)
+        elif nodeName_ == 'beginIndex':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'beginIndex')
+            self.beginIndex = ival_
+        elif nodeName_ == 'endIndex':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'endIndex')
+            self.endIndex = ival_
+        elif nodeName_ == 'summary':
+            summary_ = child_.text
+            summary_ = self.gds_validate_string(summary_, node, 'summary')
+            self.summary = summary_
+        elif nodeName_ == 'signature':
+            signature_ = child_.text
+            signature_ = self.gds_validate_string(signature_, node, 'signature')
+            self.signature = signature_
+        elif nodeName_ == 'timestamp':
+            timestamp_ = child_.text
+            timestamp_ = self.gds_validate_string(timestamp_, node, 'timestamp')
+            self.timestamp = timestamp_
+        super(extractedSymptom, self).buildChildren(child_, node, nodeName_, True)
+# end class extractedSymptom
 
 
 class problemSymptomParameters(GeneratedsSuper):
@@ -8121,10 +10379,419 @@ class SystemProfileCategoryDetails(GeneratedsSuper):
 # end class SystemProfileCategoryDetails
 
 
+class searchTextType(GeneratedsSuper):
+    """Key, value pair to hold keyed chunks of text."""
+    subclass = None
+    superclass = None
+    def __init__(self, referenceKey=None, text=None):
+        self.referenceKey = referenceKey
+        self.text = text
+    def factory(*args_, **kwargs_):
+        if searchTextType.subclass:
+            return searchTextType.subclass(*args_, **kwargs_)
+        else:
+            return searchTextType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_referenceKey(self): return self.referenceKey
+    def set_referenceKey(self, referenceKey): self.referenceKey = referenceKey
+    def get_text(self): return self.text
+    def set_text(self, text): self.text = text
+    def export(self, outfile, level, namespace_='tns:', name_='searchTextType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='searchTextType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='searchTextType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='searchTextType', fromsubclass_=False):
+        if self.referenceKey is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sreferenceKey>%s</%sreferenceKey>\n' % (namespace_, self.gds_format_string(quote_xml(self.referenceKey).encode(ExternalEncoding), input_name='referenceKey'), namespace_))
+        if self.text is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stext>%s</%stext>\n' % (namespace_, self.gds_format_string(quote_xml(self.text).encode(ExternalEncoding), input_name='text'), namespace_))
+    def hasContent_(self):
+        if (
+            self.referenceKey is not None or
+            self.text is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='searchTextType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.referenceKey is not None:
+            showIndent(outfile, level)
+            outfile.write('referenceKey=%s,\n' % quote_python(self.referenceKey).encode(ExternalEncoding))
+        if self.text is not None:
+            showIndent(outfile, level)
+            outfile.write('text=%s,\n' % quote_python(self.text).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'referenceKey':
+            referenceKey_ = child_.text
+            referenceKey_ = self.gds_validate_string(referenceKey_, node, 'referenceKey')
+            self.referenceKey = referenceKey_
+        elif nodeName_ == 'text':
+            text_ = child_.text
+            text_ = self.gds_validate_string(text_, node, 'text')
+            self.text = text_
+# end class searchTextType
+
+
+class confidentialSearchType(GeneratedsSuper):
+    """Customer Data Detection Input"""
+    subclass = None
+    superclass = None
+    def __init__(self, searchTexts=None):
+        self.searchTexts = searchTexts
+    def factory(*args_, **kwargs_):
+        if confidentialSearchType.subclass:
+            return confidentialSearchType.subclass(*args_, **kwargs_)
+        else:
+            return confidentialSearchType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_searchTexts(self): return self.searchTexts
+    def set_searchTexts(self, searchTexts): self.searchTexts = searchTexts
+    def export(self, outfile, level, namespace_='tns:', name_='confidentialSearchType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='confidentialSearchType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='confidentialSearchType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='confidentialSearchType', fromsubclass_=False):
+        if self.searchTexts is not None:
+            self.searchTexts.export(outfile, level, namespace_, name_='searchTexts',)
+    def hasContent_(self):
+        if (
+            self.searchTexts is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='confidentialSearchType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.searchTexts is not None:
+            showIndent(outfile, level)
+            outfile.write('searchTexts=model_.searchTextsType(\n')
+            self.searchTexts.exportLiteral(outfile, level, name_='searchTexts')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'searchTexts':
+            obj_ = searchTextsType.factory()
+            obj_.build(child_)
+            self.set_searchTexts(obj_)
+# end class confidentialSearchType
+
+
+class confidentialType(GeneratedsSuper):
+    """Customer Data Detection Output, possible customer, confidential data"""
+    subclass = None
+    superclass = None
+    def __init__(self, suspectTexts=None):
+        self.suspectTexts = suspectTexts
+    def factory(*args_, **kwargs_):
+        if confidentialType.subclass:
+            return confidentialType.subclass(*args_, **kwargs_)
+        else:
+            return confidentialType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_suspectTexts(self): return self.suspectTexts
+    def set_suspectTexts(self, suspectTexts): self.suspectTexts = suspectTexts
+    def export(self, outfile, level, namespace_='tns:', name_='confidentialType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='confidentialType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='confidentialType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='confidentialType', fromsubclass_=False):
+        if self.suspectTexts is not None:
+            self.suspectTexts.export(outfile, level, namespace_, name_='suspectTexts',)
+    def hasContent_(self):
+        if (
+            self.suspectTexts is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='confidentialType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.suspectTexts is not None:
+            showIndent(outfile, level)
+            outfile.write('suspectTexts=model_.suspectTextsType(\n')
+            self.suspectTexts.exportLiteral(outfile, level, name_='suspectTexts')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'suspectTexts':
+            obj_ = suspectTextsType.factory()
+            obj_.build(child_)
+            self.set_suspectTexts(obj_)
+# end class confidentialType
+
+
+class suspectTextType(GeneratedsSuper):
+    """Customer Data Detection"""
+    subclass = None
+    superclass = None
+    def __init__(self, referenceKey=None, name=None, natureOfInfraction=None, infractions=None):
+        self.referenceKey = referenceKey
+        self.name = name
+        self.natureOfInfraction = natureOfInfraction
+        self.infractions = infractions
+    def factory(*args_, **kwargs_):
+        if suspectTextType.subclass:
+            return suspectTextType.subclass(*args_, **kwargs_)
+        else:
+            return suspectTextType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_referenceKey(self): return self.referenceKey
+    def set_referenceKey(self, referenceKey): self.referenceKey = referenceKey
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_natureOfInfraction(self): return self.natureOfInfraction
+    def set_natureOfInfraction(self, natureOfInfraction): self.natureOfInfraction = natureOfInfraction
+    def get_infractions(self): return self.infractions
+    def set_infractions(self, infractions): self.infractions = infractions
+    def export(self, outfile, level, namespace_='tns:', name_='suspectTextType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='suspectTextType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='suspectTextType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='suspectTextType', fromsubclass_=False):
+        if self.referenceKey is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sreferenceKey>%s</%sreferenceKey>\n' % (namespace_, self.gds_format_string(quote_xml(self.referenceKey).encode(ExternalEncoding), input_name='referenceKey'), namespace_))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        if self.natureOfInfraction is not None:
+            showIndent(outfile, level)
+            outfile.write('<%snatureOfInfraction>%s</%snatureOfInfraction>\n' % (namespace_, self.gds_format_string(quote_xml(self.natureOfInfraction).encode(ExternalEncoding), input_name='natureOfInfraction'), namespace_))
+        if self.infractions is not None:
+            self.infractions.export(outfile, level, namespace_, name_='infractions',)
+    def hasContent_(self):
+        if (
+            self.referenceKey is not None or
+            self.name is not None or
+            self.natureOfInfraction is not None or
+            self.infractions is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='suspectTextType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.referenceKey is not None:
+            showIndent(outfile, level)
+            outfile.write('referenceKey=%s,\n' % quote_python(self.referenceKey).encode(ExternalEncoding))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        if self.natureOfInfraction is not None:
+            showIndent(outfile, level)
+            outfile.write('natureOfInfraction=%s,\n' % quote_python(self.natureOfInfraction).encode(ExternalEncoding))
+        if self.infractions is not None:
+            showIndent(outfile, level)
+            outfile.write('infractions=model_.infractionsType(\n')
+            self.infractions.exportLiteral(outfile, level, name_='infractions')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'referenceKey':
+            referenceKey_ = child_.text
+            referenceKey_ = self.gds_validate_string(referenceKey_, node, 'referenceKey')
+            self.referenceKey = referenceKey_
+        elif nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'natureOfInfraction':
+            natureOfInfraction_ = child_.text
+            natureOfInfraction_ = self.gds_validate_string(natureOfInfraction_, node, 'natureOfInfraction')
+            self.natureOfInfraction = natureOfInfraction_
+        elif nodeName_ == 'infractions':
+            obj_ = infractionsType.factory()
+            obj_.build(child_)
+            self.set_infractions(obj_)
+# end class suspectTextType
+
+
+class infractionType(GeneratedsSuper):
+    """Internal_Diagnostics_Steps in Customer Data Detection"""
+    subclass = None
+    superclass = None
+    def __init__(self, start=None, end=None):
+        self.start = start
+        self.end = end
+    def factory(*args_, **kwargs_):
+        if infractionType.subclass:
+            return infractionType.subclass(*args_, **kwargs_)
+        else:
+            return infractionType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_start(self): return self.start
+    def set_start(self, start): self.start = start
+    def get_end(self): return self.end
+    def set_end(self, end): self.end = end
+    def export(self, outfile, level, namespace_='tns:', name_='infractionType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='infractionType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='infractionType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='infractionType', fromsubclass_=False):
+        if self.start is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sstart>%s</%sstart>\n' % (namespace_, self.gds_format_integer(self.start, input_name='start'), namespace_))
+        if self.end is not None:
+            showIndent(outfile, level)
+            outfile.write('<%send>%s</%send>\n' % (namespace_, self.gds_format_integer(self.end, input_name='end'), namespace_))
+    def hasContent_(self):
+        if (
+            self.start is not None or
+            self.end is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='infractionType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.start is not None:
+            showIndent(outfile, level)
+            outfile.write('start=%d,\n' % self.start)
+        if self.end is not None:
+            showIndent(outfile, level)
+            outfile.write('end=%d,\n' % self.end)
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'start':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'start')
+            self.start = ival_
+        elif nodeName_ == 'end':
+            sval_ = child_.text
+            try:
+                ival_ = int(sval_)
+            except (TypeError, ValueError), exp:
+                raise_parse_error(child_, 'requires integer: %s' % exp)
+            ival_ = self.gds_validate_integer(ival_, node, 'end')
+            self.end = ival_
+# end class infractionType
+
+
 class caseFilter(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, endDate=None, accountNumber=None, includeClosed=None, groupNumbers=None, includePrivate=None, keyword=None, count=None, start=None, onlyUngrouped=None, ownerSSOName=None, product=None, severity=None, sortField=None, sortOrder=None, startDate=None, status=None, type_=None):
+    def __init__(self, endDate=None, accountNumber=None, includeClosed=None, groupNumbers=None, includePrivate=None, keyword=None, count=None, start=None, onlyUngrouped=None, ownerSSOName=None, product=None, severity=None, sortField=None, sortOrder=None, startDate=None, status=None, type_=None, createdBySSOName=None, resourceType=None, id=None, uri=None, viewURI=None):
         self.endDate = endDate
         self.accountNumber = accountNumber
         self.includeClosed = includeClosed
@@ -8142,6 +10809,11 @@ class caseFilter(GeneratedsSuper):
         self.startDate = startDate
         self.status = status
         self.type_ = type_
+        self.createdBySSOName = createdBySSOName
+        self.resourceType = resourceType
+        self.id = id
+        self.uri = uri
+        self.viewURI = viewURI
     def factory(*args_, **kwargs_):
         if caseFilter.subclass:
             return caseFilter.subclass(*args_, **kwargs_)
@@ -8182,6 +10854,16 @@ class caseFilter(GeneratedsSuper):
     def set_status(self, status): self.status = status
     def get_type(self): return self.type_
     def set_type(self, type_): self.type_ = type_
+    def get_createdBySSOName(self): return self.createdBySSOName
+    def set_createdBySSOName(self, createdBySSOName): self.createdBySSOName = createdBySSOName
+    def get_resourceType(self): return self.resourceType
+    def set_resourceType(self, resourceType): self.resourceType = resourceType
+    def get_id(self): return self.id
+    def set_id(self, id): self.id = id
+    def get_uri(self): return self.uri
+    def set_uri(self, uri): self.uri = uri
+    def get_viewURI(self): return self.viewURI
+    def set_viewURI(self, viewURI): self.viewURI = viewURI
     def export(self, outfile, level, namespace_='tns:', name_='caseFilter', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
@@ -8247,6 +10929,21 @@ class caseFilter(GeneratedsSuper):
         if self.type_ is not None:
             showIndent(outfile, level)
             outfile.write('<%stype>%s</%stype>\n' % (namespace_, self.gds_format_string(quote_xml(self.type_).encode(ExternalEncoding), input_name='type'), namespace_))
+        if self.createdBySSOName is not None:
+            showIndent(outfile, level)
+            outfile.write('<%screatedBySSOName>%s</%screatedBySSOName>\n' % (namespace_, self.gds_format_string(quote_xml(self.createdBySSOName).encode(ExternalEncoding), input_name='createdBySSOName'), namespace_))
+        if self.resourceType is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sresourceType>%s</%sresourceType>\n' % (namespace_, self.gds_format_string(quote_xml(self.resourceType).encode(ExternalEncoding), input_name='resourceType'), namespace_))
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.uri is not None:
+            showIndent(outfile, level)
+            outfile.write('<%suri>%s</%suri>\n' % (namespace_, self.gds_format_string(quote_xml(self.uri).encode(ExternalEncoding), input_name='uri'), namespace_))
+        if self.viewURI is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sviewURI>%s</%sviewURI>\n' % (namespace_, self.gds_format_string(quote_xml(self.viewURI).encode(ExternalEncoding), input_name='viewURI'), namespace_))
     def hasContent_(self):
         if (
             self.endDate is not None or
@@ -8265,7 +10962,12 @@ class caseFilter(GeneratedsSuper):
             self.sortOrder is not None or
             self.startDate is not None or
             self.status is not None or
-            self.type_ is not None
+            self.type_ is not None or
+            self.createdBySSOName is not None or
+            self.resourceType is not None or
+            self.id is not None or
+            self.uri is not None or
+            self.viewURI is not None
             ):
             return True
         else:
@@ -8332,6 +11034,21 @@ class caseFilter(GeneratedsSuper):
         if self.type_ is not None:
             showIndent(outfile, level)
             outfile.write('type_=%s,\n' % quote_python(self.type_).encode(ExternalEncoding))
+        if self.createdBySSOName is not None:
+            showIndent(outfile, level)
+            outfile.write('createdBySSOName=%s,\n' % quote_python(self.createdBySSOName).encode(ExternalEncoding))
+        if self.resourceType is not None:
+            showIndent(outfile, level)
+            outfile.write('resourceType=%s,\n' % quote_python(self.resourceType).encode(ExternalEncoding))
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.uri is not None:
+            showIndent(outfile, level)
+            outfile.write('uri=%s,\n' % quote_python(self.uri).encode(ExternalEncoding))
+        if self.viewURI is not None:
+            showIndent(outfile, level)
+            outfile.write('viewURI=%s,\n' % quote_python(self.viewURI).encode(ExternalEncoding))
     def build(self, node):
         self.buildAttributes(node, node.attrib, [])
         for child in node:
@@ -8434,6 +11151,26 @@ class caseFilter(GeneratedsSuper):
             type_ = child_.text
             type_ = self.gds_validate_string(type_, node, 'type')
             self.type_ = type_
+        elif nodeName_ == 'createdBySSOName':
+            createdBySSOName_ = child_.text
+            createdBySSOName_ = self.gds_validate_string(createdBySSOName_, node, 'createdBySSOName')
+            self.createdBySSOName = createdBySSOName_
+        elif nodeName_ == 'resourceType':
+            resourceType_ = child_.text
+            resourceType_ = self.gds_validate_string(resourceType_, node, 'resourceType')
+            self.resourceType = resourceType_
+        elif nodeName_ == 'id':
+            id_ = child_.text
+            id_ = self.gds_validate_string(id_, node, 'id')
+            self.id = id_
+        elif nodeName_ == 'uri':
+            uri_ = child_.text
+            uri_ = self.gds_validate_string(uri_, node, 'uri')
+            self.uri = uri_
+        elif nodeName_ == 'viewURI':
+            viewURI_ = child_.text
+            viewURI_ = self.gds_validate_string(viewURI_, node, 'viewURI')
+            self.viewURI = viewURI_
 # end class caseFilter
 
 
@@ -8510,6 +11247,1105 @@ class groupNumbers(GeneratedsSuper):
             groupNumber_ = self.gds_validate_string(groupNumber_, node, 'groupNumber')
             self.groupNumber.append(groupNumber_)
 # end class groupNumbers
+
+
+class domains(strataEntity):
+    """A list of Domains."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, domain=None):
+        super(domains, self).__init__(label,)
+        if domain is None:
+            self.domain = []
+        else:
+            self.domain = domain
+    def factory(*args_, **kwargs_):
+        if domains.subclass:
+            return domains.subclass(*args_, **kwargs_)
+        else:
+            return domains(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_domain(self): return self.domain
+    def set_domain(self, domain): self.domain = domain
+    def add_domain(self, value): self.domain.append(value)
+    def insert_domain(self, index, value): self.domain[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='domains', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='domains')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='domains'):
+        super(domains, self).exportAttributes(outfile, level, already_processed, namespace_, name_='domains')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='domains', fromsubclass_=False):
+        super(domains, self).exportChildren(outfile, level, namespace_, name_, True)
+        for domain_ in self.domain:
+            domain_.export(outfile, level, namespace_, name_='domain')
+    def hasContent_(self):
+        if (
+            self.domain or
+            super(domains, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='domains'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(domains, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(domains, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('domain=[\n')
+        level += 1
+        for domain_ in self.domain:
+            showIndent(outfile, level)
+            outfile.write('model_.domain(\n')
+            domain_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(domains, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'domain':
+            obj_ = domain.factory()
+            obj_.build(child_)
+            self.domain.append(obj_)
+        super(domains, self).buildChildren(child_, node, nodeName_, True)
+# end class domains
+
+
+class domain(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, id=None, name=None, aliases=None, tags=None):
+        self.id = id
+        self.name = name
+        self.aliases = aliases
+        self.tags = tags
+    def factory(*args_, **kwargs_):
+        if domain.subclass:
+            return domain.subclass(*args_, **kwargs_)
+        else:
+            return domain(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_id(self): return self.id
+    def set_id(self, id): self.id = id
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_aliases(self): return self.aliases
+    def set_aliases(self, aliases): self.aliases = aliases
+    def get_tags(self): return self.tags
+    def set_tags(self, tags): self.tags = tags
+    def export(self, outfile, level, namespace_='tns:', name_='domain', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='domain')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='domain'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='domain', fromsubclass_=False):
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        if self.aliases is not None:
+            showIndent(outfile, level)
+            outfile.write('<%saliases>%s</%saliases>\n' % (namespace_, self.gds_format_string(quote_xml(self.aliases).encode(ExternalEncoding), input_name='aliases'), namespace_))
+        if self.tags is not None:
+            self.tags.export(outfile, level, namespace_, name_='tags')
+    def hasContent_(self):
+        if (
+            self.id is not None or
+            self.name is not None or
+            self.aliases is not None or
+            self.tags is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='domain'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        if self.aliases is not None:
+            showIndent(outfile, level)
+            outfile.write('aliases=%s,\n' % quote_python(self.aliases).encode(ExternalEncoding))
+        if self.tags is not None:
+            showIndent(outfile, level)
+            outfile.write('tags=model_.tags(\n')
+            self.tags.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'id':
+            id_ = child_.text
+            id_ = self.gds_validate_string(id_, node, 'id')
+            self.id = id_
+        elif nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'aliases':
+            aliases_ = child_.text
+            aliases_ = self.gds_validate_string(aliases_, node, 'aliases')
+            self.aliases = aliases_
+        elif nodeName_ == 'tags':
+            obj_ = tags.factory()
+            obj_.build(child_)
+            self.set_tags(obj_)
+# end class domain
+
+
+class tags(strataEntity):
+    """A list of Tags."""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, tag=None):
+        super(tags, self).__init__(label,)
+        if tag is None:
+            self.tag = []
+        else:
+            self.tag = tag
+    def factory(*args_, **kwargs_):
+        if tags.subclass:
+            return tags.subclass(*args_, **kwargs_)
+        else:
+            return tags(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_tag(self): return self.tag
+    def set_tag(self, tag): self.tag = tag
+    def add_tag(self, value): self.tag.append(value)
+    def insert_tag(self, index, value): self.tag[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='tags', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tags')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tags'):
+        super(tags, self).exportAttributes(outfile, level, already_processed, namespace_, name_='tags')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tags', fromsubclass_=False):
+        super(tags, self).exportChildren(outfile, level, namespace_, name_, True)
+        for tag_ in self.tag:
+            tag_.export(outfile, level, namespace_, name_='tag')
+    def hasContent_(self):
+        if (
+            self.tag or
+            super(tags, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='tags'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(tags, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(tags, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('tag=[\n')
+        level += 1
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('model_.tag(\n')
+            tag_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(tags, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'tag':
+            obj_ = tag.factory()
+            obj_.build(child_)
+            self.tag.append(obj_)
+        super(tags, self).buildChildren(child_, node, nodeName_, True)
+# end class tags
+
+
+class tag(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, id=None, name=None):
+        self.id = id
+        self.name = name
+    def factory(*args_, **kwargs_):
+        if tag.subclass:
+            return tag.subclass(*args_, **kwargs_)
+        else:
+            return tag(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_id(self): return self.id
+    def set_id(self, id): self.id = id
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def export(self, outfile, level, namespace_='tns:', name_='tag', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tag')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tag'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tag', fromsubclass_=False):
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+    def hasContent_(self):
+        if (
+            self.id is not None or
+            self.name is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='tag'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'id':
+            id_ = child_.text
+            id_ = self.gds_validate_string(id_, node, 'id')
+            self.id = id_
+        elif nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+# end class tag
+
+
+class languageProfile(strataEntity):
+    """It contains details of detected language and language probablity
+    list"""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, languages=None, detectedLanguage=None):
+        super(languageProfile, self).__init__(label,)
+        self.languages = languages
+        self.detectedLanguage = detectedLanguage
+    def factory(*args_, **kwargs_):
+        if languageProfile.subclass:
+            return languageProfile.subclass(*args_, **kwargs_)
+        else:
+            return languageProfile(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_languages(self): return self.languages
+    def set_languages(self, languages): self.languages = languages
+    def get_detectedLanguage(self): return self.detectedLanguage
+    def set_detectedLanguage(self, detectedLanguage): self.detectedLanguage = detectedLanguage
+    def export(self, outfile, level, namespace_='tns:', name_='languageProfile', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='languageProfile')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='languageProfile'):
+        super(languageProfile, self).exportAttributes(outfile, level, already_processed, namespace_, name_='languageProfile')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='languageProfile', fromsubclass_=False):
+        super(languageProfile, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.languages is not None:
+            self.languages.export(outfile, level, namespace_, name_='languages')
+        if self.detectedLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdetectedLanguage>%s</%sdetectedLanguage>\n' % (namespace_, self.gds_format_string(quote_xml(self.detectedLanguage).encode(ExternalEncoding), input_name='detectedLanguage'), namespace_))
+    def hasContent_(self):
+        if (
+            self.languages is not None or
+            self.detectedLanguage is not None or
+            super(languageProfile, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='languageProfile'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(languageProfile, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(languageProfile, self).exportLiteralChildren(outfile, level, name_)
+        if self.languages is not None:
+            showIndent(outfile, level)
+            outfile.write('languages=model_.languages(\n')
+            self.languages.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        if self.detectedLanguage is not None:
+            showIndent(outfile, level)
+            outfile.write('detectedLanguage=%s,\n' % quote_python(self.detectedLanguage).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(languageProfile, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'languages':
+            obj_ = languages.factory()
+            obj_.build(child_)
+            self.set_languages(obj_)
+        elif nodeName_ == 'detectedLanguage':
+            detectedLanguage_ = child_.text
+            detectedLanguage_ = self.gds_validate_string(detectedLanguage_, node, 'detectedLanguage')
+            self.detectedLanguage = detectedLanguage_
+        super(languageProfile, self).buildChildren(child_, node, nodeName_, True)
+# end class languageProfile
+
+
+class languages(strataEntity):
+    """A list of languages"""
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, language=None):
+        super(languages, self).__init__(label,)
+        if language is None:
+            self.language = []
+        else:
+            self.language = language
+    def factory(*args_, **kwargs_):
+        if languages.subclass:
+            return languages.subclass(*args_, **kwargs_)
+        else:
+            return languages(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_language(self): return self.language
+    def set_language(self, language): self.language = language
+    def add_language(self, value): self.language.append(value)
+    def insert_language(self, index, value): self.language[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='languages', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='languages')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='languages'):
+        super(languages, self).exportAttributes(outfile, level, already_processed, namespace_, name_='languages')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='languages', fromsubclass_=False):
+        super(languages, self).exportChildren(outfile, level, namespace_, name_, True)
+        for language_ in self.language:
+            language_.export(outfile, level, namespace_, name_='language')
+    def hasContent_(self):
+        if (
+            self.language or
+            super(languages, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='languages'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(languages, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(languages, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('language=[\n')
+        level += 1
+        for language_ in self.language:
+            showIndent(outfile, level)
+            outfile.write('model_.language(\n')
+            language_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(languages, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'language':
+            obj_ = language.factory()
+            obj_.build(child_)
+            self.language.append(obj_)
+        super(languages, self).buildChildren(child_, node, nodeName_, True)
+# end class languages
+
+
+class language(trackedEntity):
+    subclass = None
+    superclass = trackedEntity
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, id=None, name=None, code=None, definedForCase=None, definedForSolution=None, probability=None, valueOf_=None):
+        super(language, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.id = id
+        self.name = name
+        self.code = code
+        self.definedForCase = definedForCase
+        self.definedForSolution = definedForSolution
+        self.probability = probability
+        self.valueOf_ = valueOf_
+    def factory(*args_, **kwargs_):
+        if language.subclass:
+            return language.subclass(*args_, **kwargs_)
+        else:
+            return language(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_id(self): return self.id
+    def set_id(self, id): self.id = id
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_code(self): return self.code
+    def set_code(self, code): self.code = code
+    def get_definedForCase(self): return self.definedForCase
+    def set_definedForCase(self, definedForCase): self.definedForCase = definedForCase
+    def get_definedForSolution(self): return self.definedForSolution
+    def set_definedForSolution(self, definedForSolution): self.definedForSolution = definedForSolution
+    def get_probability(self): return self.probability
+    def set_probability(self, probability): self.probability = probability
+    def export(self, outfile, level, namespace_='tns:', name_='language', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='language')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='language'):
+        super(language, self).exportAttributes(outfile, level, already_processed, namespace_, name_='language')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='language', fromsubclass_=False):
+        super(language, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sid>%s</%sid>\n' % (namespace_, self.gds_format_string(quote_xml(self.id).encode(ExternalEncoding), input_name='id'), namespace_))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        if self.code is not None:
+            showIndent(outfile, level)
+            outfile.write('<%scode>%s</%scode>\n' % (namespace_, self.gds_format_string(quote_xml(self.code).encode(ExternalEncoding), input_name='code'), namespace_))
+        if self.definedForCase is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdefinedForCase>%s</%sdefinedForCase>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.definedForCase)), input_name='definedForCase'), namespace_))
+        if self.definedForSolution is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sdefinedForSolution>%s</%sdefinedForSolution>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.definedForSolution)), input_name='definedForSolution'), namespace_))
+        if self.probability is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sprobability>%s</%sprobability>\n' % (namespace_, self.gds_format_string(quote_xml(self.probability).encode(ExternalEncoding), input_name='probability'), namespace_))
+    def hasContent_(self):
+        if (
+            self.id is not None or
+            self.name is not None or
+            self.code is not None or
+            self.definedForCase is not None or
+            self.definedForSolution is not None or
+            self.probability is not None or
+            super(language, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='language'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(language, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(language, self).exportLiteralChildren(outfile, level, name_)
+        if self.id is not None:
+            showIndent(outfile, level)
+            outfile.write('id=%s,\n' % quote_python(self.id).encode(ExternalEncoding))
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        if self.code is not None:
+            showIndent(outfile, level)
+            outfile.write('code=%s,\n' % quote_python(self.code).encode(ExternalEncoding))
+        if self.definedForCase is not None:
+            showIndent(outfile, level)
+            outfile.write('definedForCase=%s,\n' % self.definedForCase)
+        if self.definedForSolution is not None:
+            showIndent(outfile, level)
+            outfile.write('definedForSolution=%s,\n' % self.definedForSolution)
+        if self.probability is not None:
+            showIndent(outfile, level)
+            outfile.write('probability=%s,\n' % quote_python(self.probability).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(language, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'id':
+            id_ = child_.text
+            id_ = self.gds_validate_string(id_, node, 'id')
+            self.id = id_
+        elif nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'code':
+            code_ = child_.text
+            code_ = self.gds_validate_string(code_, node, 'code')
+            self.code = code_
+        elif nodeName_ == 'definedForCase':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'definedForCase')
+            self.definedForCase = ival_
+        elif nodeName_ == 'definedForSolution':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'definedForSolution')
+            self.definedForSolution = ival_
+        elif nodeName_ == 'probability':
+            probability_ = child_.text
+            probability_ = self.gds_validate_string(probability_, node, 'probability')
+            self.probability = probability_
+        super(language, self).buildChildren(child_, node, nodeName_, True)
+# end class language
+
+
+class privateNotes(trackedEntity):
+    subclass = None
+    superclass = trackedEntity
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, text=None, html=None):
+        super(privateNotes, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.text = text
+        self.html = html
+    def factory(*args_, **kwargs_):
+        if privateNotes.subclass:
+            return privateNotes.subclass(*args_, **kwargs_)
+        else:
+            return privateNotes(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_text(self): return self.text
+    def set_text(self, text): self.text = text
+    def get_html(self): return self.html
+    def set_html(self, html): self.html = html
+    def export(self, outfile, level, namespace_='tns:', name_='privateNotes', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='privateNotes')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='privateNotes'):
+        super(privateNotes, self).exportAttributes(outfile, level, already_processed, namespace_, name_='privateNotes')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='privateNotes', fromsubclass_=False):
+        super(privateNotes, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.text is not None:
+            showIndent(outfile, level)
+            outfile.write('<%stext>%s</%stext>\n' % (namespace_, self.gds_format_string(quote_xml(self.text).encode(ExternalEncoding), input_name='text'), namespace_))
+        if self.html is not None:
+            showIndent(outfile, level)
+            outfile.write('<%shtml>%s</%shtml>\n' % (namespace_, self.gds_format_string(quote_xml(self.html).encode(ExternalEncoding), input_name='html'), namespace_))
+    def hasContent_(self):
+        if (
+            self.text is not None or
+            self.html is not None or
+            super(privateNotes, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='privateNotes'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(privateNotes, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(privateNotes, self).exportLiteralChildren(outfile, level, name_)
+        if self.text is not None:
+            showIndent(outfile, level)
+            outfile.write('text=%s,\n' % quote_python(self.text).encode(ExternalEncoding))
+        if self.html is not None:
+            showIndent(outfile, level)
+            outfile.write('html=%s,\n' % quote_python(self.html).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(privateNotes, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'text':
+            text_ = child_.text
+            text_ = self.gds_validate_string(text_, node, 'text')
+            self.text = text_
+        elif nodeName_ == 'html':
+            html_ = child_.text
+            html_ = self.gds_validate_string(html_, node, 'html')
+            self.html = html_
+        super(privateNotes, self).buildChildren(child_, node, nodeName_, True)
+# end class privateNotes
+
+
+class health(GeneratedsSuper):
+    """A list of upstreamSystem"""
+    subclass = None
+    superclass = None
+    def __init__(self, upstreamSystem=None):
+        if upstreamSystem is None:
+            self.upstreamSystem = []
+        else:
+            self.upstreamSystem = upstreamSystem
+    def factory(*args_, **kwargs_):
+        if health.subclass:
+            return health.subclass(*args_, **kwargs_)
+        else:
+            return health(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_upstreamSystem(self): return self.upstreamSystem
+    def set_upstreamSystem(self, upstreamSystem): self.upstreamSystem = upstreamSystem
+    def add_upstreamSystem(self, value): self.upstreamSystem.append(value)
+    def insert_upstreamSystem(self, index, value): self.upstreamSystem[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='health', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='health')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='health'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='health', fromsubclass_=False):
+        for upstreamSystem_ in self.upstreamSystem:
+            upstreamSystem_.export(outfile, level, namespace_, name_='upstreamSystem')
+    def hasContent_(self):
+        if (
+            self.upstreamSystem
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='health'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('upstreamSystem=[\n')
+        level += 1
+        for upstreamSystem_ in self.upstreamSystem:
+            showIndent(outfile, level)
+            outfile.write('model_.upstreamSystem(\n')
+            upstreamSystem_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'upstreamSystem':
+            obj_ = upstreamSystem.factory()
+            obj_.build(child_)
+            self.upstreamSystem.append(obj_)
+# end class health
+
+
+class upstreamSystem(GeneratedsSuper):
+    """upstreamSystem consist of field name and status"""
+    subclass = None
+    superclass = None
+    def __init__(self, name=None, status=None):
+        self.name = name
+        self.status = status
+    def factory(*args_, **kwargs_):
+        if upstreamSystem.subclass:
+            return upstreamSystem.subclass(*args_, **kwargs_)
+        else:
+            return upstreamSystem(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_name(self): return self.name
+    def set_name(self, name): self.name = name
+    def get_status(self): return self.status
+    def set_status(self, status): self.status = status
+    def export(self, outfile, level, namespace_='tns:', name_='upstreamSystem', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='upstreamSystem')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='upstreamSystem'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='upstreamSystem', fromsubclass_=False):
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sname>%s</%sname>\n' % (namespace_, self.gds_format_string(quote_xml(self.name).encode(ExternalEncoding), input_name='name'), namespace_))
+        if self.status is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sstatus>%s</%sstatus>\n' % (namespace_, self.gds_format_boolean(self.gds_str_lower(str(self.status)), input_name='status'), namespace_))
+    def hasContent_(self):
+        if (
+            self.name is not None or
+            self.status is not None
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='upstreamSystem'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        if self.name is not None:
+            showIndent(outfile, level)
+            outfile.write('name=%s,\n' % quote_python(self.name).encode(ExternalEncoding))
+        if self.status is not None:
+            showIndent(outfile, level)
+            outfile.write('status=%s,\n' % self.status)
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'name':
+            name_ = child_.text
+            name_ = self.gds_validate_string(name_, node, 'name')
+            self.name = name_
+        elif nodeName_ == 'status':
+            sval_ = child_.text
+            if sval_ in ('true', '1'):
+                ival_ = True
+            elif sval_ in ('false', '0'):
+                ival_ = False
+            else:
+                raise_parse_error(child_, 'requires boolean')
+            ival_ = self.gds_validate_boolean(ival_, node, 'status')
+            self.status = ival_
+# end class upstreamSystem
+
+
+class bugzillas(strataEntity):
+    subclass = None
+    superclass = strataEntity
+    def __init__(self, label=None, bugzilla=None):
+        super(bugzillas, self).__init__(label,)
+        if bugzilla is None:
+            self.bugzilla = []
+        else:
+            self.bugzilla = bugzilla
+    def factory(*args_, **kwargs_):
+        if bugzillas.subclass:
+            return bugzillas.subclass(*args_, **kwargs_)
+        else:
+            return bugzillas(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_bugzilla(self): return self.bugzilla
+    def set_bugzilla(self, bugzilla): self.bugzilla = bugzilla
+    def add_bugzilla(self, value): self.bugzilla.append(value)
+    def insert_bugzilla(self, index, value): self.bugzilla[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='bugzillas', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='bugzillas')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='bugzillas'):
+        super(bugzillas, self).exportAttributes(outfile, level, already_processed, namespace_, name_='bugzillas')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='bugzillas', fromsubclass_=False):
+        super(bugzillas, self).exportChildren(outfile, level, namespace_, name_, True)
+        for bugzilla_ in self.bugzilla:
+            bugzilla_.export(outfile, level, namespace_, name_='bugzilla')
+    def hasContent_(self):
+        if (
+            self.bugzilla or
+            super(bugzillas, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='bugzillas'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(bugzillas, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(bugzillas, self).exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('bugzilla=[\n')
+        level += 1
+        for bugzilla_ in self.bugzilla:
+            showIndent(outfile, level)
+            outfile.write('model_.bugzilla(\n')
+            bugzilla_.exportLiteral(outfile, level)
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(bugzillas, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'bugzilla':
+            obj_ = bugzilla.factory()
+            obj_.build(child_)
+            self.bugzilla.append(obj_)
+        super(bugzillas, self).buildChildren(child_, node, nodeName_, True)
+# end class bugzillas
+
+
+class bugzilla(trackedEntity):
+    subclass = None
+    superclass = trackedEntity
+    def __init__(self, label=None, createdBy=None, createdDate=None, lastModifiedBy=None, lastModifiedDate=None, linked=None, linkedBy=None, linkedAt=None, bugzillaNumber=None, resourceViewURI=None, summary=None):
+        super(bugzilla, self).__init__(label, createdBy, createdDate, lastModifiedBy, lastModifiedDate, linked, linkedBy, linkedAt,)
+        self.bugzillaNumber = bugzillaNumber
+        self.resourceViewURI = resourceViewURI
+        self.summary = summary
+    def factory(*args_, **kwargs_):
+        if bugzilla.subclass:
+            return bugzilla.subclass(*args_, **kwargs_)
+        else:
+            return bugzilla(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_bugzillaNumber(self): return self.bugzillaNumber
+    def set_bugzillaNumber(self, bugzillaNumber): self.bugzillaNumber = bugzillaNumber
+    def get_resourceViewURI(self): return self.resourceViewURI
+    def set_resourceViewURI(self, resourceViewURI): self.resourceViewURI = resourceViewURI
+    def get_summary(self): return self.summary
+    def set_summary(self, summary): self.summary = summary
+    def export(self, outfile, level, namespace_='tns:', name_='bugzilla', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='bugzilla')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='bugzilla'):
+        super(bugzilla, self).exportAttributes(outfile, level, already_processed, namespace_, name_='bugzilla')
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='bugzilla', fromsubclass_=False):
+        super(bugzilla, self).exportChildren(outfile, level, namespace_, name_, True)
+        if self.bugzillaNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sbugzillaNumber>%s</%sbugzillaNumber>\n' % (namespace_, self.gds_format_string(quote_xml(self.bugzillaNumber).encode(ExternalEncoding), input_name='bugzillaNumber'), namespace_))
+        if self.resourceViewURI is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sresourceViewURI>%s</%sresourceViewURI>\n' % (namespace_, self.gds_format_string(quote_xml(self.resourceViewURI).encode(ExternalEncoding), input_name='resourceViewURI'), namespace_))
+        if self.summary is not None:
+            showIndent(outfile, level)
+            outfile.write('<%ssummary>%s</%ssummary>\n' % (namespace_, self.gds_format_string(quote_xml(self.summary).encode(ExternalEncoding), input_name='summary'), namespace_))
+    def hasContent_(self):
+        if (
+            self.bugzillaNumber is not None or
+            self.resourceViewURI is not None or
+            self.summary is not None or
+            super(bugzilla, self).hasContent_()
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='bugzilla'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        super(bugzilla, self).exportLiteralAttributes(outfile, level, already_processed, name_)
+    def exportLiteralChildren(self, outfile, level, name_):
+        super(bugzilla, self).exportLiteralChildren(outfile, level, name_)
+        if self.bugzillaNumber is not None:
+            showIndent(outfile, level)
+            outfile.write('bugzillaNumber=%s,\n' % quote_python(self.bugzillaNumber).encode(ExternalEncoding))
+        if self.resourceViewURI is not None:
+            showIndent(outfile, level)
+            outfile.write('resourceViewURI=%s,\n' % quote_python(self.resourceViewURI).encode(ExternalEncoding))
+        if self.summary is not None:
+            showIndent(outfile, level)
+            outfile.write('summary=%s,\n' % quote_python(self.summary).encode(ExternalEncoding))
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        super(bugzilla, self).buildAttributes(node, attrs, already_processed)
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'bugzillaNumber':
+            bugzillaNumber_ = child_.text
+            bugzillaNumber_ = self.gds_validate_string(bugzillaNumber_, node, 'bugzillaNumber')
+            self.bugzillaNumber = bugzillaNumber_
+        elif nodeName_ == 'resourceViewURI':
+            resourceViewURI_ = child_.text
+            resourceViewURI_ = self.gds_validate_string(resourceViewURI_, node, 'resourceViewURI')
+            self.resourceViewURI = resourceViewURI_
+        elif nodeName_ == 'summary':
+            summary_ = child_.text
+            summary_ = self.gds_validate_string(summary_, node, 'summary')
+            self.summary = summary_
+        super(bugzilla, self).buildChildren(child_, node, nodeName_, True)
+# end class bugzilla
 
 
 class solutionType(GeneratedsSuper):
@@ -8987,84 +12823,6 @@ class internalDiagnosticStepsType(GeneratedsSuper):
 # end class internalDiagnosticStepsType
 
 
-class tagType(GeneratedsSuper):
-    subclass = None
-    superclass = None
-    def __init__(self, text=None, html=None):
-        self.text = text
-        self.html = html
-    def factory(*args_, **kwargs_):
-        if tagType.subclass:
-            return tagType.subclass(*args_, **kwargs_)
-        else:
-            return tagType(*args_, **kwargs_)
-    factory = staticmethod(factory)
-    def get_text(self): return self.text
-    def set_text(self, text): self.text = text
-    def get_html(self): return self.html
-    def set_html(self, html): self.html = html
-    def export(self, outfile, level, namespace_='tns:', name_='tagType', namespacedef_=''):
-        showIndent(outfile, level)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
-        already_processed = []
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagType')
-        if self.hasContent_():
-            outfile.write('>\n')
-            self.exportChildren(outfile, level + 1, namespace_, name_)
-            showIndent(outfile, level)
-            outfile.write('</%s%s>\n' % (namespace_, name_))
-        else:
-            outfile.write('/>\n')
-    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagType'):
-        pass
-    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagType', fromsubclass_=False):
-        if self.text is not None:
-            showIndent(outfile, level)
-            outfile.write('<%stext>%s</%stext>\n' % (namespace_, self.gds_format_string(quote_xml(self.text).encode(ExternalEncoding), input_name='text'), namespace_))
-        if self.html is not None:
-            showIndent(outfile, level)
-            outfile.write('<%shtml>%s</%shtml>\n' % (namespace_, self.gds_format_string(quote_xml(self.html).encode(ExternalEncoding), input_name='html'), namespace_))
-    def hasContent_(self):
-        if (
-            self.text is not None or
-            self.html is not None
-            ):
-            return True
-        else:
-            return False
-    def exportLiteral(self, outfile, level, name_='tagType'):
-        level += 1
-        self.exportLiteralAttributes(outfile, level, [], name_)
-        if self.hasContent_():
-            self.exportLiteralChildren(outfile, level, name_)
-    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
-        pass
-    def exportLiteralChildren(self, outfile, level, name_):
-        if self.text is not None:
-            showIndent(outfile, level)
-            outfile.write('text=%s,\n' % quote_python(self.text).encode(ExternalEncoding))
-        if self.html is not None:
-            showIndent(outfile, level)
-            outfile.write('html=%s,\n' % quote_python(self.html).encode(ExternalEncoding))
-    def build(self, node):
-        self.buildAttributes(node, node.attrib, [])
-        for child in node:
-            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
-            self.buildChildren(child, node, nodeName_)
-    def buildAttributes(self, node, attrs, already_processed):
-        pass
-    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
-        if nodeName_ == 'text':
-            text_ = child_.text
-            text_ = self.gds_validate_string(text_, node, 'text')
-            self.text = text_
-        elif nodeName_ == 'html':
-            html_ = child_.text
-            html_ = self.gds_validate_string(html_, node, 'html')
-            self.html = html_
-# end class tagType
-
-
 class duplicateOfType(GeneratedsSuper):
     subclass = None
     superclass = None
@@ -9150,84 +12908,6 @@ class duplicateOfType(GeneratedsSuper):
 # end class duplicateOfType
 
 
-class bodyType(GeneratedsSuper):
-    subclass = None
-    superclass = None
-    def __init__(self, text=None, html=None):
-        self.text = text
-        self.html = html
-    def factory(*args_, **kwargs_):
-        if bodyType.subclass:
-            return bodyType.subclass(*args_, **kwargs_)
-        else:
-            return bodyType(*args_, **kwargs_)
-    factory = staticmethod(factory)
-    def get_text(self): return self.text
-    def set_text(self, text): self.text = text
-    def get_html(self): return self.html
-    def set_html(self, html): self.html = html
-    def export(self, outfile, level, namespace_='tns:', name_='bodyType', namespacedef_=''):
-        showIndent(outfile, level)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
-        already_processed = []
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='bodyType')
-        if self.hasContent_():
-            outfile.write('>\n')
-            self.exportChildren(outfile, level + 1, namespace_, name_)
-            showIndent(outfile, level)
-            outfile.write('</%s%s>\n' % (namespace_, name_))
-        else:
-            outfile.write('/>\n')
-    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='bodyType'):
-        pass
-    def exportChildren(self, outfile, level, namespace_='tns:', name_='bodyType', fromsubclass_=False):
-        if self.text is not None:
-            showIndent(outfile, level)
-            outfile.write('<%stext>%s</%stext>\n' % (namespace_, self.gds_format_string(quote_xml(self.text).encode(ExternalEncoding), input_name='text'), namespace_))
-        if self.html is not None:
-            showIndent(outfile, level)
-            outfile.write('<%shtml>%s</%shtml>\n' % (namespace_, self.gds_format_string(quote_xml(self.html).encode(ExternalEncoding), input_name='html'), namespace_))
-    def hasContent_(self):
-        if (
-            self.text is not None or
-            self.html is not None
-            ):
-            return True
-        else:
-            return False
-    def exportLiteral(self, outfile, level, name_='bodyType'):
-        level += 1
-        self.exportLiteralAttributes(outfile, level, [], name_)
-        if self.hasContent_():
-            self.exportLiteralChildren(outfile, level, name_)
-    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
-        pass
-    def exportLiteralChildren(self, outfile, level, name_):
-        if self.text is not None:
-            showIndent(outfile, level)
-            outfile.write('text=%s,\n' % quote_python(self.text).encode(ExternalEncoding))
-        if self.html is not None:
-            showIndent(outfile, level)
-            outfile.write('html=%s,\n' % quote_python(self.html).encode(ExternalEncoding))
-    def build(self, node):
-        self.buildAttributes(node, node.attrib, [])
-        for child in node:
-            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
-            self.buildChildren(child, node, nodeName_)
-    def buildAttributes(self, node, attrs, already_processed):
-        pass
-    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
-        if nodeName_ == 'text':
-            text_ = child_.text
-            text_ = self.gds_validate_string(text_, node, 'text')
-            self.text = text_
-        elif nodeName_ == 'html':
-            html_ = child_.text
-            html_ = self.gds_validate_string(html_, node, 'html')
-            self.html = html_
-# end class bodyType
-
-
 class sbrsType(GeneratedsSuper):
     subclass = None
     superclass = None
@@ -9303,6 +12983,81 @@ class sbrsType(GeneratedsSuper):
 # end class sbrsType
 
 
+class tagsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, tag=None):
+        if tag is None:
+            self.tag = []
+        else:
+            self.tag = tag
+    def factory(*args_, **kwargs_):
+        if tagsType.subclass:
+            return tagsType.subclass(*args_, **kwargs_)
+        else:
+            return tagsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_tag(self): return self.tag
+    def set_tag(self, tag): self.tag = tag
+    def add_tag(self, value): self.tag.append(value)
+    def insert_tag(self, index, value): self.tag[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='tagsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagsType', fromsubclass_=False):
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('<%stag>%s</%stag>\n' % (namespace_, self.gds_format_string(quote_xml(tag_).encode(ExternalEncoding), input_name='tag'), namespace_))
+    def hasContent_(self):
+        if (
+            self.tag
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='tagsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('tag=[\n')
+        level += 1
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(tag_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'tag':
+            tag_ = child_.text
+            tag_ = self.gds_validate_string(tag_, node, 'tag')
+            self.tag.append(tag_)
+# end class tagsType
+
+
 class productsType(GeneratedsSuper):
     subclass = None
     superclass = None
@@ -9376,6 +13131,156 @@ class productsType(GeneratedsSuper):
             product_ = self.gds_validate_string(product_, node, 'product')
             self.product.append(product_)
 # end class productsType
+
+
+class LinkedProductsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, product=None):
+        if product is None:
+            self.product = []
+        else:
+            self.product = product
+    def factory(*args_, **kwargs_):
+        if LinkedProductsType.subclass:
+            return LinkedProductsType.subclass(*args_, **kwargs_)
+        else:
+            return LinkedProductsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_product(self): return self.product
+    def set_product(self, product): self.product = product
+    def add_product(self, value): self.product.append(value)
+    def insert_product(self, index, value): self.product[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='LinkedProductsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='LinkedProductsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='LinkedProductsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='LinkedProductsType', fromsubclass_=False):
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('<%sproduct>%s</%sproduct>\n' % (namespace_, self.gds_format_string(quote_xml(product_).encode(ExternalEncoding), input_name='product'), namespace_))
+    def hasContent_(self):
+        if (
+            self.product
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='LinkedProductsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('product=[\n')
+        level += 1
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(product_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'product':
+            product_ = child_.text
+            product_ = self.gds_validate_string(product_, node, 'product')
+            self.product.append(product_)
+# end class LinkedProductsType
+
+
+class productFamilyType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, family=None):
+        if family is None:
+            self.family = []
+        else:
+            self.family = family
+    def factory(*args_, **kwargs_):
+        if productFamilyType.subclass:
+            return productFamilyType.subclass(*args_, **kwargs_)
+        else:
+            return productFamilyType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_family(self): return self.family
+    def set_family(self, family): self.family = family
+    def add_family(self, value): self.family.append(value)
+    def insert_family(self, index, value): self.family[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='productFamilyType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productFamilyType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productFamilyType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='productFamilyType', fromsubclass_=False):
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('<%sfamily>%s</%sfamily>\n' % (namespace_, self.gds_format_string(quote_xml(family_).encode(ExternalEncoding), input_name='family'), namespace_))
+    def hasContent_(self):
+        if (
+            self.family
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='productFamilyType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('family=[\n')
+        level += 1
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(family_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'family':
+            family_ = child_.text
+            family_ = self.gds_validate_string(family_, node, 'family')
+            self.family.append(family_)
+# end class productFamilyType
 
 
 class issueType1(GeneratedsSuper):
@@ -9846,27 +13751,29 @@ class articleBodyType(GeneratedsSuper):
 # end class articleBodyType
 
 
-class tagType1(GeneratedsSuper):
+class tagsType1(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, text=None, html=None):
-        self.text = text
-        self.html = html
-    def factory(*args_, **kwargs_):
-        if tagType1.subclass:
-            return tagType1.subclass(*args_, **kwargs_)
+    def __init__(self, tag=None):
+        if tag is None:
+            self.tag = []
         else:
-            return tagType1(*args_, **kwargs_)
+            self.tag = tag
+    def factory(*args_, **kwargs_):
+        if tagsType1.subclass:
+            return tagsType1.subclass(*args_, **kwargs_)
+        else:
+            return tagsType1(*args_, **kwargs_)
     factory = staticmethod(factory)
-    def get_text(self): return self.text
-    def set_text(self, text): self.text = text
-    def get_html(self): return self.html
-    def set_html(self, html): self.html = html
-    def export(self, outfile, level, namespace_='tns:', name_='tagType1', namespacedef_=''):
+    def get_tag(self): return self.tag
+    def set_tag(self, tag): self.tag = tag
+    def add_tag(self, value): self.tag.append(value)
+    def insert_tag(self, index, value): self.tag[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='tagsType1', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = []
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagType1')
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagsType1')
         if self.hasContent_():
             outfile.write('>\n')
             self.exportChildren(outfile, level + 1, namespace_, name_)
@@ -9874,9 +13781,157 @@ class tagType1(GeneratedsSuper):
             outfile.write('</%s%s>\n' % (namespace_, name_))
         else:
             outfile.write('/>\n')
-    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagType1'):
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagsType1'):
         pass
-    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagType1', fromsubclass_=False):
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagsType1', fromsubclass_=False):
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('<%stag>%s</%stag>\n' % (namespace_, self.gds_format_string(quote_xml(tag_).encode(ExternalEncoding), input_name='tag'), namespace_))
+    def hasContent_(self):
+        if (
+            self.tag
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='tagsType1'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('tag=[\n')
+        level += 1
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(tag_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'tag':
+            tag_ = child_.text
+            tag_ = self.gds_validate_string(tag_, node, 'tag')
+            self.tag.append(tag_)
+# end class tagsType1
+
+
+class categoriesType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, category=None):
+        if category is None:
+            self.category = []
+        else:
+            self.category = category
+    def factory(*args_, **kwargs_):
+        if categoriesType.subclass:
+            return categoriesType.subclass(*args_, **kwargs_)
+        else:
+            return categoriesType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_category(self): return self.category
+    def set_category(self, category): self.category = category
+    def add_category(self, value): self.category.append(value)
+    def insert_category(self, index, value): self.category[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='categoriesType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='categoriesType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='categoriesType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='categoriesType', fromsubclass_=False):
+        for category_ in self.category:
+            showIndent(outfile, level)
+            outfile.write('<%scategory>%s</%scategory>\n' % (namespace_, self.gds_format_string(quote_xml(category_).encode(ExternalEncoding), input_name='category'), namespace_))
+    def hasContent_(self):
+        if (
+            self.category
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='categoriesType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('category=[\n')
+        level += 1
+        for category_ in self.category:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(category_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'category':
+            category_ = child_.text
+            category_ = self.gds_validate_string(category_, node, 'category')
+            self.category.append(category_)
+# end class categoriesType
+
+
+class tagType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, text=None, html=None):
+        self.text = text
+        self.html = html
+    def factory(*args_, **kwargs_):
+        if tagType.subclass:
+            return tagType.subclass(*args_, **kwargs_)
+        else:
+            return tagType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_text(self): return self.text
+    def set_text(self, text): self.text = text
+    def get_html(self): return self.html
+    def set_html(self, html): self.html = html
+    def export(self, outfile, level, namespace_='tns:', name_='tagType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagType', fromsubclass_=False):
         if self.text is not None:
             showIndent(outfile, level)
             outfile.write('<%stext>%s</%stext>\n' % (namespace_, self.gds_format_string(quote_xml(self.text).encode(ExternalEncoding), input_name='text'), namespace_))
@@ -9891,7 +13946,7 @@ class tagType1(GeneratedsSuper):
             return True
         else:
             return False
-    def exportLiteral(self, outfile, level, name_='tagType1'):
+    def exportLiteral(self, outfile, level, name_='tagType'):
         level += 1
         self.exportLiteralAttributes(outfile, level, [], name_)
         if self.hasContent_():
@@ -9921,7 +13976,7 @@ class tagType1(GeneratedsSuper):
             html_ = child_.text
             html_ = self.gds_validate_string(html_, node, 'html')
             self.html = html_
-# end class tagType1
+# end class tagType
 
 
 class duplicateOfType1(GeneratedsSuper):
@@ -10084,6 +14139,377 @@ class sbrsType1(GeneratedsSuper):
 # end class sbrsType1
 
 
+class productsType1(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, product=None):
+        if product is None:
+            self.product = []
+        else:
+            self.product = product
+    def factory(*args_, **kwargs_):
+        if productsType1.subclass:
+            return productsType1.subclass(*args_, **kwargs_)
+        else:
+            return productsType1(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_product(self): return self.product
+    def set_product(self, product): self.product = product
+    def add_product(self, value): self.product.append(value)
+    def insert_product(self, index, value): self.product[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='productsType1', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productsType1')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productsType1'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='productsType1', fromsubclass_=False):
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('<%sproduct>%s</%sproduct>\n' % (namespace_, self.gds_format_string(quote_xml(product_).encode(ExternalEncoding), input_name='product'), namespace_))
+    def hasContent_(self):
+        if (
+            self.product
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='productsType1'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('product=[\n')
+        level += 1
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(product_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'product':
+            product_ = child_.text
+            product_ = self.gds_validate_string(product_, node, 'product')
+            self.product.append(product_)
+# end class productsType1
+
+
+class LinkedProductsType1(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, product=None):
+        if product is None:
+            self.product = []
+        else:
+            self.product = product
+    def factory(*args_, **kwargs_):
+        if LinkedProductsType1.subclass:
+            return LinkedProductsType1.subclass(*args_, **kwargs_)
+        else:
+            return LinkedProductsType1(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_product(self): return self.product
+    def set_product(self, product): self.product = product
+    def add_product(self, value): self.product.append(value)
+    def insert_product(self, index, value): self.product[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='LinkedProductsType1', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='LinkedProductsType1')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='LinkedProductsType1'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='LinkedProductsType1', fromsubclass_=False):
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('<%sproduct>%s</%sproduct>\n' % (namespace_, self.gds_format_string(quote_xml(product_).encode(ExternalEncoding), input_name='product'), namespace_))
+    def hasContent_(self):
+        if (
+            self.product
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='LinkedProductsType1'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('product=[\n')
+        level += 1
+        for product_ in self.product:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(product_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'product':
+            product_ = child_.text
+            product_ = self.gds_validate_string(product_, node, 'product')
+            self.product.append(product_)
+# end class LinkedProductsType1
+
+
+class productFamilyType1(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, family=None):
+        if family is None:
+            self.family = []
+        else:
+            self.family = family
+    def factory(*args_, **kwargs_):
+        if productFamilyType1.subclass:
+            return productFamilyType1.subclass(*args_, **kwargs_)
+        else:
+            return productFamilyType1(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_family(self): return self.family
+    def set_family(self, family): self.family = family
+    def add_family(self, value): self.family.append(value)
+    def insert_family(self, index, value): self.family[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='productFamilyType1', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productFamilyType1')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productFamilyType1'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='productFamilyType1', fromsubclass_=False):
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('<%sfamily>%s</%sfamily>\n' % (namespace_, self.gds_format_string(quote_xml(family_).encode(ExternalEncoding), input_name='family'), namespace_))
+    def hasContent_(self):
+        if (
+            self.family
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='productFamilyType1'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('family=[\n')
+        level += 1
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(family_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'family':
+            family_ = child_.text
+            family_ = self.gds_validate_string(family_, node, 'family')
+            self.family.append(family_)
+# end class productFamilyType1
+
+
+class linkType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, rel=None, valueOf_=None):
+        self.rel = _cast(None, rel)
+        self.valueOf_ = valueOf_
+    def factory(*args_, **kwargs_):
+        if linkType.subclass:
+            return linkType.subclass(*args_, **kwargs_)
+        else:
+            return linkType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_rel(self): return self.rel
+    def set_rel(self, rel): self.rel = rel
+    def get_valueOf_(self): return self.valueOf_
+    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+    def export(self, outfile, level, namespace_='tns:', name_='linkType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='linkType')
+        if self.hasContent_():
+            outfile.write('>')
+            outfile.write(str(self.valueOf_).encode(ExternalEncoding))
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='linkType'):
+        if self.rel is not None and 'rel' not in already_processed:
+            already_processed.append('rel')
+            outfile.write(' rel=%s' % (self.gds_format_string(quote_attrib(self.rel).encode(ExternalEncoding), input_name='rel'),))
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='linkType', fromsubclass_=False):
+        pass
+    def hasContent_(self):
+        if (
+            self.valueOf_
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='linkType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+        showIndent(outfile, level)
+        outfile.write('valueOf_ = """%s""",\n' % (self.valueOf_,))
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        if self.rel is not None and 'rel' not in already_processed:
+            already_processed.append('rel')
+            showIndent(outfile, level)
+            outfile.write('rel = "%s",\n' % (self.rel,))
+    def exportLiteralChildren(self, outfile, level, name_):
+        pass
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        self.valueOf_ = get_all_text_(node)
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        value = find_attr_value_('rel', node)
+        if value is not None and 'rel' not in already_processed:
+            already_processed.append('rel')
+            self.rel = value
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        pass
+# end class linkType
+
+
+class sbrsType2(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, sbr=None):
+        if sbr is None:
+            self.sbr = []
+        else:
+            self.sbr = sbr
+    def factory(*args_, **kwargs_):
+        if sbrsType2.subclass:
+            return sbrsType2.subclass(*args_, **kwargs_)
+        else:
+            return sbrsType2(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_sbr(self): return self.sbr
+    def set_sbr(self, sbr): self.sbr = sbr
+    def add_sbr(self, value): self.sbr.append(value)
+    def insert_sbr(self, index, value): self.sbr[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='sbrsType2', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='sbrsType2')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='sbrsType2'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='sbrsType2', fromsubclass_=False):
+        for sbr_ in self.sbr:
+            showIndent(outfile, level)
+            outfile.write('<%ssbr>%s</%ssbr>\n' % (namespace_, self.gds_format_string(quote_xml(sbr_).encode(ExternalEncoding), input_name='sbr'), namespace_))
+    def hasContent_(self):
+        if (
+            self.sbr
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='sbrsType2'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('sbr=[\n')
+        level += 1
+        for sbr_ in self.sbr:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(sbr_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'sbr':
+            sbr_ = child_.text
+            sbr_ = self.gds_validate_string(sbr_, node, 'sbr')
+            self.sbr.append(sbr_)
+# end class sbrsType2
+
+
 class tagsType2(GeneratedsSuper):
     subclass = None
     superclass = None
@@ -10159,7 +14585,7 @@ class tagsType2(GeneratedsSuper):
 # end class tagsType2
 
 
-class productsType1(GeneratedsSuper):
+class productsType2(GeneratedsSuper):
     subclass = None
     superclass = None
     def __init__(self, product=None):
@@ -10168,20 +14594,20 @@ class productsType1(GeneratedsSuper):
         else:
             self.product = product
     def factory(*args_, **kwargs_):
-        if productsType1.subclass:
-            return productsType1.subclass(*args_, **kwargs_)
+        if productsType2.subclass:
+            return productsType2.subclass(*args_, **kwargs_)
         else:
-            return productsType1(*args_, **kwargs_)
+            return productsType2(*args_, **kwargs_)
     factory = staticmethod(factory)
     def get_product(self): return self.product
     def set_product(self, product): self.product = product
     def add_product(self, value): self.product.append(value)
     def insert_product(self, index, value): self.product[index] = value
-    def export(self, outfile, level, namespace_='tns:', name_='productsType1', namespacedef_=''):
+    def export(self, outfile, level, namespace_='tns:', name_='productsType2', namespacedef_=''):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = []
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productsType1')
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productsType2')
         if self.hasContent_():
             outfile.write('>\n')
             self.exportChildren(outfile, level + 1, namespace_, name_)
@@ -10189,9 +14615,9 @@ class productsType1(GeneratedsSuper):
             outfile.write('</%s%s>\n' % (namespace_, name_))
         else:
             outfile.write('/>\n')
-    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productsType1'):
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productsType2'):
         pass
-    def exportChildren(self, outfile, level, namespace_='tns:', name_='productsType1', fromsubclass_=False):
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='productsType2', fromsubclass_=False):
         for product_ in self.product:
             showIndent(outfile, level)
             outfile.write('<%sproduct>%s</%sproduct>\n' % (namespace_, self.gds_format_string(quote_xml(product_).encode(ExternalEncoding), input_name='product'), namespace_))
@@ -10202,7 +14628,7 @@ class productsType1(GeneratedsSuper):
             return True
         else:
             return False
-    def exportLiteral(self, outfile, level, name_='productsType1'):
+    def exportLiteral(self, outfile, level, name_='productsType2'):
         level += 1
         self.exportLiteralAttributes(outfile, level, [], name_)
         if self.hasContent_():
@@ -10231,7 +14657,232 @@ class productsType1(GeneratedsSuper):
             product_ = child_.text
             product_ = self.gds_validate_string(product_, node, 'product')
             self.product.append(product_)
-# end class productsType1
+# end class productsType2
+
+
+class linkedProductsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, linkedProduct=None):
+        if linkedProduct is None:
+            self.linkedProduct = []
+        else:
+            self.linkedProduct = linkedProduct
+    def factory(*args_, **kwargs_):
+        if linkedProductsType.subclass:
+            return linkedProductsType.subclass(*args_, **kwargs_)
+        else:
+            return linkedProductsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_linkedProduct(self): return self.linkedProduct
+    def set_linkedProduct(self, linkedProduct): self.linkedProduct = linkedProduct
+    def add_linkedProduct(self, value): self.linkedProduct.append(value)
+    def insert_linkedProduct(self, index, value): self.linkedProduct[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='linkedProductsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='linkedProductsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='linkedProductsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='linkedProductsType', fromsubclass_=False):
+        for linkedProduct_ in self.linkedProduct:
+            showIndent(outfile, level)
+            outfile.write('<%slinkedProduct>%s</%slinkedProduct>\n' % (namespace_, self.gds_format_string(quote_xml(linkedProduct_).encode(ExternalEncoding), input_name='linkedProduct'), namespace_))
+    def hasContent_(self):
+        if (
+            self.linkedProduct
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='linkedProductsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('linkedProduct=[\n')
+        level += 1
+        for linkedProduct_ in self.linkedProduct:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(linkedProduct_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'linkedProduct':
+            linkedProduct_ = child_.text
+            linkedProduct_ = self.gds_validate_string(linkedProduct_, node, 'linkedProduct')
+            self.linkedProduct.append(linkedProduct_)
+# end class linkedProductsType
+
+
+class productFamilyType2(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, family=None):
+        if family is None:
+            self.family = []
+        else:
+            self.family = family
+    def factory(*args_, **kwargs_):
+        if productFamilyType2.subclass:
+            return productFamilyType2.subclass(*args_, **kwargs_)
+        else:
+            return productFamilyType2(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_family(self): return self.family
+    def set_family(self, family): self.family = family
+    def add_family(self, value): self.family.append(value)
+    def insert_family(self, index, value): self.family[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='productFamilyType2', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='productFamilyType2')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='productFamilyType2'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='productFamilyType2', fromsubclass_=False):
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('<%sfamily>%s</%sfamily>\n' % (namespace_, self.gds_format_string(quote_xml(family_).encode(ExternalEncoding), input_name='family'), namespace_))
+    def hasContent_(self):
+        if (
+            self.family
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='productFamilyType2'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('family=[\n')
+        level += 1
+        for family_ in self.family:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(family_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'family':
+            family_ = child_.text
+            family_ = self.gds_validate_string(family_, node, 'family')
+            self.family.append(family_)
+# end class productFamilyType2
+
+
+class tagsType3(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, tag=None):
+        if tag is None:
+            self.tag = []
+        else:
+            self.tag = tag
+    def factory(*args_, **kwargs_):
+        if tagsType3.subclass:
+            return tagsType3.subclass(*args_, **kwargs_)
+        else:
+            return tagsType3(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_tag(self): return self.tag
+    def set_tag(self, tag): self.tag = tag
+    def add_tag(self, value): self.tag.append(value)
+    def insert_tag(self, index, value): self.tag[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='tagsType3', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='tagsType3')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='tagsType3'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='tagsType3', fromsubclass_=False):
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('<%stag>%s</%stag>\n' % (namespace_, self.gds_format_string(quote_xml(tag_).encode(ExternalEncoding), input_name='tag'), namespace_))
+    def hasContent_(self):
+        if (
+            self.tag
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='tagsType3'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('tag=[\n')
+        level += 1
+        for tag_ in self.tag:
+            showIndent(outfile, level)
+            outfile.write('%s,\n' % quote_python(tag_).encode(ExternalEncoding))
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'tag':
+            tag_ = child_.text
+            tag_ = self.gds_validate_string(tag_, node, 'tag')
+            self.tag.append(tag_)
+# end class tagsType3
 
 
 class valueType(GeneratedsSuper):
@@ -10321,6 +14972,237 @@ class valueType(GeneratedsSuper):
             value_ = self.gds_validate_string(value_, node, 'value')
             self.value = value_
 # end class valueType
+
+
+class searchTextsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, searchText=None):
+        if searchText is None:
+            self.searchText = []
+        else:
+            self.searchText = searchText
+    def factory(*args_, **kwargs_):
+        if searchTextsType.subclass:
+            return searchTextsType.subclass(*args_, **kwargs_)
+        else:
+            return searchTextsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_searchText(self): return self.searchText
+    def set_searchText(self, searchText): self.searchText = searchText
+    def add_searchText(self, value): self.searchText.append(value)
+    def insert_searchText(self, index, value): self.searchText[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='searchTextsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='searchTextsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='searchTextsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='searchTextsType', fromsubclass_=False):
+        for searchText_ in self.searchText:
+            searchText_.export(outfile, level, namespace_, name_='searchText')
+    def hasContent_(self):
+        if (
+            self.searchText
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='searchTextsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('searchText=[\n')
+        level += 1
+        for searchText_ in self.searchText:
+            showIndent(outfile, level)
+            outfile.write('model_.searchTextType(\n')
+            searchText_.exportLiteral(outfile, level, name_='searchTextType')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'searchText':
+            obj_ = searchTextType.factory()
+            obj_.build(child_)
+            self.searchText.append(obj_)
+# end class searchTextsType
+
+
+class suspectTextsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, suspectText=None):
+        if suspectText is None:
+            self.suspectText = []
+        else:
+            self.suspectText = suspectText
+    def factory(*args_, **kwargs_):
+        if suspectTextsType.subclass:
+            return suspectTextsType.subclass(*args_, **kwargs_)
+        else:
+            return suspectTextsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_suspectText(self): return self.suspectText
+    def set_suspectText(self, suspectText): self.suspectText = suspectText
+    def add_suspectText(self, value): self.suspectText.append(value)
+    def insert_suspectText(self, index, value): self.suspectText[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='suspectTextsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='suspectTextsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='suspectTextsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='suspectTextsType', fromsubclass_=False):
+        for suspectText_ in self.suspectText:
+            suspectText_.export(outfile, level, namespace_, name_='suspectText')
+    def hasContent_(self):
+        if (
+            self.suspectText
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='suspectTextsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('suspectText=[\n')
+        level += 1
+        for suspectText_ in self.suspectText:
+            showIndent(outfile, level)
+            outfile.write('model_.suspectTextType(\n')
+            suspectText_.exportLiteral(outfile, level, name_='suspectTextType')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'suspectText':
+            obj_ = suspectTextType.factory()
+            obj_.build(child_)
+            self.suspectText.append(obj_)
+# end class suspectTextsType
+
+
+class infractionsType(GeneratedsSuper):
+    subclass = None
+    superclass = None
+    def __init__(self, infraction=None):
+        if infraction is None:
+            self.infraction = []
+        else:
+            self.infraction = infraction
+    def factory(*args_, **kwargs_):
+        if infractionsType.subclass:
+            return infractionsType.subclass(*args_, **kwargs_)
+        else:
+            return infractionsType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_infraction(self): return self.infraction
+    def set_infraction(self, infraction): self.infraction = infraction
+    def add_infraction(self, value): self.infraction.append(value)
+    def insert_infraction(self, index, value): self.infraction[index] = value
+    def export(self, outfile, level, namespace_='tns:', name_='infractionsType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
+        already_processed = []
+        self.exportAttributes(outfile, level, already_processed, namespace_, name_='infractionsType')
+        if self.hasContent_():
+            outfile.write('>\n')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            showIndent(outfile, level)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, already_processed, namespace_='tns:', name_='infractionsType'):
+        pass
+    def exportChildren(self, outfile, level, namespace_='tns:', name_='infractionsType', fromsubclass_=False):
+        for infraction_ in self.infraction:
+            infraction_.export(outfile, level, namespace_, name_='infraction')
+    def hasContent_(self):
+        if (
+            self.infraction
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='infractionsType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, [], name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, already_processed, name_):
+        pass
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('infraction=[\n')
+        level += 1
+        for infraction_ in self.infraction:
+            showIndent(outfile, level)
+            outfile.write('model_.infractionType(\n')
+            infraction_.exportLiteral(outfile, level, name_='infractionType')
+            showIndent(outfile, level)
+            outfile.write('),\n')
+        level -= 1
+        showIndent(outfile, level)
+        outfile.write('],\n')
+    def build(self, node):
+        self.buildAttributes(node, node.attrib, [])
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self.buildChildren(child, node, nodeName_)
+    def buildAttributes(self, node, attrs, already_processed):
+        pass
+    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+        if nodeName_ == 'infraction':
+            obj_ = infractionType.factory()
+            obj_.build(child_)
+            self.infraction.append(obj_)
+# end class infractionsType
 
 
 USAGE_TEXT = """
@@ -10417,9 +15299,12 @@ if __name__ == '__main__':
 
 
 __all__ = [
+    "LinkedProductsType",
+    "LinkedProductsType1",
     "SystemProfileCategory",
     "SystemProfileCategoryDetails",
     "account",
+    "address",
     "article",
     "articleBodyType",
     "articles",
@@ -10427,12 +15312,18 @@ __all__ = [
     "attachments",
     "backtrace",
     "base_link",
-    "bodyType",
+    "bugzilla",
+    "bugzillas",
     "case",
     "caseFilter",
     "cases",
+    "categoriesType",
     "comment",
     "comments",
+    "confidentialSearchType",
+    "confidentialType",
+    "domain",
+    "domains",
     "duplicateOfType",
     "duplicateOfType1",
     "entitlement",
@@ -10440,30 +15331,56 @@ __all__ = [
     "environmentType",
     "environmentType1",
     "error",
+    "explainSbr",
+    "extractedSymptom",
+    "extractedSymptoms",
     "group",
     "groupNumbers",
     "groups",
+    "health",
+    "infractionType",
+    "infractionsType",
     "internalDiagnosticStepsType",
     "internalDiagnosticStepsType1",
     "issueType",
     "issueType1",
+    "language",
+    "languageProfile",
+    "languages",
     "link",
+    "linkType",
+    "linkedProductsType",
     "notified_users",
+    "permissions",
+    "privateNotes",
     "problem",
     "problemSymptomParameters",
     "problems",
     "product",
+    "productFamilyType",
+    "productFamilyType1",
+    "productFamilyType2",
     "products",
     "productsType",
     "productsType1",
+    "productsType2",
     "recommendation",
     "recommendations",
     "resolutionType",
     "resolutionType1",
+    "role",
+    "roles",
     "rootCauseType",
     "rootCauseType1",
+    "sbr",
+    "sbrs",
     "sbrsType",
     "sbrsType1",
+    "sbrsType2",
+    "searchResult",
+    "searchResults",
+    "searchTextType",
+    "searchTextsType",
     "solution",
     "solutionType",
     "solutions",
@@ -10473,14 +15390,26 @@ __all__ = [
     "suggested_artifact",
     "suggested_artifacts",
     "supportNeed",
+    "suspectTextType",
+    "suspectTextsType",
     "symptom",
+    "symptomField",
+    "symptomFields",
     "symptoms",
     "systemProfile",
     "systemProfiles",
+    "tag",
     "tagType",
-    "tagType1",
+    "tags",
+    "tagsType",
+    "tagsType1",
+    "tagsType2",
+    "tagsType3",
     "trackedEntity",
+    "upstreamSystem",
     "user",
+    "userGroupType",
+    "userGroupsType",
     "users",
     "valueType",
     "values",
@@ -10489,75 +15418,124 @@ __all__ = [
 
 # Begin NOT_GENERATED
 _rootClassMap = {
-                "SystemProfileCategory"          : SystemProfileCategory,
-                "SystemProfileCategoryDetails"   : SystemProfileCategoryDetails,
-                "account"                        : account,
-                "article"                        : article,
-                "articleBodyType"                : articleBodyType,
-                "articles"                       : articles,
-                "attachment"                     : attachment,
-                "attachments"                    : attachments,
-                "backtrace"                      : backtrace,
-                "base_link"                      : base_link,
-                "bodyType"                       : bodyType,
-                "case"                           : case,
-                "caseFilter"                     : caseFilter,
-                "cases"                          : cases,
-                "comment"                        : comment,
-                "comments"                       : comments,
-                "duplicateOfType"                : duplicateOfType,
-                "duplicateOfType1"               : duplicateOfType1,
-                "entitlement"                    : entitlement,
-                "entitlements"                   : entitlements,
-                "environmentType"                : environmentType,
-                "environmentType1"               : environmentType1,
-                "error"                          : error,
-                "group"                          : group,
-                "groupNumbers"                   : groupNumbers,
-                "groups"                         : groups,
-                "internalDiagnosticStepsType"    : internalDiagnosticStepsType,
-                "internalDiagnosticStepsType1"   : internalDiagnosticStepsType1,
-                "issueType"                      : issueType,
-                "issueType1"                     : issueType1,
-                "link"                           : link,
-                "notified_users"                 : notified_users,
-                "problem"                        : problem,
-                "problemSymptomParameters"       : problemSymptomParameters,
-                "problems"                       : problems,
-                "product"                        : product,
-                "products"                       : products,
-                "productsType"                   : productsType,
-                "productsType1"                  : productsType1,
-                "recommendation"                 : recommendation,
-                "recommendations"                : recommendations,
-                "resolutionType"                 : resolutionType,
-                "resolutionType1"                : resolutionType1,
-                "rootCauseType"                  : rootCauseType,
-                "rootCauseType1"                 : rootCauseType1,
-                "sbrsType"                       : sbrsType,
-                "sbrsType1"                      : sbrsType1,
-                "solution"                       : solution,
-                "solutionType"                   : solutionType,
-                "solutions"                      : solutions,
-                "source"                         : source,
-                "sqiRating"                      : sqiRating,
-                "strataEntity"                   : strataEntity,
-                "suggested_artifact"             : suggested_artifact,
-                "suggested_artifacts"            : suggested_artifacts,
-                "supportNeed"                    : supportNeed,
-                "symptom"                        : symptom,
-                "symptoms"                       : symptoms,
-                "systemProfile"                  : systemProfile,
-                "systemProfiles"                 : systemProfiles,
-                "tagType"                        : tagType,
-                "tagType1"                       : tagType1,
-                "trackedEntity"                  : trackedEntity,
-                "user"                           : user,
-                "users"                          : users,
-                "valueType"                      : valueType,
-                "values"                         : values,
-                "versions"                       : versions
+        "LinkedProductsType"            :     LinkedProductsType,
+        "LinkedProductsType1"           :     LinkedProductsType1,
+        "SystemProfileCategory"         :     SystemProfileCategory,
+        "SystemProfileCategoryDetails"  :     SystemProfileCategoryDetails,
+        "account"                       :     account,
+        "address"                       :     address,
+        "article"                       :     article,
+        "articleBodyType"               :     articleBodyType,
+        "articles"                      :     articles,
+        "attachment"                    :     attachment,
+        "attachments"                   :     attachments,
+        "backtrace"                     :     backtrace,
+        "base_link"                     :     base_link,
+        "bugzilla"                      :     bugzilla,
+        "bugzillas"                     :     bugzillas,
+        "case"                          :     case,
+        "caseFilter"                    :     caseFilter,
+        "cases"                         :     cases,
+        "categoriesType"                :     categoriesType,
+        "comment"                       :     comment,
+        "comments"                      :     comments,
+        "confidentialSearchType"        :     confidentialSearchType,
+        "confidentialType"              :     confidentialType,
+        "domain"                        :     domain,
+        "domains"                       :     domains,
+        "duplicateOfType"               :     duplicateOfType,
+        "duplicateOfType1"              :     duplicateOfType1,
+        "entitlement"                   :     entitlement,
+        "entitlements"                  :     entitlements,
+        "environmentType"               :     environmentType,
+        "environmentType1"              :     environmentType1,
+        "error"                         :     error,
+        "explainSbr"                    :     explainSbr,
+        "extractedSymptom"              :     extractedSymptom,
+        "extractedSymptoms"             :     extractedSymptoms,
+        "group"                         :     group,
+        "groupNumbers"                  :     groupNumbers,
+        "groups"                        :     groups,
+        "health"                        :     health,
+        "infractionType"                :     infractionType,
+        "infractionsType"               :     infractionsType,
+        "internalDiagnosticStepsType"   :     internalDiagnosticStepsType,
+        "internalDiagnosticStepsType1"  :     internalDiagnosticStepsType1,
+        "issueType"                     :     issueType,
+        "issueType1"                    :     issueType1,
+        "language"                      :     language,
+        "languageProfile"               :     languageProfile,
+        "languages"                     :     languages,
+        "link"                          :     link,
+        "linkType"                      :     linkType,
+        "linkedProductsType"            :     linkedProductsType,
+        "notified_users"                :     notified_users,
+        "permissions"                   :     permissions,
+        "privateNotes"                  :     privateNotes,
+        "problem"                       :     problem,
+        "problemSymptomParameters"      :     problemSymptomParameters,
+        "problems"                      :     problems,
+        "product"                       :     product,
+        "productFamilyType"             :     productFamilyType,
+        "productFamilyType1"            :     productFamilyType1,
+        "productFamilyType2"            :     productFamilyType2,
+        "products"                      :     products,
+        "productsType"                  :     productsType,
+        "productsType1"                 :     productsType1,
+        "productsType2"                 :     productsType2,
+        "recommendation"                :     recommendation,
+        "recommendations"               :     recommendations,
+        "resolutionType"                :     resolutionType,
+        "resolutionType1"               :     resolutionType1,
+        "role"                          :     role,
+        "roles"                         :     roles,
+        "rootCauseType"                 :     rootCauseType,
+        "rootCauseType1"                :     rootCauseType1,
+        "sbr"                           :     sbr,
+        "sbrs"                          :     sbrs,
+        "sbrsType"                      :     sbrsType,
+        "sbrsType1"                     :     sbrsType1,
+        "sbrsType2"                     :     sbrsType2,
+        "searchResult"                  :     searchResult,
+        "searchResults"                 :     searchResults,
+        "searchTextType"                :     searchTextType,
+        "searchTextsType"               :     searchTextsType,
+        "solution"                      :     solution,
+        "solutionType"                  :     solutionType,
+        "solutions"                     :     solutions,
+        "source"                        :     source,
+        "sqiRating"                     :     sqiRating,
+        "strataEntity"                  :     strataEntity,
+        "suggested_artifact"            :     suggested_artifact,
+        "suggested_artifacts"           :     suggested_artifacts,
+        "supportNeed"                   :     supportNeed,
+        "suspectTextType"               :     suspectTextType,
+        "suspectTextsType"              :     suspectTextsType,
+        "symptom"                       :     symptom,
+        "symptomField"                  :     symptomField,
+        "symptomFields"                 :     symptomFields,
+        "symptoms"                      :     symptoms,
+        "systemProfile"                 :     systemProfile,
+        "systemProfiles"                :     systemProfiles,
+        "tag"                           :     tag,
+        "tagType"                       :     tagType,
+        "tags"                          :     tags,
+        "tagsType"                      :     tagsType,
+        "tagsType1"                     :     tagsType1,
+        "tagsType2"                     :     tagsType2,
+        "tagsType3"                     :     tagsType3,
+        "trackedEntity"                 :     trackedEntity,
+        "upstreamSystem"                :     upstreamSystem,
+        "user"                          :     user,
+        "userGroupType"                 :     userGroupType,
+        "userGroupsType"                :     userGroupsType,
+        "users"                         :     users,
+        "valueType"                     :     valueType,
+        "values"                        :     values,
+        "versions"                      :     versions
     }
+
+
 def findRootClass(rootTag):
     """
     Helper function that enables the generated code to locate the
